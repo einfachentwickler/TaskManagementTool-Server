@@ -42,10 +42,10 @@ namespace TaskManagementTool.BusinessLogic.Services
         {
             Todo item = await _todoRepository.GetSingleAsync(todo.Id);
 
-            todo.Name = todo.Name;
-            todo.IsCompleted = todo.IsCompleted;
-            todo.Content = todo.Content;
-            todo.Importance = todo.Importance;
+            item.Name = todo.Name;
+            item.IsCompleted = todo.IsCompleted;
+            item.Content = todo.Content;
+            item.Importance = todo.Importance;
 
             await _todoRepository.UpdateAsync(item);
         }
