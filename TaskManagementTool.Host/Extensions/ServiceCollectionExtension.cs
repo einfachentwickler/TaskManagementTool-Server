@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TaskManagementTool.DataAccess.Entities;
+using TaskManagementTool.Host.Configuration.Entities;
 using TaskManagementTool.Host.Constants;
 using TaskManagementTool.Host.Profiles;
 using DbContext = TaskManagementTool.DataAccess.DbContext;
@@ -17,11 +17,9 @@ namespace TaskManagementTool.Host.Extensions
 {
     public static class ServiceCollectionExtension
     {
-        public static void ConfigureSqlContext(this IServiceCollection services, IConfiguration configuration)
+        public static void ConfigureSqlContext(this IServiceCollection services, DatabaseConfigurationOptions options)
         {
-            string connectionString = configuration.GetSection(DbConfigurationSectionNames.CONNECTION_STRING).Value;
-
-            void UseSqlServer(DbContextOptionsBuilder builder) => builder.UseSqlServer(connectionString);
+            void UseSqlServer(DbContextOptionsBuilder builder) => builder.UseSqlServer(options.ConnectionString);
 
             services.AddDbContext<DbContext>(UseSqlServer);
         }
@@ -38,16 +36,21 @@ namespace TaskManagementTool.Host.Extensions
             service.AddCors(AddCors);
         }
 
-        public static void ConfigureIdentity(this IServiceCollection services, IConfiguration configuration)
+        public static void ConfigureIdentity(
+            this IServiceCollection services,
+            IdentityConfigurationOptions passwordOptions,
+            TokenValidationOptions tokenOptions,
+            AuthSettings authSettings
+            )
         {
-            void AddIdentity(IdentityOptions options)
+            void AddIdentity(IdentityOptions identityOptions)
             {
-                options.Password.RequireDigit = bool.Parse(configuration.GetSection(PasswordOptionsSectionNames.REQUIRE_DIGITS).Value);
-                options.Password.RequireLowercase = bool.Parse(configuration.GetSection(PasswordOptionsSectionNames.REQUIRE_LOWERCASE).Value);
-                options.Password.RequireNonAlphanumeric = bool.Parse(configuration.GetSection(PasswordOptionsSectionNames.REQUIRE_NON_ALPHANUMERIC).Value);
-                options.Password.RequireUppercase = bool.Parse(configuration.GetSection(PasswordOptionsSectionNames.REQUIRE_UPPERCASE).Value);
-                options.Password.RequiredLength = int.Parse(configuration.GetSection(PasswordOptionsSectionNames.REQUIRED_LENGTH).Value);
-                options.Password.RequiredUniqueChars = int.Parse(configuration.GetSection(PasswordOptionsSectionNames.REQUIRE_UNIQUE_CHARTS).Value);
+                identityOptions.Password.RequireDigit = passwordOptions.IsDigitRequired;
+                identityOptions.Password.RequireLowercase = passwordOptions.IsLowercaseRequired;
+                identityOptions.Password.RequireNonAlphanumeric = passwordOptions.IsNonAlphaNumericRequired;
+                identityOptions.Password.RequireUppercase = passwordOptions.IsUppercaseRequired;
+                identityOptions.Password.RequiredLength = passwordOptions.RequiredPasswordLength;
+                identityOptions.Password.RequiredUniqueChars = passwordOptions.RequiredUniqueChart;
             }
 
             static void AddAuthentication(AuthenticationOptions options)
@@ -60,15 +63,13 @@ namespace TaskManagementTool.Host.Extensions
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = bool.Parse(configuration.GetSection(TokenValidationParameterSectionNames.SHOULD_VALIDATE_ISSUER).Value),
-                    ValidateAudience = bool.Parse(configuration.GetSection(TokenValidationParameterSectionNames.SHOULD_VALIDATE_AUDIENCE).Value),
-                    ValidAudience = configuration.GetSection(AuthSettingsSectionNames.AUDIENCE).Value,
-                    ValidIssuer = configuration[AuthSettingsSectionNames.ISSUER],
-                    RequireExpirationTime = bool.Parse(configuration.GetSection(TokenValidationParameterSectionNames.SHOULD_REQUIRE_EXPIRATION_TIME).Value),
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(configuration.GetSection(AuthSettingsSectionNames.KEY).Value)
-                    ),
-                    ValidateIssuerSigningKey = bool.Parse(configuration.GetSection(TokenValidationParameterSectionNames.SHOULD_VALIDATE_ISSUER_SIGNIN_KEY).Value)
+                    ValidateIssuer = tokenOptions.ShouldValidateIssuer,
+                    ValidateAudience = tokenOptions.ShouldValidateAudience,
+                    ValidAudience = authSettings.Audience,
+                    ValidIssuer = authSettings.Issuer,
+                    RequireExpirationTime = tokenOptions.ShouldRequireExpirationTime,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authSettings.Key)),
+                    ValidateIssuerSigningKey = tokenOptions.ShouldValidateIssuerSigninKey
                 };
             }
 

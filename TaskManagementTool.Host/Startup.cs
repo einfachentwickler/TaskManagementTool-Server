@@ -5,6 +5,7 @@ using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.Services;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.Repositories;
+using TaskManagementTool.Host.Configuration.Entities;
 using TaskManagementTool.Host.Contracts;
 using TaskManagementTool.Host.Extensions;
 using TaskManagementTool.Host.Logging;
@@ -33,8 +34,12 @@ namespace TaskManagementTool.Host
             services.AddControllers();
             services.ConfigureAutoMapper();
             services.ConfigureCors();
-            services.ConfigureSqlContext(Configuration);
-            services.ConfigureIdentity(Configuration);
+            services.ConfigureSqlContext(new DatabaseConfigurationOptions(Configuration));
+            services.ConfigureIdentity(
+                new IdentityConfigurationOptions(Configuration), 
+                new TokenValidationOptions(Configuration), 
+                new AuthSettings(Configuration)
+                );
 
             services.AddTransient<ITodoRepository, TodoRepository>();
             services.AddTransient<ITodoService, TodoService>();
