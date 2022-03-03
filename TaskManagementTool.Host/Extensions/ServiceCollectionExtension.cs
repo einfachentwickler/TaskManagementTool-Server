@@ -11,6 +11,7 @@ using System.Text;
 using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.Host.Constants;
 using TaskManagementTool.Host.Profiles;
+using DbContext = TaskManagementTool.DataAccess.DbContext;
 
 namespace TaskManagementTool.Host.Extensions
 {
@@ -42,7 +43,6 @@ namespace TaskManagementTool.Host.Extensions
             void AddIdentity(IdentityOptions options)
             {
                 options.Password.RequireDigit = bool.Parse(configuration.GetSection(PasswordOptionsSectionNames.REQUIRE_DIGITS).Value);
-                
                 options.Password.RequireLowercase = bool.Parse(configuration.GetSection(PasswordOptionsSectionNames.REQUIRE_LOWERCASE).Value);
                 options.Password.RequireNonAlphanumeric = bool.Parse(configuration.GetSection(PasswordOptionsSectionNames.REQUIRE_NON_ALPHANUMERIC).Value);
                 options.Password.RequireUppercase = bool.Parse(configuration.GetSection(PasswordOptionsSectionNames.REQUIRE_UPPERCASE).Value);
@@ -60,15 +60,15 @@ namespace TaskManagementTool.Host.Extensions
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = bool.Parse(TokenValidationParameterSectionNames.SHOULD_VALIDATE_ISSUER),
-                    ValidateAudience = bool.Parse(TokenValidationParameterSectionNames.SHOULD_VALIDATE_AUDIENCE),
+                    ValidateIssuer = bool.Parse(configuration.GetSection(TokenValidationParameterSectionNames.SHOULD_VALIDATE_ISSUER).Value),
+                    ValidateAudience = bool.Parse(configuration.GetSection(TokenValidationParameterSectionNames.SHOULD_VALIDATE_AUDIENCE).Value),
                     ValidAudience = configuration.GetSection(AuthSettingsSectionNames.AUDIENCE).Value,
                     ValidIssuer = configuration[AuthSettingsSectionNames.ISSUER],
-                    RequireExpirationTime = bool.Parse(TokenValidationParameterSectionNames.SHOULD_REQUIRE_EXPIRATION_TIME),
+                    RequireExpirationTime = bool.Parse(configuration.GetSection(TokenValidationParameterSectionNames.SHOULD_REQUIRE_EXPIRATION_TIME).Value),
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(configuration.GetSection(AuthSettingsSectionNames.KEY).Value)
                     ),
-                    ValidateIssuerSigningKey = bool.Parse(TokenValidationParameterSectionNames.SHOULD_VALIDATE_ISSUER_SIGNIN_KEY)
+                    ValidateIssuerSigningKey = bool.Parse(configuration.GetSection(TokenValidationParameterSectionNames.SHOULD_VALIDATE_ISSUER_SIGNIN_KEY).Value)
                 };
             }
 
