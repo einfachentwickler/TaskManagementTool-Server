@@ -1,15 +1,13 @@
-﻿using System;
+﻿using IntegrationTests.SqlServer.EfCore.Configuration;
+using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using IntegrationTests.SqlServer.EfCore.Configuration;
-using NUnit.Framework;
 using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.Services;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
-using TaskManagementTool.Common.Exceptions;
-using TaskManagementTool.DataAccess.Entities;
 
 namespace IntegrationTests.SqlServer.EfCore
 {
@@ -53,20 +51,16 @@ namespace IntegrationTests.SqlServer.EfCore
         {
             //arrange
             string expectedName = Guid.NewGuid().ToString();
-            
-            CreateTodoDto request = new() { Name = expectedName };
 
             //act
-            await _instance.AddAsync(request);
-            int insertedElementId = (await _instance.GetAsync()).Last().Id;
+            int insertedElementId = await AddTempRecordAndReturnId(expectedName);
 
             TodoDto actualResult = await _instance.GetSingleAsync(insertedElementId);
 
             //assert
             Assert.That(actualResult.Name == expectedName);
 
-            //cleanup
-            await _instance.DeleteAsync(insertedElementId);
+            await CleanupDatabase(insertedElementId);
         }
 
         [Test]
@@ -75,10 +69,7 @@ namespace IntegrationTests.SqlServer.EfCore
             //arrange
             string expectedName = Guid.NewGuid().ToString();
 
-            CreateTodoDto entity = new() { Name = expectedName };
-
-            await _instance.AddAsync(entity);
-            int id = (await _instance.GetAsync()).Last().Id;
+            int id = await AddTempRecordAndReturnId(expectedName);
 
             //act
             await _instance.DeleteAsync(id);
@@ -90,15 +81,11 @@ namespace IntegrationTests.SqlServer.EfCore
         [Test]
         public async Task UpdateAsync_Test()
         {
-            //cleanup
+            //arrange
             string updatedName = Guid.NewGuid().ToString();
             string updatedContent = Guid.NewGuid().ToString();
-            
-            CreateTodoDto entity = new() { Name = updatedName };
 
-            await _instance.AddAsync(entity);
-
-            int id = (await _instance.GetAsync()).Last().Id;
+            int id = await AddTempRecordAndReturnId(updatedName, updatedContent);
 
             UpdateTodoDto entityToUpdate = new()
             {
@@ -115,7 +102,23 @@ namespace IntegrationTests.SqlServer.EfCore
             //assert
             Assert.That(actualresult.Name == updatedName && actualresult.Content == updatedContent);
 
-            await _instance.DeleteAsync(id);
+            await CleanupDatabase(id);
         }
+
+        private async Task<int> AddTempRecordAndReturnId(string updatedname, string updatedContent = null)
+        {
+            CreateTodoDto entity = new()
+            {
+                Name = updatedname, 
+                Content = updatedContent
+            };
+           
+            await _instance.AddAsync(entity);
+            
+            int id = (await _instance.GetAsync()).Last().Id;
+            return id;
+        }
+
+        private async Task CleanupDatabase(int id) => await _instance.DeleteAsync(id);
     }
 }
