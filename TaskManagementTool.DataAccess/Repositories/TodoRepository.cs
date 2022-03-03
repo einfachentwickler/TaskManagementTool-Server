@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TaskManagementTool.Common.Exceptions;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.Entities;
 
@@ -10,9 +8,9 @@ namespace TaskManagementTool.DataAccess.Repositories
 {
     public class TodoRepository : ITodoRepository
     {
-        private readonly DbContext _context;
+        private readonly Dao _context;
 
-        public TodoRepository(DbContext context)
+        public TodoRepository(Dao context)
         {
             _context = context;
             _context.Database.EnsureCreated();
@@ -30,8 +28,8 @@ namespace TaskManagementTool.DataAccess.Repositories
         public async Task<Todo> GetSingleAsync(int id)
         {
             Todo item = await _context.Todos
-                .Include(i => i.Creator)
-                .FirstOrDefaultAsync(i => i.Id == id);
+                .Include(todo => todo.Creator)
+                .FirstAsync(todo => todo.Id == id);
 
             return item;
         }
@@ -51,12 +49,7 @@ namespace TaskManagementTool.DataAccess.Repositories
         public async Task DeleteAsync(int id)
         {
             Todo todo = await _context.Todos
-                .FirstOrDefaultAsync(toDo => toDo.Id == id);
-
-            if (todo is null)
-            {
-                throw new TaskManagementToolException("Invalid id passed: todo is null");
-            }
+                .FirstAsync(todo => todo.Id == id);
 
             _context.Todos.Remove(todo);
             await _context.SaveChangesAsync();

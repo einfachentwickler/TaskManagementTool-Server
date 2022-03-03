@@ -4,10 +4,10 @@ using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.DataAccess
 {
-    public class DbContext : IdentityDbContext<User>
+    public class Dao : IdentityDbContext<User>
     {
         public DbSet<Todo> Todos { get; set; }
 
-        public DbContext(DbContextOptions<DbContext> options) : base(options) { }
+        public Dao(DbContextOptions<Dao> options) : base(options) { }
     }
 }

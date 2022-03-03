@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using TaskManagementTool.DataAccess;
 using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.Host.Configuration.Entities;
 using TaskManagementTool.Host.Constants;
 using TaskManagementTool.Host.Profiles;
-using DbContext = TaskManagementTool.DataAccess.DbContext;
 
 namespace TaskManagementTool.Host.Extensions
 {
@@ -21,7 +21,7 @@ namespace TaskManagementTool.Host.Extensions
         {
             void UseSqlServer(DbContextOptionsBuilder builder) => builder.UseSqlServer(options.ConnectionString);
 
-            services.AddDbContext<DbContext>(UseSqlServer);
+            services.AddDbContext<Dao>(UseSqlServer);
         }
 
         public static void ConfigureCors(this IServiceCollection service)
@@ -75,7 +75,7 @@ namespace TaskManagementTool.Host.Extensions
 
             services
                 .AddIdentity<User, IdentityRole>(AddIdentity)
-                .AddEntityFrameworkStores<DbContext>()
+                .AddEntityFrameworkStores<Dao>()
                 .AddDefaultTokenProviders();
 
             services

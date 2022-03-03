@@ -9,7 +9,7 @@ namespace TaskManagementTool.DataAccess.Initializers
     public static class DbInitializer
     {
         public static async Task InitializeAsync(
-            DbContext context, UserManager<User> userManager,
+            Dao context, UserManager<User> userManager,
             RoleManager<IdentityRole> roleManager
             )
         {

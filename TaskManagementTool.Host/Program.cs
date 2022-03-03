@@ -22,7 +22,7 @@ namespace TaskManagementTool.Host
                 IServiceProvider services = scope.ServiceProvider;
                 UserManager<User> userManager = services.GetRequiredService<UserManager<User>>();
                 RoleManager<IdentityRole> rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                DbContext context = services.GetRequiredService<DbContext>();
+                Dao context = services.GetRequiredService<Dao>();
 
                 if (await context.Database.EnsureCreatedAsync())
                 {
