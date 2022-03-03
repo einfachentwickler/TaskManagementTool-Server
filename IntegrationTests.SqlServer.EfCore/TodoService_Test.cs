@@ -53,14 +53,21 @@ namespace IntegrationTests.SqlServer.EfCore
             string expectedName = Guid.NewGuid().ToString();
 
             //act
-            int insertedElementId = await AddTempRecordAndReturnId(expectedName);
+            CreateTodoDto entity = new()
+            {
+                Name = expectedName
+            };
 
-            TodoDto actualResult = await _instance.GetSingleAsync(insertedElementId);
+            await _instance.AddAsync(entity);
+
+            int id = (await _instance.GetAsync()).Last().Id;
+
+            TodoDto actualResult = await _instance.GetSingleAsync(id);
 
             //assert
             Assert.That(actualResult.Name == expectedName);
 
-            await CleanupDatabase(insertedElementId);
+            await CleanupDatabase(id);
         }
 
         [Test]
