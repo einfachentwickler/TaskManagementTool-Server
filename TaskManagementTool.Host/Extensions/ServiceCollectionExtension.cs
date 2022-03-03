@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -7,8 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TaskManagementTool.DataAccess.Entities;
+using TaskManagementTool.Host.Constants;
 using TaskManagementTool.Host.Profiles;
-using DbContext = TaskManagementTool.DataAccess.DbContext;
 
 namespace TaskManagementTool.Host.Extensions
 {
@@ -16,62 +18,81 @@ namespace TaskManagementTool.Host.Extensions
     {
         public static void ConfigureSqlContext(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<DbContext>(options =>
-                options.UseSqlServer(configuration.GetSection("ConnectionString").Value)
-            );
+            string connectionString = configuration.GetSection(DbConfigurationSectionNames.CONNECTION_STRING).Value;
+
+            void UseSqlServer(DbContextOptionsBuilder builder) => builder.UseSqlServer(connectionString);
+
+            services.AddDbContext<DbContext>(UseSqlServer);
         }
+
         public static void ConfigureCors(this IServiceCollection service)
-            =>
-                service.AddCors(
-                    cors => cors.AddPolicy("CorsPolicy",
-                        builder =>
-                            builder.AllowAnyOrigin()
-                                .AllowAnyHeader()
-                                .AllowAnyMethod()
-                    )
-                );
+        {
+            void AddPolicy(CorsPolicyBuilder builder) => builder
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+
+            void AddCors(CorsOptions options) => options.AddPolicy(CorsPolicyNames.DEFAULT_POLICY_NAME, AddPolicy);
+
+            service.AddCors(AddCors);
+        }
 
         public static void ConfigureIdentity(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddIdentity<User, IdentityRole>(options =>
-                {
-                    options.Password.RequireDigit = false;
-                    options.Password.RequireLowercase = false;
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireUppercase = false;
-                    options.Password.RequiredLength = 1;
-                    options.Password.RequiredUniqueChars = 0;
-                })
-                .AddEntityFrameworkStores<DbContext>()
-                .AddDefaultTokenProviders();
-            services.AddAuthentication(auth =>
-                {
-                    auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                }
-            ).AddJwtBearer(options =>
+            void AddIdentity(IdentityOptions options)
+            {
+                options.Password.RequireDigit = bool.Parse(configuration.GetSection(PasswordOptionsSectionNames.REQUIRE_DIGITS).Value);
+                
+                options.Password.RequireLowercase = bool.Parse(configuration.GetSection(PasswordOptionsSectionNames.REQUIRE_LOWERCASE).Value);
+                options.Password.RequireNonAlphanumeric = bool.Parse(configuration.GetSection(PasswordOptionsSectionNames.REQUIRE_NON_ALPHANUMERIC).Value);
+                options.Password.RequireUppercase = bool.Parse(configuration.GetSection(PasswordOptionsSectionNames.REQUIRE_UPPERCASE).Value);
+                options.Password.RequiredLength = int.Parse(configuration.GetSection(PasswordOptionsSectionNames.REQUIRED_LENGTH).Value);
+                options.Password.RequiredUniqueChars = int.Parse(configuration.GetSection(PasswordOptionsSectionNames.REQUIRE_UNIQUE_CHARTS).Value);
+            }
+
+            static void AddAuthentication(AuthenticationOptions options)
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }
+
+            void AddJwtBearer(JwtBearerOptions options)
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidAudience = configuration.GetSection("AuthSettings:Audience").Value,
-                    ValidIssuer = configuration["AuthSettings:Issuer"],
-                    RequireExpirationTime = true,
+                    ValidateIssuer = bool.Parse(TokenValidationParameterSectionNames.SHOULD_VALIDATE_ISSUER),
+                    ValidateAudience = bool.Parse(TokenValidationParameterSectionNames.SHOULD_VALIDATE_AUDIENCE),
+                    ValidAudience = configuration.GetSection(AuthSettingsSectionNames.AUDIENCE).Value,
+                    ValidIssuer = configuration[AuthSettingsSectionNames.ISSUER],
+                    RequireExpirationTime = bool.Parse(TokenValidationParameterSectionNames.SHOULD_REQUIRE_EXPIRATION_TIME),
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(configuration.GetSection("AuthSettings:Key").Value)
+                        Encoding.UTF8.GetBytes(configuration.GetSection(AuthSettingsSectionNames.KEY).Value)
                     ),
-                    ValidateIssuerSigningKey = true
+                    ValidateIssuerSigningKey = bool.Parse(TokenValidationParameterSectionNames.SHOULD_VALIDATE_ISSUER_SIGNIN_KEY)
                 };
-            });
+            }
+
+            services
+                .AddIdentity<User, IdentityRole>(AddIdentity)
+                .AddEntityFrameworkStores<DbContext>()
+                .AddDefaultTokenProviders();
+
+            services
+                .AddAuthentication(AddAuthentication)
+                .AddJwtBearer(AddJwtBearer);
         }
 
         public static void ConfigureAutoMapper(this IServiceCollection services)
         {
-            MapperConfiguration config = new(cf =>
-                cf.AddProfile(new DefaultMappingProfile())
-            );
-            services.AddSingleton(config.CreateMapper());
+            DefaultMappingProfile defaultProfile = new();
+
+            void AddProfile(IMapperConfigurationExpression expression) => expression.AddProfile(defaultProfile);
+
+            MapperConfiguration config = new(AddProfile);
+
+            IMapper mapper = config.CreateMapper();
+
+            services.AddSingleton(mapper);
         }
     }
 }
