@@ -36,12 +36,8 @@ namespace TaskManagementTool.BusinessLogic.Services
 
         public async Task<UserDto> GetUserAsync(string id)
         {
-            User singleUser = await _userManager.Users.FirstOrDefaultAsync(user => user.Id == id);
+            User singleUser = await _userManager.Users.FirstAsync(user => user.Id == id);
 
-            if (singleUser is null)
-            {
-                throw new TaskManagementToolException("Passed invalid id: user is null");
-            }
             UserDto mappedUser = _mapper.Map<User, UserDto>(singleUser);
             return mappedUser;
         }
@@ -59,9 +55,22 @@ namespace TaskManagementTool.BusinessLogic.Services
 
         public async Task DeleteUserAsync(string id)
         {
-            ICollection<Todo> todos = await _todoRepository.GetAsync();
+            await DeleteUsersTodos(id);
 
-            todos = todos.Where(todo => todo.Creator.Id == id).ToList();
+            User user = await _userManager.Users.FirstAsync(usr => usr.Id == id);
+
+            IdentityResult identityResult = await _userManager.DeleteAsync(user);
+            if (!identityResult.Succeeded)
+            {
+                throw new TaskManagementToolException("Update failed: " + string.Join("\n", identityResult.Errors));
+            }
+        }
+
+        private async Task DeleteUsersTodos(string id)
+        {
+            ICollection<Todo> todos = (await _todoRepository.GetAsync())
+                .Where(todo => todo.Creator?.Id == id)
+                .ToList();
 
             if (todos.Any())
             {
@@ -69,18 +78,6 @@ namespace TaskManagementTool.BusinessLogic.Services
                 {
                     await _todoRepository.DeleteAsync(todo.Id);
                 }
-            }
-            User user = await _userManager.Users.FirstOrDefaultAsync(usr => usr.Id == id);
-
-            if (user is null)
-            {
-                throw new TaskManagementToolException("Passed invalid id: user is null");
-            }
-
-            IdentityResult identityResult = await _userManager.DeleteAsync(user);
-            if (!identityResult.Succeeded)
-            {
-                throw new TaskManagementToolException("Update failed: " + string.Join("\n", identityResult.Errors));
             }
         }
 

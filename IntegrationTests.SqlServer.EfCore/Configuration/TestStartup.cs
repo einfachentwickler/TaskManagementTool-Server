@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using NLog.Extensions.Logging;
+using Moq;
 using TaskManagementTool.DataAccess;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.Entities;
@@ -18,7 +18,7 @@ namespace IntegrationTests.SqlServer.EfCore.Configuration
     public class TestStartup
     {
         public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
-            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory+"/Configuration")
+            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory + "/Configuration")
             .AddJsonFile("appsettings.test.json")
             .Build();
 
@@ -45,9 +45,39 @@ namespace IntegrationTests.SqlServer.EfCore.Configuration
 
             Mapper = config.CreateMapper();
             #endregion
+
+            #region User manager setup
+            IUserStore<User> userStore = new UserStore<User>(TestStartup.Dao);
+
+            IPasswordHasher<User> hasher = new PasswordHasher<User>();
+
+            UserValidator<User> validator = new();
+            List<UserValidator<User>> validators = new() { validator };
+
+            ILogger<UserManager<User>> logger = new Mock<ILogger<UserManager<User>>>().Object;
+
+            UserManager = new UserManager<User>(
+                userStore,
+                null,
+                hasher, validators,
+                null,
+                null,
+                null,
+                null,
+                logger
+            );
+
+            // Set-up token providers.
+            IUserTwoFactorTokenProvider<User> tokenProvider = new EmailTokenProvider<User>();
+            UserManager.RegisterTokenProvider("Default", tokenProvider);
+            IUserTwoFactorTokenProvider<User> phoneTokenProvider = new PhoneNumberTokenProvider<User>();
+            UserManager.RegisterTokenProvider("PhoneTokenProvider", phoneTokenProvider);
+            #endregion
         }
 
         public static IMapper Mapper { get; }
+
+        public static UserManager<User> UserManager { get; }
 
         public static ITodoRepository Repository => new TodoRepository(Dao);
     }

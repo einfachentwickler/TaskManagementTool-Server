@@ -22,7 +22,10 @@ namespace TaskManagementTool.BusinessLogic.Services
         private readonly IConfiguration _configuration;
 
         public AuthService(UserManager<User> managerPar, IConfiguration configuration)
-            => (_userManager, _configuration) = (managerPar, configuration);
+        {
+            _userManager = managerPar;
+            _configuration = configuration;
+        }
 
         public async Task<UserManagerResponse> LoginUserAsync(LoginDto model)
         {

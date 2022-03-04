@@ -1,11 +1,7 @@
 ﻿using IntegrationTests.SqlServer.EfCore.Configuration;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Moq;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Contracts;
@@ -23,45 +19,18 @@ namespace IntegrationTests.SqlServer.EfCore
     {
         private IAuthService _instance;
 
-        private UserManager<User> UserManager;
-
         private const string PASSWORD = "password";
 
         [SetUp]
         public void Setup()
         {
-            IUserStore<User> userStore = new UserStore<User>(TestStartup.Dao);
-
-            IPasswordHasher<User> hasher = new PasswordHasher<User>();
-
-            UserValidator<User> validator = new();
-            List<UserValidator<User>> validators = new() { validator };
-
-            ILogger<UserManager<User>> logger = new Mock<ILogger<UserManager<User>>>().Object;
-
-            UserManager = new UserManager<User>(
-                userStore,
-                null,
-                hasher, validators,
-                null,
-                null,
-                null,
-                null,
-                logger
-                );
-
-            // Set-up token providers.
-            IUserTwoFactorTokenProvider<User> tokenProvider = new EmailTokenProvider<User>();
-            UserManager.RegisterTokenProvider("Default", tokenProvider);
-            IUserTwoFactorTokenProvider<User> phoneTokenProvider = new PhoneNumberTokenProvider<User>();
-            UserManager.RegisterTokenProvider("PhoneTokenProvider", phoneTokenProvider);
-
-            _instance = new AuthService(UserManager, TestStartup.Configuration);
+            _instance = new AuthService(TestStartup.UserManager, TestStartup.Configuration);
         }
 
         [Test]
         public async Task LoginUserAsync_SuccessTest()
         {
+            //arrange
             string email = $"{Guid.NewGuid()}@example.com";
 
             await RegisterAsyncTempUser(email);
@@ -72,8 +41,10 @@ namespace IntegrationTests.SqlServer.EfCore
                 Password = PASSWORD
             };
 
+            //act
             UserManagerResponse actualResult = await _instance.LoginUserAsync(model);
 
+            //assert
             Assert.That(actualResult.IsSuccess);
 
             await CleanupDatabase(email);
@@ -82,6 +53,7 @@ namespace IntegrationTests.SqlServer.EfCore
         [Test]
         public async Task LoginUserAsync_BlockedTest()
         {
+            //arrange
             string email = $"{Guid.NewGuid()}@example.com";
 
             await RegisterAsyncTempUser(email, true);
@@ -92,8 +64,10 @@ namespace IntegrationTests.SqlServer.EfCore
                 Password = PASSWORD
             };
 
+            //act
             UserManagerResponse actualResult = await _instance.LoginUserAsync(model);
 
+            //assert
             Assert.That(!actualResult.IsSuccess);
             Assert.That(actualResult.Message == "This email was blocked");
 
@@ -103,6 +77,7 @@ namespace IntegrationTests.SqlServer.EfCore
         [Test]
         public async Task LoginUserAsync_WrongEmailTest()
         {
+            //arrange
             string email = $"{Guid.NewGuid()}@example.com";
 
             LoginDto model = new()
@@ -111,8 +86,10 @@ namespace IntegrationTests.SqlServer.EfCore
                 Password = PASSWORD
             };
 
+            //act
             UserManagerResponse actualResult = await _instance.LoginUserAsync(model);
 
+            //assert
             Assert.That(!actualResult.IsSuccess);
             Assert.That(actualResult.Message == "There is no user with this email");
         }
@@ -120,14 +97,17 @@ namespace IntegrationTests.SqlServer.EfCore
         [Test]
         public async Task LoginUserAsync_WrongPasswordTest()
         {
+            //arrange
             LoginDto model = new()
             {
                 Email = TestStartup.Configuration.GetSection("TestData:ValidEmail").Value,
                 Password = PASSWORD + "wrong"
             };
 
+            //act
             UserManagerResponse actualResult = await _instance.LoginUserAsync(model);
 
+            //assert
             Assert.That(!actualResult.IsSuccess);
             Assert.That(actualResult.Message == "Incorrect login or password");
         }
@@ -135,6 +115,7 @@ namespace IntegrationTests.SqlServer.EfCore
         [Test]
         public async Task RegisterUserAsync_SuccessTest()
         {
+            //arrange
             string email = $"{Guid.NewGuid()}@example.com";
 
             RegisterDto registerDto = new()
@@ -147,8 +128,10 @@ namespace IntegrationTests.SqlServer.EfCore
                 LastName = "Last name"
             };
 
+            //act
             UserManagerResponse response = await _instance.RegisterUserAsync(registerDto);
 
+            //assert
             Assert.That(response.IsSuccess);
 
             await CleanupDatabase(email);
@@ -157,6 +140,7 @@ namespace IntegrationTests.SqlServer.EfCore
         [Test]
         public async Task RegisterUserAsync_PasswordDoesNotMatchTest()
         {
+            //arrange
             string email = $"{Guid.NewGuid()}@example.com";
 
             RegisterDto registerDto = new()
@@ -169,13 +153,15 @@ namespace IntegrationTests.SqlServer.EfCore
                 LastName = "Last name"
             };
 
+            //act
             UserManagerResponse response = await _instance.RegisterUserAsync(registerDto);
 
+            //assert
             Assert.That(!response.IsSuccess);
             Assert.That(response.Message == "Confirm password doesn't match the password");
         }
 
-        private async Task RegisterAsyncTempUser(string email, bool isBlocked = false)
+        private static async Task RegisterAsyncTempUser(string email, bool isBlocked = false)
         {
             User registerUser = new()
             {
@@ -188,7 +174,7 @@ namespace IntegrationTests.SqlServer.EfCore
                 IsBlocked = isBlocked
             };
 
-            IdentityResult result = await UserManager.CreateAsync(registerUser, PASSWORD);
+            IdentityResult result = await TestStartup.UserManager.CreateAsync(registerUser, PASSWORD);
 
             if (!result.Succeeded)
             {
@@ -198,11 +184,11 @@ namespace IntegrationTests.SqlServer.EfCore
             }
         }
 
-        private async Task CleanupDatabase(string email)
+        private static async Task CleanupDatabase(string email)
         {
-            User user = await UserManager.FindByEmailAsync(email);
+            User user = await TestStartup.UserManager.FindByEmailAsync(email);
 
-            await UserManager.DeleteAsync(user);
+            await TestStartup.UserManager.DeleteAsync(user);
         }
     }
 }
