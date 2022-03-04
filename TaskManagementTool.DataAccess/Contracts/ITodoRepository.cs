@@ -6,7 +6,7 @@ namespace TaskManagementTool.DataAccess.Contracts
 {
     public interface ITodoRepository
     {
-        public Task<ICollection<Todo>> GetAsync();
+        public Task<IEnumerable<Todo>> GetAsync();
 
         public Task<Todo> GetSingleAsync(int id);
 

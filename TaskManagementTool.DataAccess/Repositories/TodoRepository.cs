@@ -16,9 +16,9 @@ namespace TaskManagementTool.DataAccess.Repositories
             _context.Database.EnsureCreated();
         }
 
-        public async Task<ICollection<Todo>> GetAsync()
+        public async Task<IEnumerable<Todo>> GetAsync()
         {
-            ICollection<Todo> todos = await _context.Todos
+            IEnumerable<Todo> todos = await _context.Todos
                 .Include(todo => todo.Creator)
                 .ToListAsync();
 

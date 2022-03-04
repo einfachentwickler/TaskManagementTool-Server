@@ -17,10 +17,10 @@ namespace TaskManagementTool.BusinessLogic.Services
 
         public TodoService(IMapper mapper, ITodoRepository todoRepository) => (_todoRepository, _mapper) = (todoRepository, mapper);
 
-        public async Task<ICollection<TodoDto>> GetAsync()
+        public async Task<IEnumerable<TodoDto>> GetAsync()
         {
-            ICollection<Todo> todos = await _todoRepository.GetAsync();
-            ICollection<TodoDto> mappedTodos = _mapper.Map<ICollection<TodoDto>>(todos);
+            IEnumerable<Todo> todos = await _todoRepository.GetAsync();
+            IEnumerable<TodoDto> mappedTodos = _mapper.Map<IEnumerable<TodoDto>>(todos);
             return mappedTodos;
         }
 

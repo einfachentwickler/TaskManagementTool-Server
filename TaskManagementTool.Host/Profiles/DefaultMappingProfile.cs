@@ -19,8 +19,8 @@ namespace TaskManagementTool.Host.Profiles
             CreateMap<CreateTodoDto, Todo>();
             CreateMap<UpdateTodoDto, Todo>();
 
-            CreateMap<ICollection<Todo>, List<TodoDto>>();
-            CreateMap<ICollection<User>, List<UserDto>>();
+            CreateMap<IEnumerable<Todo>, List<TodoDto>>();
+            CreateMap<IEnumerable<User>, List<UserDto>>();
         }
     }
 }

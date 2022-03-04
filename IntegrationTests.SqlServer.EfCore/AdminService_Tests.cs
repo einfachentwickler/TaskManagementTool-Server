@@ -31,9 +31,9 @@ namespace IntegrationTests.SqlServer.EfCore
         [Test]
         public async Task GetUsers_SuccessTest()
         {
-            ICollection<UserDto> actualResult = await _instance.GetUsersAsync();
+            IEnumerable<UserDto> actualResult = await _instance.GetUsersAsync();
 
-            Assert.That(actualResult.Count > 0);
+            Assert.That(actualResult.Any());
         }
 
         [Test]

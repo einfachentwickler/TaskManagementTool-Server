@@ -27,10 +27,10 @@ namespace TaskManagementTool.BusinessLogic.Services
             _todoRepository = todoRepository;
         }
 
-        public async Task<ICollection<UserDto>> GetUsersAsync()
+        public async Task<IEnumerable<UserDto>> GetUsersAsync()
         {
-            ICollection<User> users = await _userManager.Users.ToListAsync();
-            ICollection<UserDto> mappedUsers = _mapper.Map<ICollection<UserDto>>(users);
+            IEnumerable<User> users = await _userManager.Users.ToListAsync();
+            IEnumerable<UserDto> mappedUsers = _mapper.Map<IEnumerable<UserDto>>(users);
             return mappedUsers;
         }
 
@@ -68,7 +68,7 @@ namespace TaskManagementTool.BusinessLogic.Services
 
         private async Task DeleteUsersTodos(string id)
         {
-            ICollection<Todo> todos = (await _todoRepository.GetAsync())
+            IEnumerable<Todo> todos = (await _todoRepository.GetAsync())
                 .Where(todo => todo.Creator?.Id == id)
                 .ToList();
 

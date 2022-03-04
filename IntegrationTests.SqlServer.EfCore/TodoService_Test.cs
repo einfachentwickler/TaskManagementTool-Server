@@ -25,9 +25,9 @@ namespace IntegrationTests.SqlServer.EfCore
         [Test]
         public async Task GetAsync_Test()
         {
-            ICollection<TodoDto> actualResult = await _instance.GetAsync();
+            IEnumerable<TodoDto> actualResult = await _instance.GetAsync();
 
-            Assert.That(actualResult.Count > 0);
+            Assert.That(actualResult.Any());
         }
 
         [Test]

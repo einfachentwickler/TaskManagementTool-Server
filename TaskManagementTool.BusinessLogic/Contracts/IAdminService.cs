@@ -6,7 +6,7 @@ namespace TaskManagementTool.BusinessLogic.Contracts
 {
     public interface IAdminService
     {
-        public Task<ICollection<UserDto>> GetUsersAsync();
+        public Task<IEnumerable<UserDto>> GetUsersAsync();
 
         public Task<UserDto> GetUserAsync(string id);
 

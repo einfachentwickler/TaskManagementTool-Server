@@ -14,16 +14,23 @@ using TaskManagementTool.Host.Profiles;
 
 namespace TaskManagementTool.UnitTests.BusinessLogic
 {
-    public class TestTodoService
+    public class TodoService_Test
     {
         private ITodoService todoService;
 
         [SetUp]
         public void Setup()
         {
-            MapperConfiguration config = new(cf => cf.AddProfile(new DefaultMappingProfile()));
+            DefaultMappingProfile defaultMappingProfile = new();
+            AutoNSubstituteCustomization autoNSubstituteCustomization = new();
 
-            IFixture fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
+            void AddProfile(IMapperConfigurationExpression configuration) => configuration.AddProfile(defaultMappingProfile);
+
+            MapperConfiguration config = new(AddProfile);
+
+            IMapper mapper = config.CreateMapper();
+
+            IFixture fixture = new Fixture().Customize(autoNSubstituteCustomization);
 
             ITodoRepository todoRepository = fixture.Create<ITodoRepository>();
 
@@ -34,14 +41,14 @@ namespace TaskManagementTool.UnitTests.BusinessLogic
 
             todoRepository.GetAsync().Returns(SeedData.Todos);
 
-            todoService = new TodoService(config.CreateMapper(), todoRepository);
+            todoService = new TodoService(mapper, todoRepository);
         }
 
         [Test]
-        public void GetSingleAsync()
+        public async Task GetSingleAsync_Test()
         {
-            TodoDto expectedTodo = todoService.GetSingleAsync(1).GetAwaiter().GetResult();
-            TodoDto falseTodo = todoService.GetSingleAsync(5).GetAwaiter().GetResult();
+            TodoDto expectedTodo = await todoService.GetSingleAsync(1);
+            TodoDto falseTodo = await todoService.GetSingleAsync(5);
 
             Assert.NotNull(expectedTodo);
             Assert.Null(falseTodo);
@@ -49,14 +56,16 @@ namespace TaskManagementTool.UnitTests.BusinessLogic
         }
 
         [Test]
-        public void GetAsync()
+        public async Task GetAsync_Test()
         {
-            ICollection<TodoDto> todos = todoService.GetAsync().GetAwaiter().GetResult();
+            IEnumerable<TodoDto> todos = await todoService.GetAsync();
 
             Assert.NotNull(todos);
-            Assert.AreEqual(todos.Count, 4);
-            Assert.AreEqual(todos.First().Id, 1);
-            Assert.AreEqual(todos.Last().Id, 4);
+
+            List<TodoDto> todoDtos = todos.ToList();
+            Assert.AreEqual(todoDtos.Count, 4);
+            Assert.AreEqual(todoDtos.First().Id, 1);
+            Assert.AreEqual(todoDtos.Last().Id, 4);
         }
     }
 }

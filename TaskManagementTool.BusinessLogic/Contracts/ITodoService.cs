@@ -7,7 +7,7 @@ namespace TaskManagementTool.BusinessLogic.Contracts
 {
     public interface ITodoService
     {
-        public Task<ICollection<TodoDto>> GetAsync();
+        public Task<IEnumerable<TodoDto>> GetAsync();
 
         public Task<TodoDto> GetSingleAsync(int id);
 
