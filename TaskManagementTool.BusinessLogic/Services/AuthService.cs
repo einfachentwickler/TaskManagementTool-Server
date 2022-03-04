@@ -122,7 +122,7 @@ namespace TaskManagementTool.BusinessLogic.Services
             {
                 Message = "User was not created",
                 IsSuccess = false,
-                Errors = result.Errors.Select(e => e.Description)
+                Errors = result.Errors.Select(identityError => identityError.Description)
             };
         }
     }

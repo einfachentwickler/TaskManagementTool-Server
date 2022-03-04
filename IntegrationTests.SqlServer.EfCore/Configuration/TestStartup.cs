@@ -2,8 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 using TaskManagementTool.DataAccess;
 using TaskManagementTool.DataAccess.Contracts;
+using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.DataAccess.Repositories;
 using TaskManagementTool.Host.Profiles;
 
@@ -16,7 +22,7 @@ namespace IntegrationTests.SqlServer.EfCore.Configuration
             .AddJsonFile("appsettings.test.json")
             .Build();
 
-        private static readonly Dao _dao;
+        public static readonly Dao Dao;
 
         static TestStartup()
         {
@@ -27,7 +33,7 @@ namespace IntegrationTests.SqlServer.EfCore.Configuration
 
             DbContextOptions<Dao> options = builder.Options;
 
-            _dao = new Dao(options);
+            Dao = new Dao(options);
             #endregion
 
             #region Mapper setup
@@ -43,6 +49,6 @@ namespace IntegrationTests.SqlServer.EfCore.Configuration
 
         public static IMapper Mapper { get; }
 
-        public static ITodoRepository Repository => new TodoRepository(_dao);
+        public static ITodoRepository Repository => new TodoRepository(Dao);
     }
 }
