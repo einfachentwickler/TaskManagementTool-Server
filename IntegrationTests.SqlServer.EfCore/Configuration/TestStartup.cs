@@ -11,7 +11,7 @@ using TaskManagementTool.DataAccess;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.DataAccess.Repositories;
-using TaskManagementTool.Host.Profiles;
+using TaskManagementTool.Host.Configuration.Profiles;
 
 namespace IntegrationTests.SqlServer.EfCore.Configuration
 {

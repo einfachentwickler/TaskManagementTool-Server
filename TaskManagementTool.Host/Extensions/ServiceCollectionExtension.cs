@@ -10,8 +10,8 @@ using System.Text;
 using TaskManagementTool.DataAccess;
 using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.Host.Configuration.Entities;
+using TaskManagementTool.Host.Configuration.Profiles;
 using TaskManagementTool.Host.Constants;
-using TaskManagementTool.Host.Profiles;
 
 namespace TaskManagementTool.Host.Extensions
 {

@@ -6,9 +6,7 @@ using TaskManagementTool.BusinessLogic.Services;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.Repositories;
 using TaskManagementTool.Host.Configuration.Entities;
-using TaskManagementTool.Host.Contracts;
 using TaskManagementTool.Host.Extensions;
-using TaskManagementTool.Host.Logging;
 using TaskManagementTool.Host.Middleware;
 
 namespace TaskManagementTool.Host
@@ -25,11 +23,10 @@ namespace TaskManagementTool.Host
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ILoggingConfigurator, LoggingConfigurator>();
-
-            ILoggingConfigurator configurator = services.BuildServiceProvider().GetRequiredService<ILoggingConfigurator>();
-
-            configurator.Setup(Configuration);
+            services.AddTransient(_ => new IdentityConfigurationOptions(Configuration));
+            services.AddTransient(_ => new DatabaseConfigurationOptions(Configuration));
+            services.AddTransient(_ => new TokenValidationOptions(Configuration));
+            services.AddTransient(_ => new AuthSettings(Configuration));
 
             services.AddControllers();
             services.ConfigureAutoMapper();
@@ -52,7 +49,6 @@ namespace TaskManagementTool.Host
         public void Configure(IApplicationBuilder app)
         {
             app.UseMiddleware<ExceptionMiddleware>();
-            app.UseMiddleware<RequestLoggingMiddleware>();
 
             app.UseHttpsRedirection();
             app.UseCors("CorsPolicy");

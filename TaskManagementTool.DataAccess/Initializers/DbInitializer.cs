@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TaskManagementTool.Common.Constants;
 using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.DataAccess.Initializers
@@ -15,9 +16,9 @@ namespace TaskManagementTool.DataAccess.Initializers
         {
             const string password = "password";
 
-            if (await roleManager.FindByNameAsync("Admin") is null)
+            if (await roleManager.FindByNameAsync(UserRoles.ADMIN_ROLE) is null)
             {
-                await roleManager.CreateAsync(new IdentityRole("Admin"));
+                await roleManager.CreateAsync(new IdentityRole(UserRoles.ADMIN_ROLE));
             }
 
             if (await userManager.FindByNameAsync(DataSeed.Users.First().Email) is null)
@@ -26,11 +27,16 @@ namespace TaskManagementTool.DataAccess.Initializers
 
                 if (result.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(DataSeed.Users.First(), "Admin");
+                    await userManager.AddToRoleAsync(DataSeed.Users.First(), UserRoles.ADMIN_ROLE);
                 }
 
                 List<Todo> collection = DataSeed.Todos.ToList();
-                collection.ForEach(async td => await context.Todos.AddAsync(td));
+
+                foreach (Todo todo in collection)
+                {
+                    await context.Todos.AddAsync(todo);
+                }
+
                 await context.SaveChangesAsync();
             }
         }

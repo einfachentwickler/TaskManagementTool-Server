@@ -10,7 +10,7 @@ using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.Services;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.DataAccess.Contracts;
-using TaskManagementTool.Host.Profiles;
+using TaskManagementTool.Host.Configuration.Profiles;
 
 namespace TaskManagementTool.UnitTests.BusinessLogic
 {

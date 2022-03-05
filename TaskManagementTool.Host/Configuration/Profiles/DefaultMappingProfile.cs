@@ -1,10 +1,10 @@
-﻿using AutoMapper;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using AutoMapper;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
 using TaskManagementTool.DataAccess.Entities;
 
-namespace TaskManagementTool.Host.Profiles
+namespace TaskManagementTool.Host.Configuration.Profiles
 {
     public class DefaultMappingProfile : Profile
     {
