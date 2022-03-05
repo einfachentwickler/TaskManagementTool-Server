@@ -1,17 +1,13 @@
 ﻿using IntegrationTests.SqlServer.EfCore.Configuration;
-using IntegrationTests.SqlServer.EfCore.Constants;
-using Microsoft.AspNetCore.Identity;
+using IntegrationTests.SqlServer.EfCore.Utils;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using IntegrationTests.SqlServer.EfCore.Utils;
 using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.Services;
 using TaskManagementTool.BusinessLogic.ViewModels;
-using TaskManagementTool.Common.Constants;
-using TaskManagementTool.Common.Exceptions;
 using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.DataAccess.Repositories;
 

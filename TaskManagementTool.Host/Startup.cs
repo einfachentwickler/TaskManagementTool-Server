@@ -36,8 +36,8 @@ namespace TaskManagementTool.Host
             services.ConfigureCors();
             services.ConfigureSqlContext(new DatabaseConfigurationOptions(Configuration));
             services.ConfigureIdentity(
-                new IdentityConfigurationOptions(Configuration), 
-                new TokenValidationOptions(Configuration), 
+                new IdentityConfigurationOptions(Configuration),
+                new TokenValidationOptions(Configuration),
                 new AuthSettings(Configuration)
                 );
 

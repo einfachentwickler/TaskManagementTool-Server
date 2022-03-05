@@ -11,7 +11,7 @@ namespace TaskManagementTool.Host.Configuration.Entities
         public int RequiredPasswordLength => int.Parse(_configuration.GetSection("IdentityPasswordOptions:RequiredLength").Value);
 
         public int RequiredUniqueChart => int.Parse(_configuration.GetSection("IdentityPasswordOptions:RequiredUniqueChars").Value);
-        
+
         public bool IsDigitRequired => bool.Parse(_configuration.GetSection("IdentityPasswordOptions:RequireDigit").Value);
 
         public bool IsLowercaseRequired => bool.Parse(_configuration.GetSection("IdentityPasswordOptions:RequireLowercase").Value);

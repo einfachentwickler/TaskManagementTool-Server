@@ -30,7 +30,7 @@ namespace TaskManagementTool.Host.Controllers
         public async Task<IActionResult> ReverseStatus(string id)
         {
             UserDto user = await _adminService.GetUserAsync(id);
-            
+
             if (user is null)
             {
                 return NotFound(id);

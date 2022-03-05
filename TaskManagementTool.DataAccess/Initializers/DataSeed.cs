@@ -6,12 +6,12 @@ namespace TaskManagementTool.DataAccess.Initializers
     {
         public static User[] Users { get; } =
         {
-            new() 
-            { 
-                Email = "admin@example.com", 
-                IsBlocked = false, 
-                UserName = "admin@example.com", 
-                Role = "Admin", 
+            new()
+            {
+                Email = "admin@example.com",
+                IsBlocked = false,
+                UserName = "admin@example.com",
+                Role = "Admin",
                 FirstName = "Admin",
                 LastName = "Admin's last name"
             }

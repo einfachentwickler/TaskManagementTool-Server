@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using IntegrationTests.SqlServer.EfCore.Configuration;
+﻿using IntegrationTests.SqlServer.EfCore.Configuration;
 using IntegrationTests.SqlServer.EfCore.Constants;
 using Microsoft.AspNetCore.Identity;
+using System.Linq;
+using System.Threading.Tasks;
 using TaskManagementTool.Common.Constants;
 using TaskManagementTool.Common.Exceptions;
 using TaskManagementTool.DataAccess.Entities;

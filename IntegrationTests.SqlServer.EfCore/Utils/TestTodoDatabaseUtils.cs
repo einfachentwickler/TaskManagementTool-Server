@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using IntegrationTests.SqlServer.EfCore.Configuration;
+using System.Linq;
 using System.Threading.Tasks;
-using IntegrationTests.SqlServer.EfCore.Configuration;
 using TaskManagementTool.DataAccess.Entities;
 
 namespace IntegrationTests.SqlServer.EfCore.Utils
