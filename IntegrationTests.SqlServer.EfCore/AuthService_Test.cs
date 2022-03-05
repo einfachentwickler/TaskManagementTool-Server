@@ -1,16 +1,12 @@
 ﻿using IntegrationTests.SqlServer.EfCore.Configuration;
-using Microsoft.AspNetCore.Identity;
+using IntegrationTests.SqlServer.EfCore.Utils;
 using NUnit.Framework;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.Services;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
-using TaskManagementTool.Common.Constants;
-using TaskManagementTool.Common.Exceptions;
-using TaskManagementTool.DataAccess.Entities;
 
 namespace IntegrationTests.SqlServer.EfCore
 {
@@ -33,7 +29,7 @@ namespace IntegrationTests.SqlServer.EfCore
             //arrange
             string email = $"{Guid.NewGuid()}@example.com";
 
-            await RegisterAsyncTempUser(email);
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email);
 
             LoginDto model = new()
             {
@@ -47,7 +43,7 @@ namespace IntegrationTests.SqlServer.EfCore
             //assert
             Assert.That(actualResult.IsSuccess);
 
-            await CleanupDatabase(email);
+            await TestUserDatabaseUtils.CleanupDatabase(email);
         }
 
         [Test]
@@ -56,7 +52,7 @@ namespace IntegrationTests.SqlServer.EfCore
             //arrange
             string email = $"{Guid.NewGuid()}@example.com";
 
-            await RegisterAsyncTempUser(email, true);
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email, true);
 
             LoginDto model = new()
             {
@@ -71,7 +67,7 @@ namespace IntegrationTests.SqlServer.EfCore
             Assert.That(!actualResult.IsSuccess);
             Assert.That(actualResult.Message == "This email was blocked");
 
-            await CleanupDatabase(email);
+            await TestUserDatabaseUtils.CleanupDatabase(email);
         }
 
         [Test]
@@ -98,9 +94,12 @@ namespace IntegrationTests.SqlServer.EfCore
         public async Task LoginUserAsync_WrongPasswordTest()
         {
             //arrange
+            string email = $"{Guid.NewGuid()}@example.com";
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email);
+
             LoginDto model = new()
             {
-                Email = TestStartup.Configuration.GetSection("TestData:ValidEmail").Value,
+                Email = email,
                 Password = PASSWORD + "wrong"
             };
 
@@ -110,6 +109,8 @@ namespace IntegrationTests.SqlServer.EfCore
             //assert
             Assert.That(!actualResult.IsSuccess);
             Assert.That(actualResult.Message == "Incorrect login or password");
+
+            await TestUserDatabaseUtils.CleanupDatabase(email);
         }
 
         [Test]
@@ -134,7 +135,7 @@ namespace IntegrationTests.SqlServer.EfCore
             //assert
             Assert.That(response.IsSuccess);
 
-            await CleanupDatabase(email);
+            await TestUserDatabaseUtils.CleanupDatabase(email);
         }
 
         [Test]
@@ -159,36 +160,6 @@ namespace IntegrationTests.SqlServer.EfCore
             //assert
             Assert.That(!response.IsSuccess);
             Assert.That(response.Message == "Confirm password doesn't match the password");
-        }
-
-        private static async Task RegisterAsyncTempUser(string email, bool isBlocked = false)
-        {
-            User registerUser = new()
-            {
-                Age = 14,
-                Email = email,
-                FirstName = "First name",
-                LastName = "Last name",
-                UserName = email,
-                Role = UserRoles.USER_ROLE,
-                IsBlocked = isBlocked
-            };
-
-            IdentityResult result = await TestStartup.UserManager.CreateAsync(registerUser, PASSWORD);
-
-            if (!result.Succeeded)
-            {
-                throw new TaskManagementToolException(
-                    $"User was not created: {string.Join("\n", result.Errors.Select(error => new { error.Code, error.Description }))}"
-                    );
-            }
-        }
-
-        private static async Task CleanupDatabase(string email)
-        {
-            User user = await TestStartup.UserManager.FindByEmailAsync(email);
-
-            await TestStartup.UserManager.DeleteAsync(user);
         }
     }
 }

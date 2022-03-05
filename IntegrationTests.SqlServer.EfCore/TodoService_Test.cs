@@ -1,4 +1,5 @@
 ﻿using IntegrationTests.SqlServer.EfCore.Configuration;
+using IntegrationTests.SqlServer.EfCore.Utils;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace IntegrationTests.SqlServer.EfCore
         [TestCase(1)]
         public async Task GetSingleAsync_CorrectIdTest(int id)
         {
-            TodoDto actualResult = await _instance.GetSingleAsync(id);
+            TodoDto actualResult = await _instance.FirstAsync(id);
 
             Assert.That(actualResult is not null);
         }
@@ -43,7 +44,7 @@ namespace IntegrationTests.SqlServer.EfCore
         [TestCase(9999)]
         public void GetSingleAsync_WrongIdTest(int id)
         {
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _instance.GetSingleAsync(id));
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _instance.FirstAsync(id));
         }
 
         [Test]
@@ -62,12 +63,12 @@ namespace IntegrationTests.SqlServer.EfCore
 
             int id = (await _instance.GetAsync()).Last().Id;
 
-            TodoDto actualResult = await _instance.GetSingleAsync(id);
+            TodoDto actualResult = await _instance.FirstAsync(id);
 
             //assert
             Assert.That(actualResult.Name == expectedName);
 
-            await CleanupDatabase(id);
+            await TestTodoDatabaseUtils.CleanupDatabase(id);
         }
 
         [Test]
@@ -76,13 +77,13 @@ namespace IntegrationTests.SqlServer.EfCore
             //arrange
             string expectedName = Guid.NewGuid().ToString();
 
-            int id = await AddTempRecordAndReturnId(expectedName);
+            int id = await TestTodoDatabaseUtils.AddTempRecordAndReturnId(expectedName);
 
             //act
             await _instance.DeleteAsync(id);
 
             //assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _instance.GetSingleAsync(id));
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _instance.FirstAsync(id));
         }
 
         [Test]
@@ -92,7 +93,7 @@ namespace IntegrationTests.SqlServer.EfCore
             string updatedName = Guid.NewGuid().ToString();
             string updatedContent = Guid.NewGuid().ToString();
 
-            int id = await AddTempRecordAndReturnId(updatedName, updatedContent);
+            int id = await TestTodoDatabaseUtils.AddTempRecordAndReturnId(updatedName, updatedContent);
 
             UpdateTodoDto entityToUpdate = new()
             {
@@ -104,28 +105,12 @@ namespace IntegrationTests.SqlServer.EfCore
             //act
             await _instance.UpdateAsync(entityToUpdate);
 
-            TodoDto actualresult = await _instance.GetSingleAsync(id);
+            TodoDto actualresult = await _instance.FirstAsync(id);
 
             //assert
             Assert.That(actualresult.Name == updatedName && actualresult.Content == updatedContent);
 
-            await CleanupDatabase(id);
+            await TestTodoDatabaseUtils.CleanupDatabase(id);
         }
-
-        private async Task<int> AddTempRecordAndReturnId(string updatedname, string updatedContent = null)
-        {
-            CreateTodoDto entity = new()
-            {
-                Name = updatedname, 
-                Content = updatedContent
-            };
-           
-            await _instance.AddAsync(entity);
-            
-            int id = (await _instance.GetAsync()).Last().Id;
-            return id;
-        }
-
-        private async Task CleanupDatabase(int id) => await _instance.DeleteAsync(id);
     }
 }

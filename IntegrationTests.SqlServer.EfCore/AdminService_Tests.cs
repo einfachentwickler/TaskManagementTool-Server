@@ -1,10 +1,12 @@
 ﻿using IntegrationTests.SqlServer.EfCore.Configuration;
+using IntegrationTests.SqlServer.EfCore.Constants;
 using Microsoft.AspNetCore.Identity;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using IntegrationTests.SqlServer.EfCore.Utils;
 using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.Services;
 using TaskManagementTool.BusinessLogic.ViewModels;
@@ -19,8 +21,6 @@ namespace IntegrationTests.SqlServer.EfCore
     public class AdminService_Tests
     {
         private IAdminService _instance;
-
-        private const string PASSWORD = "password";
 
         [SetUp]
         public void Setup()
@@ -40,24 +40,32 @@ namespace IntegrationTests.SqlServer.EfCore
         public async Task GetUser_SuccessTest()
         {
             //arrange
-            string validId = await GetValidUserId();
+            string email = $"{Guid.NewGuid()}@example.com";
+
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email);
+
+            User user = await TestStartup.UserManager.FindByEmailAsync(email);
 
             //act
-            UserDto actualResult = await _instance.GetUserAsync(validId);
+            UserDto actualResult = await _instance.GetUserAsync(user.Id);
 
             //assert
             Assert.That(actualResult is not null);
 
             Assert.That(actualResult.Email is not null);
+
+            await TestUserDatabaseUtils.CleanupDatabase(email);
         }
 
         [Test]
         public async Task UpdateUserAsync_SuccessTest()
         {
             //arrange
-            string validId = await GetValidUserId();
+            string email = $"{Guid.NewGuid()}@example.com";
 
-            User user = await TestStartup.UserManager.FindByIdAsync(validId);
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email);
+
+            User user = await TestStartup.UserManager.FindByEmailAsync(email);
 
             UserDto userToUpdate = TestStartup.Mapper.Map<User, UserDto>(user);
 
@@ -69,11 +77,13 @@ namespace IntegrationTests.SqlServer.EfCore
             await _instance.UpdateUserAsync(userToUpdate);
 
             //assert
-            User userAfterUpdate = await TestStartup.UserManager.FindByIdAsync(validId);
+            User userAfterUpdate = await TestStartup.UserManager.FindByEmailAsync(email);
 
             Assert.That(userAfterUpdate is not null);
 
             Assert.That(userAfterUpdate.FirstName == firstName);
+
+            await TestUserDatabaseUtils.CleanupDatabase(email);
         }
 
         [Test]
@@ -82,8 +92,7 @@ namespace IntegrationTests.SqlServer.EfCore
             //arrange
             string email = $"{Guid.NewGuid()}@example.com";
 
-
-            await RegisterTempUserAsync(email);
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email);
 
             User user = await TestStartup.UserManager.FindByEmailAsync(email);
 
@@ -92,37 +101,6 @@ namespace IntegrationTests.SqlServer.EfCore
 
             //assert
             Assert.ThrowsAsync<InvalidOperationException>(async () => await _instance.GetUserAsync(user.Id));
-        }
-
-        private static async Task RegisterTempUserAsync(string email, bool isBlocked = false)
-        {
-            User registerUser = new()
-            {
-                Age = 14,
-                Email = email,
-                FirstName = "First name",
-                LastName = "Last name",
-                UserName = email,
-                Role = UserRoles.USER_ROLE,
-                IsBlocked = isBlocked
-            };
-
-            IdentityResult result = await TestStartup.UserManager.CreateAsync(registerUser, PASSWORD);
-
-            if (!result.Succeeded)
-            {
-                throw new TaskManagementToolException(
-                    $"User was not created: {string.Join("\n", result.Errors.Select(error => new { error.Code, error.Description }))}"
-                );
-            }
-        }
-
-        private static async Task<string> GetValidUserId()
-        {
-            User user = await TestStartup.UserManager
-                .FindByEmailAsync(TestStartup.Configuration.GetSection("TestData:ValidEmail").Value);
-
-            return user.Id;
         }
     }
 }

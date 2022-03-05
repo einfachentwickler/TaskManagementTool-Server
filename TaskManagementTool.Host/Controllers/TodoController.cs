@@ -28,7 +28,7 @@ namespace TaskManagementTool.Host.Controllers
             string userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                             ?? throw new Exception("User id is null");
 
-            TodoDto todo = await _service.GetSingleAsync(todoId);
+            TodoDto todo = await _service.FirstAsync(todoId);
             return todo is not null && todo.Creator.Id == userId;
         }
 
@@ -50,7 +50,7 @@ namespace TaskManagementTool.Host.Controllers
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            TodoDto todo = await _service.GetSingleAsync(id);
+            TodoDto todo = await _service.FirstAsync(id);
             if (todo is null)
             {
                 return NotFound(id);
@@ -95,7 +95,7 @@ namespace TaskManagementTool.Host.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            TodoDto model = await _service.GetSingleAsync(id);
+            TodoDto model = await _service.FirstAsync(id);
             if (model is null)
             {
                 return NotFound(id);
