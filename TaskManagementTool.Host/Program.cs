@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using NLog.Web;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using TaskManagementTool.DataAccess;
 using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.DataAccess.Initializers;
@@ -20,13 +21,15 @@ namespace TaskManagementTool.Host
             using (IServiceScope scope = host.Services.CreateScope())
             {
                 IServiceProvider services = scope.ServiceProvider;
+                IConfiguration configuration = services.GetRequiredService<IConfiguration>();
+               
                 UserManager<User> userManager = services.GetRequiredService<UserManager<User>>();
                 RoleManager<IdentityRole> rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                 Dao context = services.GetRequiredService<Dao>();
 
                 if (await context.Database.EnsureCreatedAsync())
                 {
-                    await DbInitializer.InitializeAsync(context, userManager, rolesManager);
+                    await EfCoreCodeFirstInitializer.InitializeAsync(context, userManager, rolesManager, configuration);
                 }
             }
 

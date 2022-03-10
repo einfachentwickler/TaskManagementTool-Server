@@ -34,10 +34,10 @@ namespace TaskManagementTool.UnitTests.BusinessLogic
 
             ITodoRepository todoRepository = fixture.Create<ITodoRepository>();
 
-            todoRepository.GetSingleAsync(1).Returns(Task.FromResult(SeedData.Todos.First()));
-            todoRepository.GetSingleAsync(2).Returns(Task.FromResult(SeedData.Todos.Skip(1).First()));
-            todoRepository.GetSingleAsync(3).Returns(Task.FromResult(SeedData.Todos.Skip(2).First()));
-            todoRepository.GetSingleAsync(4).Returns(Task.FromResult(SeedData.Todos.Last()));
+            todoRepository.FirstAsync(1).Returns(Task.FromResult(SeedData.Todos.First()));
+            todoRepository.FirstAsync(2).Returns(Task.FromResult(SeedData.Todos.Skip(1).First()));
+            todoRepository.FirstAsync(3).Returns(Task.FromResult(SeedData.Todos.Skip(2).First()));
+            todoRepository.FirstAsync(4).Returns(Task.FromResult(SeedData.Todos.Last()));
 
             todoRepository.GetAsync().Returns(SeedData.Todos);
 

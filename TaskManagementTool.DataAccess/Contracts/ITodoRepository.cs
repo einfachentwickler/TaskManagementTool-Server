@@ -8,7 +8,7 @@ namespace TaskManagementTool.DataAccess.Contracts
     {
         public Task<IEnumerable<Todo>> GetAsync();
 
-        public Task<Todo> GetSingleAsync(int id);
+        public Task<Todo> FirstAsync(int id);
 
         public Task AddAsync(Todo item);
 

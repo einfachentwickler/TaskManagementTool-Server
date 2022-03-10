@@ -26,7 +26,7 @@ namespace TaskManagementTool.BusinessLogic.Services
 
         public async Task<TodoDto> FirstAsync(int id)
         {
-            Todo todo = await _todoRepository.GetSingleAsync(id);
+            Todo todo = await _todoRepository.FirstAsync(id);
             TodoDto mappedTodo = _mapper.Map<Todo, TodoDto>(todo);
 
             return mappedTodo;
@@ -40,7 +40,7 @@ namespace TaskManagementTool.BusinessLogic.Services
 
         public async Task UpdateAsync(UpdateTodoDto todo)
         {
-            Todo item = await _todoRepository.GetSingleAsync(todo.Id);
+            Todo item = await _todoRepository.FirstAsync(todo.Id);
 
             item.Name = todo.Name;
             item.IsCompleted = todo.IsCompleted;

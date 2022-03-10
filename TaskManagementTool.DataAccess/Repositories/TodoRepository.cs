@@ -25,7 +25,7 @@ namespace TaskManagementTool.DataAccess.Repositories
             return todos;
         }
 
-        public async Task<Todo> GetSingleAsync(int id)
+        public async Task<Todo> FirstAsync(int id)
         {
             Todo item = await _context.Todos
                 .Include(todo => todo.Creator)
