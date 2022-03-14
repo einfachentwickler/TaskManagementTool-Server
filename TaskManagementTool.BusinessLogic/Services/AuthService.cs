@@ -7,9 +7,11 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using TaskManagementTool.BusinessLogic.Constants;
 using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
+using TaskManagementTool.Common.Constants;
 using TaskManagementTool.Common.Exceptions;
 using TaskManagementTool.DataAccess.Entities;
 
@@ -35,7 +37,7 @@ namespace TaskManagementTool.BusinessLogic.Services
             {
                 return new UserManagerResponse
                 {
-                    Message = "There is no user with this email",
+                    Message = UserManagerResponseMessages.USER_DOES_NOT_EXIST,
                     IsSuccess = false
                 };
             }
@@ -44,7 +46,7 @@ namespace TaskManagementTool.BusinessLogic.Services
             {
                 return new UserManagerResponse
                 {
-                    Message = "This email was blocked",
+                    Message = UserManagerResponseMessages.BLOCKED_EMAIL,
                     IsSuccess = false
                 };
             }
@@ -54,34 +56,18 @@ namespace TaskManagementTool.BusinessLogic.Services
             {
                 return new UserManagerResponse
                 {
-                    Message = "Incorrect login or password",
+                    Message = UserManagerResponseMessages.INVALID_CREDENTIALS,
                     IsSuccess = false
                 };
             }
 
-            Claim[] claims = {
-                new("email",model.Email),
-                new(ClaimTypes.NameIdentifier,user.Id),
-                new("role",user.Role)
-            };
-
-            SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(_configuration["AuthSettings:Key"]));
-
-            JwtSecurityToken token = new(
-                issuer: _configuration["AuthSettings:Issuer"],
-                audience: _configuration["AuthSettings:Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddDays(30),
-                signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
-                );
-
-            string tokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
+            (string tokenAsString, JwtSecurityToken jwtSecurityToken) = GetToken(user, model);
 
             return new UserManagerResponse
             {
                 Message = tokenAsString,
                 IsSuccess = true,
-                ExpiredDate = token.ValidTo
+                ExpiredDate = jwtSecurityToken.ValidTo
             };
         }
 
@@ -96,7 +82,7 @@ namespace TaskManagementTool.BusinessLogic.Services
             {
                 return new UserManagerResponse
                 {
-                    Message = "Confirm password doesn't match the password"
+                    Message = UserManagerResponseMessages.CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD
                 };
             }
 
@@ -107,7 +93,7 @@ namespace TaskManagementTool.BusinessLogic.Services
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Age = model.Age,
-                Role = "User"
+                Role = UserRoles.USER_ROLE
             };
 
             IdentityResult result = await _userManager.CreateAsync(identityUser, model.Password);
@@ -116,17 +102,42 @@ namespace TaskManagementTool.BusinessLogic.Services
             {
                 return new UserManagerResponse
                 {
-                    Message = "User successfully created",
+                    Message = UserManagerResponseMessages.USER_CREATED,
                     IsSuccess = true
                 };
             }
 
             return new UserManagerResponse
             {
-                Message = "User was not created",
+                Message = UserManagerResponseMessages.USER_WAS_NOT_CREATED,
                 IsSuccess = false,
                 Errors = result.Errors.Select(identityError => identityError.Description)
             };
+        }
+
+        private (string, JwtSecurityToken) GetToken(User user, LoginDto model)
+        {
+            Claim[] claims = {
+                new("email",model.Email),
+                new(ClaimTypes.NameIdentifier,user.Id),
+                new("role",user.Role)
+            };
+
+            byte[] authKey = Encoding.UTF8.GetBytes(_configuration["AuthSettings:Key"]);
+
+            SymmetricSecurityKey key = new(authKey);
+
+            JwtSecurityToken token = new(
+                 _configuration["AuthSettings:Issuer"],
+                 _configuration["AuthSettings:Audience"],
+                claims,
+                expires: DateTime.Now.AddDays(30),
+                signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
+            );
+
+            string tokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return (tokenAsString, token);
         }
     }
 }

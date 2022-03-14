@@ -3,6 +3,7 @@ using IntegrationTests.SqlServer.EfCore.Constants;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading.Tasks;
+using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.Common.Constants;
 using TaskManagementTool.Common.Exceptions;
 using TaskManagementTool.DataAccess.Entities;
@@ -39,6 +40,22 @@ namespace IntegrationTests.SqlServer.EfCore.Utils
                     $"User was not created: {string.Join("\n", result.Errors.Select(error => new { error.Code, error.Description }))}"
                 );
             }
+        }
+
+        public static async Task<UserDto> GetUserDtoAsync(string email)
+        {
+            User user = await TestStartup.UserManager.FindByEmailAsync(email);
+
+            UserDto userToReturn = TestStartup.Mapper.Map<User, UserDto>(user);
+
+            return userToReturn;
+        }
+
+        public static async Task<User> GetUserAsync(string email)
+        {
+            User user = await TestStartup.UserManager.FindByEmailAsync(email);
+
+            return user;
         }
     }
 }

@@ -40,7 +40,7 @@ namespace IntegrationTests.SqlServer.EfCore
 
             await TestUserDatabaseUtils.RegisterTempUserAsync(email);
 
-            User user = await TestStartup.UserManager.FindByEmailAsync(email);
+            User user = await TestUserDatabaseUtils.GetUserAsync(email);
 
             //act
             UserDto actualResult = await _instance.GetUserAsync(user.Id);
@@ -61,9 +61,7 @@ namespace IntegrationTests.SqlServer.EfCore
 
             await TestUserDatabaseUtils.RegisterTempUserAsync(email);
 
-            User user = await TestStartup.UserManager.FindByEmailAsync(email);
-
-            UserDto userToUpdate = TestStartup.Mapper.Map<User, UserDto>(user);
+            UserDto userToUpdate = await TestUserDatabaseUtils.GetUserDtoAsync(email);
 
             string firstName = Guid.NewGuid().ToString();
 
@@ -73,7 +71,7 @@ namespace IntegrationTests.SqlServer.EfCore
             await _instance.UpdateUserAsync(userToUpdate);
 
             //assert
-            User userAfterUpdate = await TestStartup.UserManager.FindByEmailAsync(email);
+            User userAfterUpdate = await TestUserDatabaseUtils.GetUserAsync(email);
 
             Assert.That(userAfterUpdate is not null);
 
@@ -90,7 +88,7 @@ namespace IntegrationTests.SqlServer.EfCore
 
             await TestUserDatabaseUtils.RegisterTempUserAsync(email);
 
-            User user = await TestStartup.UserManager.FindByEmailAsync(email);
+            User user = await TestUserDatabaseUtils.GetUserAsync(email);
 
             //act
             await _instance.DeleteUserAsync(user.Id);

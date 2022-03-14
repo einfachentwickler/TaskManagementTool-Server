@@ -1,4 +1,5 @@
 ﻿using IntegrationTests.SqlServer.EfCore.Configuration;
+using IntegrationTests.SqlServer.EfCore.Constants;
 using IntegrationTests.SqlServer.EfCore.Utils;
 using NUnit.Framework;
 using System;
@@ -14,8 +15,6 @@ namespace IntegrationTests.SqlServer.EfCore
     public class AuthService_Test
     {
         private IAuthService _instance;
-
-        private const string PASSWORD = "password";
 
         [SetUp]
         public void Setup()
@@ -34,7 +33,7 @@ namespace IntegrationTests.SqlServer.EfCore
             LoginDto model = new()
             {
                 Email = email,
-                Password = PASSWORD
+                Password = MockDataConstants.TEMP_USER_PASSWORD
             };
 
             //act
@@ -52,12 +51,12 @@ namespace IntegrationTests.SqlServer.EfCore
             //arrange
             string email = $"{Guid.NewGuid()}@example.com";
 
-            await TestUserDatabaseUtils.RegisterTempUserAsync(email, true);
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email, isBlocked:true);
 
             LoginDto model = new()
             {
                 Email = email,
-                Password = PASSWORD
+                Password = MockDataConstants.TEMP_USER_PASSWORD
             };
 
             //act
@@ -79,7 +78,7 @@ namespace IntegrationTests.SqlServer.EfCore
             LoginDto model = new()
             {
                 Email = email,
-                Password = PASSWORD
+                Password = MockDataConstants.TEMP_USER_PASSWORD
             };
 
             //act
@@ -100,7 +99,7 @@ namespace IntegrationTests.SqlServer.EfCore
             LoginDto model = new()
             {
                 Email = email,
-                Password = PASSWORD + "wrong"
+                Password = MockDataConstants.TEMP_USER_PASSWORD + "wrong"
             };
 
             //act
@@ -122,8 +121,8 @@ namespace IntegrationTests.SqlServer.EfCore
             RegisterDto registerDto = new()
             {
                 Age = 14,
-                Password = "password",
-                ConfirmPassword = "password",
+                Password = MockDataConstants.TEMP_USER_PASSWORD,
+                ConfirmPassword = MockDataConstants.TEMP_USER_PASSWORD,
                 Email = email,
                 FirstName = "First name",
                 LastName = "Last name"
@@ -147,8 +146,8 @@ namespace IntegrationTests.SqlServer.EfCore
             RegisterDto registerDto = new()
             {
                 Age = 14,
-                Password = "password",
-                ConfirmPassword = "password wrong",
+                Password = MockDataConstants.TEMP_USER_PASSWORD,
+                ConfirmPassword = MockDataConstants.TEMP_USER_PASSWORD + "wrong",
                 Email = email,
                 FirstName = "First name",
                 LastName = "Last name"
