@@ -37,8 +37,9 @@ namespace IntegrationTests.SqlServer.EfCore
         {
             //arrange
             string email = $"{Guid.NewGuid()}@example.com";
+            const bool isBlocked = false;
 
-            await TestUserDatabaseUtils.RegisterTempUserAsync(email);
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email, isBlocked);
 
             User user = await TestUserDatabaseUtils.GetUserAsync(email);
 
@@ -58,8 +59,9 @@ namespace IntegrationTests.SqlServer.EfCore
         {
             //arrange
             string email = $"{Guid.NewGuid()}@example.com";
+            const bool isBlocked = false;
 
-            await TestUserDatabaseUtils.RegisterTempUserAsync(email);
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email, isBlocked);
 
             UserDto userToUpdate = await TestUserDatabaseUtils.GetUserDtoAsync(email);
 
@@ -85,8 +87,9 @@ namespace IntegrationTests.SqlServer.EfCore
         {
             //arrange
             string email = $"{Guid.NewGuid()}@example.com";
+            const bool isBlocked = false;
 
-            await TestUserDatabaseUtils.RegisterTempUserAsync(email);
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email, isBlocked);
 
             User user = await TestUserDatabaseUtils.GetUserAsync(email);
 

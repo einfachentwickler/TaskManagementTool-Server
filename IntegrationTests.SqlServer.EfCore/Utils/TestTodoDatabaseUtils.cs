@@ -1,6 +1,7 @@
 ﻿using IntegrationTests.SqlServer.EfCore.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
+using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
 using TaskManagementTool.DataAccess.Entities;
 
 namespace IntegrationTests.SqlServer.EfCore.Utils
@@ -23,5 +24,27 @@ namespace IntegrationTests.SqlServer.EfCore.Utils
         }
 
         public static async Task CleanupDatabase(int id) => await TestStartup.Repository.DeleteAsync(id);
+
+        public static CreateTodoDto GetCreateTodoDto(string expectedName)
+        {
+            CreateTodoDto entity = new()
+            {
+                Name = expectedName
+            };
+
+            return entity;
+        }
+
+        public static UpdateTodoDto GetUpdateTodoDto(int id, string updatedName, string updatedContent)
+        {
+            UpdateTodoDto entityToUpdate = new()
+            {
+                Id = id,
+                Name = updatedName,
+                Content = updatedContent
+            };
+
+            return entityToUpdate;
+        }
     }
 }

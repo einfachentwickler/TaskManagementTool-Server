@@ -9,7 +9,7 @@ namespace TaskManagementTool.BusinessLogic.Contracts
     {
         public Task<IEnumerable<TodoDto>> GetAsync();
 
-        public Task<TodoDto> FirstAsync(int id);
+        public Task<TodoDto> FindByIdAsync(int id);
 
         public Task AddAsync(CreateTodoDto toDoPar);
 

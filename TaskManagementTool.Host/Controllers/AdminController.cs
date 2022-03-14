@@ -61,7 +61,7 @@ namespace TaskManagementTool.Host.Controllers
         [HttpDelete("todos/{id:int}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            if (await _todoService.FirstAsync(id) is null)
+            if (await _todoService.FindByIdAsync(id) is null)
             {
                 return NotFound(id);
             }

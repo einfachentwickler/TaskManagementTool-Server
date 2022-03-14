@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.ViewModels;
+using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
 using TaskManagementTool.Common.Constants;
 using TaskManagementTool.Common.Exceptions;
 using TaskManagementTool.DataAccess.Entities;
@@ -19,7 +20,7 @@ namespace IntegrationTests.SqlServer.EfCore.Utils
             await TestStartup.UserManager.DeleteAsync(user);
         }
 
-        public static async Task RegisterTempUserAsync(string email, bool isBlocked = false)
+        public static async Task RegisterTempUserAsync(string email, bool isBlocked)
         {
             User registerUser = new()
             {
@@ -57,5 +58,24 @@ namespace IntegrationTests.SqlServer.EfCore.Utils
 
             return user;
         }
+
+        public static RegisterDto GetRegisterDto(string email, bool confirmPasswordMatchesPassword)
+        {
+            string confirmPassword = confirmPasswordMatchesPassword ? MockDataConstants.TEMP_USER_PASSWORD : "wrong";
+
+            RegisterDto registerDto = new()
+            {
+                Age = 14,
+                Password = MockDataConstants.TEMP_USER_PASSWORD,
+                ConfirmPassword = confirmPassword,
+                Email = email,
+                FirstName = "First name",
+                LastName = "Last name"
+            };
+
+            return registerDto;
+        }
+
+
     }
 }

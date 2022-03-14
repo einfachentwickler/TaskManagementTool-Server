@@ -4,6 +4,7 @@ using IntegrationTests.SqlServer.EfCore.Utils;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using TaskManagementTool.BusinessLogic.Constants;
 using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.Services;
 using TaskManagementTool.BusinessLogic.ViewModels;
@@ -27,8 +28,9 @@ namespace IntegrationTests.SqlServer.EfCore
         {
             //arrange
             string email = $"{Guid.NewGuid()}@example.com";
+            const bool isBlocked = false;
 
-            await TestUserDatabaseUtils.RegisterTempUserAsync(email);
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email, isBlocked);
 
             LoginDto model = new()
             {
@@ -50,8 +52,9 @@ namespace IntegrationTests.SqlServer.EfCore
         {
             //arrange
             string email = $"{Guid.NewGuid()}@example.com";
+            const bool isBlocked = true;
 
-            await TestUserDatabaseUtils.RegisterTempUserAsync(email, isBlocked:true);
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email, isBlocked);
 
             LoginDto model = new()
             {
@@ -64,7 +67,7 @@ namespace IntegrationTests.SqlServer.EfCore
 
             //assert
             Assert.That(!actualResult.IsSuccess);
-            Assert.That(actualResult.Message == "This email was blocked");
+            Assert.That(actualResult.Message == UserManagerResponseMessages.BLOCKED_EMAIL);
 
             await TestUserDatabaseUtils.CleanupDatabase(email);
         }
@@ -86,7 +89,7 @@ namespace IntegrationTests.SqlServer.EfCore
 
             //assert
             Assert.That(!actualResult.IsSuccess);
-            Assert.That(actualResult.Message == "There is no user with this email");
+            Assert.That(actualResult.Message == UserManagerResponseMessages.USER_DOES_NOT_EXIST);
         }
 
         [Test]
@@ -94,7 +97,9 @@ namespace IntegrationTests.SqlServer.EfCore
         {
             //arrange
             string email = $"{Guid.NewGuid()}@example.com";
-            await TestUserDatabaseUtils.RegisterTempUserAsync(email);
+            const bool isBlocked = false;
+
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email, isBlocked);
 
             LoginDto model = new()
             {
@@ -107,7 +112,7 @@ namespace IntegrationTests.SqlServer.EfCore
 
             //assert
             Assert.That(!actualResult.IsSuccess);
-            Assert.That(actualResult.Message == "Incorrect login or password");
+            Assert.That(actualResult.Message == UserManagerResponseMessages.INVALID_CREDENTIALS);
 
             await TestUserDatabaseUtils.CleanupDatabase(email);
         }
@@ -117,16 +122,9 @@ namespace IntegrationTests.SqlServer.EfCore
         {
             //arrange
             string email = $"{Guid.NewGuid()}@example.com";
+            const bool confirmPasswordSuccesses = true;
 
-            RegisterDto registerDto = new()
-            {
-                Age = 14,
-                Password = MockDataConstants.TEMP_USER_PASSWORD,
-                ConfirmPassword = MockDataConstants.TEMP_USER_PASSWORD,
-                Email = email,
-                FirstName = "First name",
-                LastName = "Last name"
-            };
+            RegisterDto registerDto = TestUserDatabaseUtils.GetRegisterDto(email, confirmPasswordSuccesses);
 
             //act
             UserManagerResponse response = await _instance.RegisterUserAsync(registerDto);
@@ -142,23 +140,16 @@ namespace IntegrationTests.SqlServer.EfCore
         {
             //arrange
             string email = $"{Guid.NewGuid()}@example.com";
+            const bool confirmPasswordSuccesses = false;
 
-            RegisterDto registerDto = new()
-            {
-                Age = 14,
-                Password = MockDataConstants.TEMP_USER_PASSWORD,
-                ConfirmPassword = MockDataConstants.TEMP_USER_PASSWORD + "wrong",
-                Email = email,
-                FirstName = "First name",
-                LastName = "Last name"
-            };
+            RegisterDto registerDto = TestUserDatabaseUtils.GetRegisterDto(email, confirmPasswordSuccesses);
 
             //act
             UserManagerResponse response = await _instance.RegisterUserAsync(registerDto);
 
             //assert
             Assert.That(!response.IsSuccess);
-            Assert.That(response.Message == "Confirm password doesn't match the password");
+            Assert.That(response.Message == UserManagerResponseMessages.CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD);
         }
     }
 }

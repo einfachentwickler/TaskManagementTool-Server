@@ -35,7 +35,7 @@ namespace IntegrationTests.SqlServer.EfCore
         [TestCase(1)]
         public async Task GetSingleAsync_CorrectIdTest(int id)
         {
-            TodoDto actualResult = await _instance.FirstAsync(id);
+            TodoDto actualResult = await _instance.FindByIdAsync(id);
 
             Assert.That(actualResult is not null);
         }
@@ -44,7 +44,7 @@ namespace IntegrationTests.SqlServer.EfCore
         [TestCase(9999)]
         public void GetSingleAsync_WrongIdTest(int id)
         {
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _instance.FirstAsync(id));
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _instance.FindByIdAsync(id));
         }
 
         [Test]
@@ -54,18 +54,15 @@ namespace IntegrationTests.SqlServer.EfCore
             string expectedName = Guid.NewGuid().ToString();
 
             //act
-            CreateTodoDto entity = new()
-            {
-                Name = expectedName
-            };
+            CreateTodoDto entity = TestTodoDatabaseUtils.GetCreateTodoDto(expectedName);
 
             await _instance.AddAsync(entity);
 
+            //assert
             int id = (await _instance.GetAsync()).Last().Id;
 
-            TodoDto actualResult = await _instance.FirstAsync(id);
+            TodoDto actualResult = await _instance.FindByIdAsync(id);
 
-            //assert
             Assert.That(actualResult.Name == expectedName);
 
             await TestTodoDatabaseUtils.CleanupDatabase(id);
@@ -83,7 +80,7 @@ namespace IntegrationTests.SqlServer.EfCore
             await _instance.DeleteAsync(id);
 
             //assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _instance.FirstAsync(id));
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _instance.FindByIdAsync(id));
         }
 
         [Test]
@@ -95,20 +92,16 @@ namespace IntegrationTests.SqlServer.EfCore
 
             int id = await TestTodoDatabaseUtils.AddTempRecordAndReturnId(updatedName, updatedContent);
 
-            UpdateTodoDto entityToUpdate = new()
-            {
-                Id = id,
-                Name = updatedName,
-                Content = updatedContent
-            };
+            UpdateTodoDto entityToUpdate = TestTodoDatabaseUtils.GetUpdateTodoDto(id, updatedName, updatedContent);
 
             //act
             await _instance.UpdateAsync(entityToUpdate);
 
-            TodoDto actualresult = await _instance.FirstAsync(id);
+            TodoDto actualresult = await _instance.FindByIdAsync(id);
 
             //assert
-            Assert.That(actualresult.Name == updatedName && actualresult.Content == updatedContent);
+            Assert.That(actualresult.Name == updatedName);
+            Assert.That(actualresult.Content == updatedContent);
 
             await TestTodoDatabaseUtils.CleanupDatabase(id);
         }

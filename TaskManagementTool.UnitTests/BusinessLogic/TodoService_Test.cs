@@ -47,8 +47,8 @@ namespace TaskManagementTool.UnitTests.BusinessLogic
         [Test]
         public async Task GetSingleAsync_Test()
         {
-            TodoDto expectedTodo = await todoService.FirstAsync(1);
-            TodoDto falseTodo = await todoService.FirstAsync(5);
+            TodoDto expectedTodo = await todoService.FindByIdAsync(1);
+            TodoDto falseTodo = await todoService.FindByIdAsync(5);
 
             Assert.NotNull(expectedTodo);
             Assert.Null(falseTodo);

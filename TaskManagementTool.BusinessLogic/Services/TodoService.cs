@@ -24,7 +24,7 @@ namespace TaskManagementTool.BusinessLogic.Services
             return mappedTodos;
         }
 
-        public async Task<TodoDto> FirstAsync(int id)
+        public async Task<TodoDto> FindByIdAsync(int id)
         {
             Todo todo = await _todoRepository.FirstAsync(id);
             TodoDto mappedTodo = _mapper.Map<Todo, TodoDto>(todo);
