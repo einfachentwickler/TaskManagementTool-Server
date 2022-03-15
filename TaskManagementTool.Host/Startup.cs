@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -8,6 +10,7 @@ using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.Services;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.Repositories;
+using TaskManagementTool.Host.Configuration.Constants;
 using TaskManagementTool.Host.Configuration.Entities;
 using TaskManagementTool.Host.Extensions;
 using TaskManagementTool.Host.Middleware;
@@ -16,25 +19,21 @@ namespace TaskManagementTool.Host
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
+        public Startup(IConfiguration configuration) => Configuration = configuration;
+        
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient(_ => new IdentityConfigurationOptions(Configuration));
-            services.AddTransient(_ => new DatabaseConfigurationOptions(Configuration));
-            services.AddTransient(_ => new TokenValidationOptions(Configuration));
-            services.AddTransient(_ => new AuthSettings(Configuration));
-
             services.AddControllers();
+
             services.ConfigureAutoMapper();
+
             services.ConfigureCors();
+
             services.ConfigureSqlContext(new DatabaseConfigurationOptions(Configuration));
+
             services.ConfigureIdentity(
                 new IdentityConfigurationOptions(Configuration),
                 new TokenValidationOptions(Configuration),
@@ -47,35 +46,33 @@ namespace TaskManagementTool.Host
             services.AddTransient<IAdminService, AdminService>();
             services.AddTransient<IAuthService, AuthService>();
 
-            services.AddSwaggerGen(config =>
-            {
-                config.SwaggerDoc("v1", new OpenApiInfo { Title = "Payment Card Info API", Version = "v1" });
-            });
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
+            static void ConfigureSwagger(SwaggerUIOptions options)
+            {
+                options.SwaggerEndpoint(SwaggerSetupConstants.URL, SwaggerSetupConstants.APPLICATION_NAME);
+            }
+
+            static void ConfigureEndpoints(IEndpointRouteBuilder builder) => builder.MapControllers();
+           
             app.UseSwagger();
 
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Task management tool");
-            });
+            app.UseSwaggerUI(ConfigureSwagger);
 
             app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseHttpsRedirection();
-            app.UseCors("CorsPolicy");
+            app.UseCors(CorsPolicyNameConstants.DEFAULT_POLICY_NAME);
 
             app.UseAuthentication();
             app.UseRouting();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(ConfigureEndpoints);
         }
     }
 }

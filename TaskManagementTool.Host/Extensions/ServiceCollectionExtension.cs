@@ -9,9 +9,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TaskManagementTool.DataAccess;
 using TaskManagementTool.DataAccess.Entities;
+using TaskManagementTool.Host.Configuration.Constants;
 using TaskManagementTool.Host.Configuration.Entities;
 using TaskManagementTool.Host.Configuration.Profiles;
-using TaskManagementTool.Host.Constants;
 
 namespace TaskManagementTool.Host.Extensions
 {
@@ -31,7 +31,7 @@ namespace TaskManagementTool.Host.Extensions
                 .AllowAnyHeader()
                 .AllowAnyMethod();
 
-            void AddCors(CorsOptions options) => options.AddPolicy(CorsPolicyNames.DEFAULT_POLICY_NAME, AddPolicy);
+            void AddCors(CorsOptions options) => options.AddPolicy(CorsPolicyNameConstants.DEFAULT_POLICY_NAME, AddPolicy);
 
             service.AddCors(AddCors);
         }
