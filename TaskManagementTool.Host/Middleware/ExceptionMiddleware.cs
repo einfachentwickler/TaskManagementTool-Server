@@ -24,7 +24,7 @@ namespace TaskManagementTool.Host.Middleware
                     _ => 500
                 };
 
-                await context.Response.WriteAsync("Error happened...");
+                await context.Response.WriteAsync("Internal server error");
             }
         }
     }

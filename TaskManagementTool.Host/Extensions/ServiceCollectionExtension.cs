@@ -68,7 +68,7 @@ namespace TaskManagementTool.Host.Extensions
                     ValidAudience = authSettings.Audience,
                     ValidIssuer = authSettings.Issuer,
                     RequireExpirationTime = tokenOptions.ShouldRequireExpirationTime,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authSettings.Key)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(authSettings.Key)),
                     ValidateIssuerSigningKey = tokenOptions.ShouldValidateIssuerSigninKey
                 };
             }

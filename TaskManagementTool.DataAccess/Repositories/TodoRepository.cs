@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,10 +30,10 @@ namespace TaskManagementTool.DataAccess.Repositories
                     throw new NullReferenceException("User id is null");
                 }
 
-                todos  = await _context.Todos
+                todos = await _context.Todos
                     .Include(todo => todo.Creator)
                     .Where(todo => todo.CreatorId == userId)
-                    .OrderByDescending(todo=>todo.Importance)
+                    .OrderByDescending(todo => todo.Importance)
                     .ToListAsync();
 
                 return todos;

@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NLog.Web;
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using TaskManagementTool.DataAccess;
 using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.DataAccess.Initializers;
@@ -22,7 +22,7 @@ namespace TaskManagementTool.Host
             {
                 IServiceProvider services = scope.ServiceProvider;
                 IConfiguration configuration = services.GetRequiredService<IConfiguration>();
-               
+
                 UserManager<User> userManager = services.GetRequiredService<UserManager<User>>();
                 RoleManager<IdentityRole> rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                 Dao context = services.GetRequiredService<Dao>();

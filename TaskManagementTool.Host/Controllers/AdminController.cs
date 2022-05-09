@@ -38,7 +38,7 @@ namespace TaskManagementTool.Host.Controllers
             {
                 return NotFound(id);
             }
-         
+
             await _adminService.BlockOrUnblockUserAsync(id);
             return Ok(user);
         }

@@ -68,9 +68,9 @@ namespace IntegrationTests.SqlServer.EfCore
             User userBeforeUpdate = await TestUserDatabaseUtils.GetUserAsync(email);
 
             await _instance.BlockOrUnblockUserAsync(userBeforeUpdate.Id);
-            
+
             User userAfterUpdate = await TestUserDatabaseUtils.GetUserAsync(email);
-            
+
             //assert
             Assert.That(userAfterUpdate.IsBlocked != isBlocked);
 

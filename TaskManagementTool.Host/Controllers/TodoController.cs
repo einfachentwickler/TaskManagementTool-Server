@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.Services.Utils;
@@ -80,13 +79,13 @@ namespace TaskManagementTool.Host.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             TodoDto model = await _todoService.FindByIdAsync(id);
-            
+
             if (model is null)
             {
                 return NotFound(id);
             }
 
-            if (!await _authUtils.IsAllowedAction(_httpContextAccessor.HttpContext,id))
+            if (!await _authUtils.IsAllowedAction(_httpContextAccessor.HttpContext, id))
             {
                 return Forbid();
             }
