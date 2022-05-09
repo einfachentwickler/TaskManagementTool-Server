@@ -1,13 +1,11 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.Services;
+using TaskManagementTool.BusinessLogic.Services.Utils;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.Repositories;
 using TaskManagementTool.Host.Configuration.Constants;
@@ -20,7 +18,7 @@ namespace TaskManagementTool.Host
     public class Startup
     {
         public Startup(IConfiguration configuration) => Configuration = configuration;
-        
+
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -46,6 +44,8 @@ namespace TaskManagementTool.Host
             services.AddTransient<IAdminService, AdminService>();
             services.AddTransient<IAuthService, AuthService>();
 
+            services.AddTransient<IAuthUtils, AuthUtils>();
+
             services.AddSwaggerGen();
         }
 
@@ -58,7 +58,7 @@ namespace TaskManagementTool.Host
             }
 
             static void ConfigureEndpoints(IEndpointRouteBuilder builder) => builder.MapControllers();
-           
+
             app.UseSwagger();
 
             app.UseSwaggerUI(ConfigureSwagger);

@@ -3,13 +3,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.Services.Utils;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
-using TaskManagementTool.Common.Exceptions;
 using TaskManagementTool.Host.ActionFilters;
 
 namespace TaskManagementTool.Host.Controllers
@@ -23,21 +21,17 @@ namespace TaskManagementTool.Host.Controllers
 
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public HomeController(ITodoService service, IHttpContextAccessor httpContextAccessor)
-            => (_service, _httpContextAccessor) = (service, httpContextAccessor);
+        private readonly IAuthUtils _authUtils;
 
-        private async Task<bool> IsAllowedAction(int todoId)
+        public HomeController(ITodoService service, IHttpContextAccessor httpContextAccessor, IAuthUtils utils)
         {
-            string userId = HttpContextUtils.GetUserId(_httpContextAccessor.HttpContext);
-
-            TodoDto todo = await _service.FindByIdAsync(todoId);
-            return todo is not null && todo.Creator.Id == userId;
+            (_service, _httpContextAccessor, _authUtils) = (service, httpContextAccessor, utils);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            string userId = HttpContextUtils.GetUserId(_httpContextAccessor.HttpContext);
+            string userId = _authUtils.GetUserId(_httpContextAccessor.HttpContext);
 
             IEnumerable<TodoDto> messages = await _service.GetAsync();
 
@@ -57,17 +51,18 @@ namespace TaskManagementTool.Host.Controllers
                 return NotFound(id);
             }
 
-            if (!await IsAllowedAction(id))
+            if (!await _authUtils.IsAllowedAction(_httpContextAccessor.HttpContext, id))
             {
                 return Forbid();
             }
+
             return Ok(todo);
         }
 
         [HttpPost]
         public async Task<IActionResult> Add(CreateTodoDto model)
         {
-            string userId = HttpContextUtils.GetUserId(_httpContextAccessor.HttpContext);
+            string userId = _authUtils.GetUserId(_httpContextAccessor.HttpContext);
             model.CreatorId = userId;
             await _service.AddAsync(model);
             return Ok(model);
@@ -76,7 +71,7 @@ namespace TaskManagementTool.Host.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(UpdateTodoDto model)
         {
-            if (!await IsAllowedAction(model.Id))
+            if (!await _authUtils.IsAllowedAction(_httpContextAccessor.HttpContext, model.Id))
             {
                 return Forbid();
             }
@@ -88,14 +83,17 @@ namespace TaskManagementTool.Host.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             TodoDto model = await _service.FindByIdAsync(id);
+            
             if (model is null)
             {
                 return NotFound(id);
             }
-            if (!await IsAllowedAction(id))
+
+            if (!await _authUtils.IsAllowedAction(_httpContextAccessor.HttpContext,id))
             {
                 return Forbid();
             }
+
             await _service.DeleteAsync(id);
             return Ok(model);
         }
