@@ -3,11 +3,13 @@ using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
+using TaskManagementTool.Host.ActionFilters;
 
 namespace TaskManagementTool.Host.Controllers
 {
     [Route("api/auth")]
     [ApiController]
+    [ModelStateFilter]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _userService;
@@ -17,10 +19,6 @@ namespace TaskManagementTool.Host.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterDto model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             UserManagerResponse result = await _userService.RegisterUserAsync(model);
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
@@ -29,10 +27,6 @@ namespace TaskManagementTool.Host.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync([FromBody] LoginDto model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             UserManagerResponse result = await _userService.LoginUserAsync(model);
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);

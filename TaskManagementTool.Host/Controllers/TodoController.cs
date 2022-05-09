@@ -1,19 +1,22 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Contracts;
+using TaskManagementTool.BusinessLogic.Services.Utils;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
+using TaskManagementTool.Common.Exceptions;
+using TaskManagementTool.Host.ActionFilters;
 
 namespace TaskManagementTool.Host.Controllers
 {
     [Route("api/home")]
     [ApiController, Authorize]
+    [ModelStateFilter]
     public class HomeController : ControllerBase
     {
         private readonly ITodoService _service;
@@ -25,8 +28,7 @@ namespace TaskManagementTool.Host.Controllers
 
         private async Task<bool> IsAllowedAction(int todoId)
         {
-            string userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                            ?? throw new Exception("User id is null");
+            string userId = HttpContextUtils.GetUserId(_httpContextAccessor.HttpContext);
 
             TodoDto todo = await _service.FindByIdAsync(todoId);
             return todo is not null && todo.Creator.Id == userId;
@@ -35,8 +37,7 @@ namespace TaskManagementTool.Host.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            string userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                            ?? throw new Exception("User id is null");
+            string userId = HttpContextUtils.GetUserId(_httpContextAccessor.HttpContext);
 
             IEnumerable<TodoDto> messages = await _service.GetAsync();
 
@@ -66,12 +67,7 @@ namespace TaskManagementTool.Host.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(CreateTodoDto model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            string userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception("User id is null");
-
+            string userId = HttpContextUtils.GetUserId(_httpContextAccessor.HttpContext);
             model.CreatorId = userId;
             await _service.AddAsync(model);
             return Ok(model);
@@ -80,10 +76,6 @@ namespace TaskManagementTool.Host.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(UpdateTodoDto model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             if (!await IsAllowedAction(model.Id))
             {
                 return Forbid();

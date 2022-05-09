@@ -10,7 +10,6 @@ namespace TaskManagementTool.BusinessLogic.ViewModels.AuthModels
 
         [Required(ErrorMessage = "Password is a required field")]
         [MinLength(1, ErrorMessage = "Min length is 1")]
-        [MaxLength(100, ErrorMessage = "Max length is 100")]
         public string Password { get; set; }
     }
 }
