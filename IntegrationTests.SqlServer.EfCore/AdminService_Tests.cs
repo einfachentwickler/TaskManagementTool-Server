@@ -55,6 +55,29 @@ namespace IntegrationTests.SqlServer.EfCore
         }
 
         [Test]
+        [TestCase(false)]
+        [TestCase(true)]
+        public async Task BlockOrUnblockUserAsync_SuccessTest(bool isBlocked)
+        {
+            //arrange
+            string email = $"{Guid.NewGuid()}@example.com";
+
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email, isBlocked);
+
+            //act
+            User userBeforeUpdate = await TestUserDatabaseUtils.GetUserAsync(email);
+
+            await _instance.BlockOrUnblockUserAsync(userBeforeUpdate.Id);
+            
+            User userAfterUpdate = await TestUserDatabaseUtils.GetUserAsync(email);
+            
+            //assert
+            Assert.That(userAfterUpdate.IsBlocked != isBlocked);
+
+            await TestUserDatabaseUtils.CleanupDatabase(email);
+        }
+
+        [Test]
         public async Task UpdateUserAsync_SuccessTest()
         {
             //arrange

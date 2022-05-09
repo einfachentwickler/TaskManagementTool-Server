@@ -54,8 +54,10 @@ namespace TaskManagementTool.BusinessLogic.Services
             }
         }
 
-        public async Task BlockOrUnblockUserAsync(UserDto user)
+        public async Task BlockOrUnblockUserAsync(string userId)
         {
+            UserDto user = await GetUserAsync(userId);
+
             user.IsBlocked = !user.IsBlocked;
 
             await UpdateUserAsync(user);
