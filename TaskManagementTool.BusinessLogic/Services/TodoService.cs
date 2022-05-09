@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
+using TaskManagementTool.Common.Enums;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.Entities;
 
@@ -17,9 +18,10 @@ namespace TaskManagementTool.BusinessLogic.Services
 
         public TodoService(IMapper mapper, ITodoRepository todoRepository) => (_todoRepository, _mapper) = (todoRepository, mapper);
 
-        public async Task<IEnumerable<TodoDto>> GetAsync()
+        public async Task<IEnumerable<TodoDto>> GetAsync(SearchCriteriaEnum searchCriteria, string userId = null)
         {
-            IEnumerable<Todo> todos = await _todoRepository.GetAsync();
+            IEnumerable<Todo> todos = await _todoRepository.GetAsync(searchCriteria, userId);
+
             IEnumerable<TodoDto> mappedTodos = _mapper.Map<IEnumerable<TodoDto>>(todos);
             return mappedTodos;
         }

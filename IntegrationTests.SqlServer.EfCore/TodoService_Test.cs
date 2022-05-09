@@ -9,6 +9,7 @@ using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.Services;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
+using TaskManagementTool.Common.Enums;
 
 namespace IntegrationTests.SqlServer.EfCore
 {
@@ -26,7 +27,7 @@ namespace IntegrationTests.SqlServer.EfCore
         [Test]
         public async Task GetAsync_Test()
         {
-            IEnumerable<TodoDto> actualResult = await _instance.GetAsync();
+            IEnumerable<TodoDto> actualResult = await _instance.GetAsync(SearchCriteriaEnum.GetAll);
 
             Assert.That(actualResult.Any());
         }
@@ -59,7 +60,7 @@ namespace IntegrationTests.SqlServer.EfCore
             await _instance.AddAsync(entity);
 
             //assert
-            int id = (await _instance.GetAsync()).Last().Id;
+            int id = (await _instance.GetAsync(SearchCriteriaEnum.GetAll)).Last().Id;
 
             TodoDto actualResult = await _instance.FindByIdAsync(id);
 

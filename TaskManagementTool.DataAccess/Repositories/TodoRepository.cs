@@ -1,6 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using TaskManagementTool.Common.Enums;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.Entities;
 
@@ -16,10 +19,29 @@ namespace TaskManagementTool.DataAccess.Repositories
             _context.Database.EnsureCreated();
         }
 
-        public async Task<IEnumerable<Todo>> GetAsync()
+        public async Task<IEnumerable<Todo>> GetAsync(SearchCriteriaEnum searchCriteria, string userId = null)
         {
-            IEnumerable<Todo> todos = await _context.Todos
+            IEnumerable<Todo> todos;
+
+            if (searchCriteria == SearchCriteriaEnum.GetById)
+            {
+                if (userId is null)
+                {
+                    throw new NullReferenceException("User id is null");
+                }
+
+                todos  = await _context.Todos
+                    .Include(todo => todo.Creator)
+                    .Where(todo => todo.CreatorId == userId)
+                    .OrderByDescending(todo=>todo.Importance)
+                    .ToListAsync();
+
+                return todos;
+            }
+
+            todos = await _context.Todos
                 .Include(todo => todo.Creator)
+                .OrderByDescending(todo => todo.Importance)
                 .ToListAsync();
 
             return todos;

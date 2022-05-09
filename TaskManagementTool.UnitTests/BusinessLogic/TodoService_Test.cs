@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.Services;
 using TaskManagementTool.BusinessLogic.ViewModels;
+using TaskManagementTool.Common.Enums;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.Host.Configuration.Profiles;
 
@@ -39,7 +40,7 @@ namespace TaskManagementTool.UnitTests.BusinessLogic
             todoRepository.FirstAsync(3).Returns(Task.FromResult(SeedData.Todos.Skip(2).First()));
             todoRepository.FirstAsync(4).Returns(Task.FromResult(SeedData.Todos.Last()));
 
-            todoRepository.GetAsync().Returns(SeedData.Todos);
+            todoRepository.GetAsync(SearchCriteriaEnum.GetAll).Returns(SeedData.Todos);
 
             todoService = new TodoService(mapper, todoRepository);
         }
@@ -58,7 +59,7 @@ namespace TaskManagementTool.UnitTests.BusinessLogic
         [Test]
         public async Task GetAsync_Test()
         {
-            IEnumerable<TodoDto> todos = await todoService.GetAsync();
+            IEnumerable<TodoDto> todos = await todoService.GetAsync(SearchCriteriaEnum.GetAll);
 
             Assert.NotNull(todos);
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.ViewModels;
+using TaskManagementTool.Common.Enums;
 
 namespace TaskManagementTool.Host.Controllers
 {
@@ -37,8 +38,8 @@ namespace TaskManagementTool.Host.Controllers
             {
                 return NotFound(id);
             }
-            user.IsBlocked = !user.IsBlocked;
-            await _adminService.UpdateUserAsync(user);
+         
+            await _adminService.BlockOrUnblockUserAsync(user);
             return Ok(user);
         }
 
@@ -56,7 +57,7 @@ namespace TaskManagementTool.Host.Controllers
         [HttpGet("todos")]
         public async Task<IActionResult> GetTodos()
         {
-            IEnumerable<TodoDto> todos = await _todoService.GetAsync();
+            IEnumerable<TodoDto> todos = await _todoService.GetAsync(SearchCriteriaEnum.GetAll);
             return Ok(todos);
         }
 

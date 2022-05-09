@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.ViewModels;
+using TaskManagementTool.Common.Enums;
 using TaskManagementTool.Common.Exceptions;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.Entities;
@@ -53,6 +54,13 @@ namespace TaskManagementTool.BusinessLogic.Services
             }
         }
 
+        public async Task BlockOrUnblockUserAsync(UserDto user)
+        {
+            user.IsBlocked = !user.IsBlocked;
+
+            await UpdateUserAsync(user);
+        }
+
         public async Task DeleteUserAsync(string id)
         {
             await DeleteUsersTodos(id);
@@ -68,7 +76,7 @@ namespace TaskManagementTool.BusinessLogic.Services
 
         private async Task DeleteUsersTodos(string id)
         {
-            IEnumerable<Todo> todos = (await _todoRepository.GetAsync())
+            IEnumerable<Todo> todos = (await _todoRepository.GetAsync(SearchCriteriaEnum.GetAll))
                 .Where(todo => todo.Creator?.Id == id)
                 .ToList();
 

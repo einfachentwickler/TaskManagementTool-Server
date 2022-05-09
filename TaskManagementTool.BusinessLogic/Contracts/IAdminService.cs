@@ -11,6 +11,8 @@ namespace TaskManagementTool.BusinessLogic.Contracts
         public Task<UserDto> GetUserAsync(string id);
 
         public Task UpdateUserAsync(UserDto user);
+        
+        public Task BlockOrUnblockUserAsync(UserDto user);
 
         public Task DeleteUserAsync(string id);
     }

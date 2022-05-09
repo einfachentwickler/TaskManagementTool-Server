@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
+using TaskManagementTool.Common.Enums;
 using TaskManagementTool.DataAccess.Entities;
 
 namespace IntegrationTests.SqlServer.EfCore.Utils
@@ -18,7 +19,7 @@ namespace IntegrationTests.SqlServer.EfCore.Utils
 
             await TestStartup.Repository.AddAsync(entity);
 
-            int id = (await TestStartup.Repository.GetAsync()).Last().Id;
+            int id = (await TestStartup.Repository.GetAsync(SearchCriteriaEnum.GetAll)).Last().Id;
 
             return id;
         }

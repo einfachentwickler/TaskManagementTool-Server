@@ -2,12 +2,13 @@
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
+using TaskManagementTool.Common.Enums;
 
 namespace TaskManagementTool.BusinessLogic.Contracts
 {
     public interface ITodoService
     {
-        public Task<IEnumerable<TodoDto>> GetAsync();
+        public Task<IEnumerable<TodoDto>> GetAsync(SearchCriteriaEnum searchCriteria, string userId = null);
 
         public Task<TodoDto> FindByIdAsync(int id);
 
