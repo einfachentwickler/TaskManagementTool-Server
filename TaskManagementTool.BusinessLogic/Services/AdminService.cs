@@ -78,13 +78,13 @@ namespace TaskManagementTool.BusinessLogic.Services
 
         private async Task DeleteUsersTodos(string id)
         {
-            IEnumerable<Todo> todos = (await _todoRepository.GetAsync(SearchCriteriaEnum.GetAll))
+            IEnumerable<TodoEntry> todos = (await _todoRepository.GetAsync(SearchCriteriaEnum.GetAll))
                 .Where(todo => todo.Creator?.Id == id)
                 .ToList();
 
             if (todos.Any())
             {
-                foreach (Todo todo in todos)
+                foreach (TodoEntry todo in todos)
                 {
                     await _todoRepository.DeleteAsync(todo.Id);
                 }

@@ -21,7 +21,7 @@ namespace TaskManagementTool.Host.Extensions
         {
             void UseSqlServer(DbContextOptionsBuilder builder) => builder.UseSqlServer(options.ConnectionString);
 
-            services.AddDbContext<Dao>(UseSqlServer);
+            services.AddDbContext<TaskManagementToolDatabase>(UseSqlServer);
         }
 
         public static void ConfigureCors(this IServiceCollection service)
@@ -75,7 +75,7 @@ namespace TaskManagementTool.Host.Extensions
 
             services
                 .AddIdentity<User, IdentityRole>(AddIdentity)
-                .AddEntityFrameworkStores<Dao>()
+                .AddEntityFrameworkStores<TaskManagementToolDatabase>()
                 .AddDefaultTokenProviders();
 
             services

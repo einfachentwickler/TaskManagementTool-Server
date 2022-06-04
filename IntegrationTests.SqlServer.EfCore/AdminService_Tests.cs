@@ -21,7 +21,7 @@ namespace IntegrationTests.SqlServer.EfCore
         [SetUp]
         public void Setup()
         {
-            _instance = new AdminService(TestStartup.Mapper, TestStartup.UserManager, new TodoRepository(TestStartup.Dao));
+            _instance = new AdminService(TestStartup.Mapper, TestStartup.UserManager, new TodoRepository(TestStartup.DatabaseFactory));
         }
 
         [Test]

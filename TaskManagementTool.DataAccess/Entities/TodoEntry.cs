@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TaskManagementTool.DataAccess.Entities
 {
-    public class Todo
+    public class TodoEntry
     {
         [Key]
         public int Id { get; set; }

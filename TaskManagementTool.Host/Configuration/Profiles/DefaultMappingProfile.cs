@@ -13,13 +13,13 @@ namespace TaskManagementTool.Host.Configuration.Profiles
             CreateMap<User, UserDto>();
             CreateMap<UserDto, User>();
 
-            CreateMap<Todo, TodoDto>();
-            CreateMap<TodoDto, Todo>();
+            CreateMap<TodoEntry, TodoDto>();
+            CreateMap<TodoDto, TodoEntry>();
 
-            CreateMap<CreateTodoDto, Todo>();
-            CreateMap<UpdateTodoDto, Todo>();
+            CreateMap<CreateTodoDto, TodoEntry>();
+            CreateMap<UpdateTodoDto, TodoEntry>();
 
-            CreateMap<IEnumerable<Todo>, List<TodoDto>>();
+            CreateMap<IEnumerable<TodoEntry>, List<TodoDto>>();
             CreateMap<IEnumerable<User>, List<UserDto>>();
         }
     }

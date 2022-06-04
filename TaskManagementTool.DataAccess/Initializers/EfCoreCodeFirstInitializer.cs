@@ -9,7 +9,7 @@ namespace TaskManagementTool.DataAccess.Initializers
     public static class EfCoreCodeFirstInitializer
     {
         public static async Task InitializeAsync(
-            Dao context,
+            ITaskManagementToolDatabase context,
             UserManager<User> userManager,
             RoleManager<IdentityRole> roleManager,
             IConfiguration configuration
@@ -51,7 +51,7 @@ namespace TaskManagementTool.DataAccess.Initializers
                     await userManager.AddToRoleAsync(admin, UserRoles.ADMIN_ROLE);
                 }
 
-                Todo[] todos =
+                TodoEntry[] todos =
                 {
                     new()
                     {
@@ -71,7 +71,7 @@ namespace TaskManagementTool.DataAccess.Initializers
                     }
                 };
 
-                foreach (Todo todo in todos)
+                foreach (TodoEntry todo in todos)
                 {
                     await context.Todos.AddAsync(todo);
                 }

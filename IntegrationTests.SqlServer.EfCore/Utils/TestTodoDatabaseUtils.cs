@@ -11,7 +11,7 @@ namespace IntegrationTests.SqlServer.EfCore.Utils
     {
         public static async Task<int> AddTempRecordAndReturnId(string updatedname, string updatedContent = null)
         {
-            Todo entity = new()
+            TodoEntry entity = new()
             {
                 Name = updatedname,
                 Content = updatedContent

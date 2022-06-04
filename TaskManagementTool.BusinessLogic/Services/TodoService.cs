@@ -20,7 +20,7 @@ namespace TaskManagementTool.BusinessLogic.Services
 
         public async Task<IEnumerable<TodoDto>> GetAsync(SearchCriteriaEnum searchCriteria, string userId = null)
         {
-            IEnumerable<Todo> todos = await _todoRepository.GetAsync(searchCriteria, userId);
+            IEnumerable<TodoEntry> todos = await _todoRepository.GetAsync(searchCriteria, userId);
 
             IEnumerable<TodoDto> mappedTodos = _mapper.Map<IEnumerable<TodoDto>>(todos);
             return mappedTodos;
@@ -28,21 +28,21 @@ namespace TaskManagementTool.BusinessLogic.Services
 
         public async Task<TodoDto> FindByIdAsync(int id)
         {
-            Todo todo = await _todoRepository.FirstAsync(id);
-            TodoDto mappedTodo = _mapper.Map<Todo, TodoDto>(todo);
+            TodoEntry todoEntry = await _todoRepository.FirstAsync(id);
+            TodoDto mappedTodo = _mapper.Map<TodoEntry, TodoDto>(todoEntry);
 
             return mappedTodo;
         }
 
         public async Task AddAsync(CreateTodoDto todoPar)
         {
-            Todo todo = _mapper.Map<CreateTodoDto, Todo>(todoPar);
-            await _todoRepository.AddAsync(todo);
+            TodoEntry todoEntry = _mapper.Map<CreateTodoDto, TodoEntry>(todoPar);
+            await _todoRepository.AddAsync(todoEntry);
         }
 
         public async Task UpdateAsync(UpdateTodoDto todo)
         {
-            Todo item = await _todoRepository.FirstAsync(todo.Id);
+            TodoEntry item = await _todoRepository.FirstAsync(todo.Id);
 
             item.Name = todo.Name;
             item.IsCompleted = todo.IsCompleted;

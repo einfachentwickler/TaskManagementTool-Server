@@ -6,22 +6,26 @@ using System.Threading.Tasks;
 using TaskManagementTool.Common.Enums;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.Entities;
+using TaskManagementTool.DataAccess.Factories;
 
 namespace TaskManagementTool.DataAccess.Repositories
 {
     public class TodoRepository : ITodoRepository
     {
-        private readonly Dao _context;
+        private readonly IDatabaseFactory _factory;
 
-        public TodoRepository(Dao context)
+        public TodoRepository(IDatabaseFactory factory)
         {
-            _context = context;
-            _context.Database.EnsureCreated();
+            _factory = factory;
         }
 
-        public async Task<IEnumerable<Todo>> GetAsync(SearchCriteriaEnum searchCriteria, string userId = null)
+        public async Task<IEnumerable<TodoEntry>> GetAsync(SearchCriteriaEnum searchCriteria, string userId = null)
         {
-            IEnumerable<Todo> todos;
+            await using ITaskManagementToolDatabase db = _factory.Create();
+
+            await db.Database.EnsureCreatedAsync();
+
+            IEnumerable<TodoEntry> todos;
 
             if (searchCriteria == SearchCriteriaEnum.GetById)
             {
@@ -30,7 +34,7 @@ namespace TaskManagementTool.DataAccess.Repositories
                     throw new NullReferenceException("User id is null");
                 }
 
-                todos = await _context.Todos
+                todos = await db.Todos
                     .Include(todo => todo.Creator)
                     .Where(todo => todo.CreatorId == userId)
                     .OrderByDescending(todo => todo.Importance)
@@ -39,7 +43,7 @@ namespace TaskManagementTool.DataAccess.Repositories
                 return todos;
             }
 
-            todos = await _context.Todos
+            todos = await db.Todos
                 .Include(todo => todo.Creator)
                 .OrderByDescending(todo => todo.Importance)
                 .ToListAsync();
@@ -47,34 +51,42 @@ namespace TaskManagementTool.DataAccess.Repositories
             return todos;
         }
 
-        public async Task<Todo> FirstAsync(int id)
+        public async Task<TodoEntry> FirstAsync(int id)
         {
-            Todo item = await _context.Todos
+            await using ITaskManagementToolDatabase db = _factory.Create();
+
+            TodoEntry item = await db.Todos
                 .Include(todo => todo.Creator)
                 .FirstAsync(todo => todo.Id == id);
 
             return item;
         }
 
-        public async Task AddAsync(Todo item)
+        public async Task AddAsync(TodoEntry item)
         {
-            await _context.Todos.AddAsync(item);
-            await _context.SaveChangesAsync();
+            await using ITaskManagementToolDatabase db = _factory.Create();
+
+            await db.Todos.AddAsync(item);
+            await db.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Todo item)
+        public async Task UpdateAsync(TodoEntry item)
         {
-            _context.Todos.Update(item);
-            await _context.SaveChangesAsync();
+            await using ITaskManagementToolDatabase db = _factory.Create();
+
+            db.Todos.Update(item);
+            await db.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
         {
-            Todo todo = await _context.Todos
+            await using ITaskManagementToolDatabase db = _factory.Create();
+
+            TodoEntry todoEntry = await db.Todos
                 .FirstAsync(todo => todo.Id == id);
 
-            _context.Todos.Remove(todo);
-            await _context.SaveChangesAsync();
+            db.Todos.Remove(todoEntry);
+            await db.SaveChangesAsync();
         }
     }
 }

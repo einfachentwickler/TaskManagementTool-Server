@@ -7,13 +7,13 @@ namespace TaskManagementTool.DataAccess.Contracts
 {
     public interface ITodoRepository
     {
-        public Task<IEnumerable<Todo>> GetAsync(SearchCriteriaEnum searchCriteria, string userId = null);
+        public Task<IEnumerable<TodoEntry>> GetAsync(SearchCriteriaEnum searchCriteria, string userId = null);
 
-        public Task<Todo> FirstAsync(int id);
+        public Task<TodoEntry> FirstAsync(int id);
 
-        public Task AddAsync(Todo item);
+        public Task AddAsync(TodoEntry item);
 
-        public Task UpdateAsync(Todo item);
+        public Task UpdateAsync(TodoEntry item);
 
         public Task DeleteAsync(int id);
     }

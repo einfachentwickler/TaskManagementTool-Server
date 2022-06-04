@@ -5,7 +5,7 @@ namespace TaskManagementTool.UnitTests.BusinessLogic
 {
     public static class SeedData
     {
-        public static IEnumerable<Todo> Todos { get; } = new List<Todo>()
+        public static IEnumerable<TodoEntry> Todos { get; } = new List<TodoEntry>()
         {
             new(){ Id = 1, Content = "Todo seed 1 name", Importance = 5, IsCompleted = true, Name = "Todo seed 1 content"},
             new(){ Id = 2, Content = "Todo seed 1 name", Importance = 1, IsCompleted = false, Name = "Todo seed 2 content"},

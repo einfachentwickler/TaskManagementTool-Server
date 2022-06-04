@@ -6,6 +6,8 @@ using Microsoft.Extensions.Hosting;
 using NLog.Web;
 using System;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using TaskManagementTool.DataAccess;
 using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.DataAccess.Initializers;
@@ -25,10 +27,11 @@ namespace TaskManagementTool.Host
 
                 UserManager<User> userManager = services.GetRequiredService<UserManager<User>>();
                 RoleManager<IdentityRole> rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                Dao context = services.GetRequiredService<Dao>();
+                TaskManagementToolDatabase context = services.GetRequiredService<TaskManagementToolDatabase>();
 
-                if (await context.Database.EnsureCreatedAsync())
+                if (!await context.Database.GetService<IRelationalDatabaseCreator>().ExistsAsync())
                 {
+                    await context.Database.EnsureCreatedAsync();
                     await EfCoreCodeFirstInitializer.InitializeAsync(context, userManager, rolesManager, configuration);
                 }
             }

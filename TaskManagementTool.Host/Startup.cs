@@ -7,6 +7,7 @@ using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.Services;
 using TaskManagementTool.BusinessLogic.Services.Utils;
 using TaskManagementTool.DataAccess.Contracts;
+using TaskManagementTool.DataAccess.Factories;
 using TaskManagementTool.DataAccess.Repositories;
 using TaskManagementTool.Host.Configuration.Constants;
 using TaskManagementTool.Host.Configuration.Entities;
@@ -43,6 +44,8 @@ namespace TaskManagementTool.Host
 
             services.AddTransient<IAdminService, AdminService>();
             services.AddTransient<IAuthService, AuthService>();
+
+            services.AddTransient<IDatabaseFactory, DatabaseFactory>();
 
             services.AddTransient<IAuthUtils, AuthUtils>();
 

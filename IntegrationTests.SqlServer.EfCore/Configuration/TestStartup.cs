@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using TaskManagementTool.DataAccess;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.Entities;
+using TaskManagementTool.DataAccess.Factories;
 using TaskManagementTool.DataAccess.Repositories;
 using TaskManagementTool.Host.Configuration.Profiles;
 
@@ -22,18 +23,18 @@ namespace IntegrationTests.SqlServer.EfCore.Configuration
             .AddJsonFile("appsettings.test.json")
             .Build();
 
-        public static readonly Dao Dao;
+        public static IDatabaseFactory DatabaseFactory { get; }
 
         static TestStartup()
         {
             #region Dao setup
-            DbContextOptionsBuilder<Dao> builder =
-                new DbContextOptionsBuilder<Dao>()
+            DbContextOptionsBuilder<TaskManagementToolDatabase> builder =
+                new DbContextOptionsBuilder<TaskManagementToolDatabase>()
                     .UseSqlServer(Configuration.GetSection("ConnectionString").Value);
 
-            DbContextOptions<Dao> options = builder.Options;
+            DbContextOptions<TaskManagementToolDatabase> options = builder.Options;
 
-            Dao = new Dao(options);
+            DatabaseFactory = new DatabaseFactory(options);
             #endregion
 
             #region Mapper setup
@@ -47,7 +48,7 @@ namespace IntegrationTests.SqlServer.EfCore.Configuration
             #endregion
 
             #region User manager setup
-            IUserStore<User> userStore = new UserStore<User>(TestStartup.Dao);
+            IUserStore<User> userStore = new UserStore<User>(DatabaseFactory.Create().DbContext);
 
             IPasswordHasher<User> hasher = new PasswordHasher<User>();
 
@@ -79,6 +80,6 @@ namespace IntegrationTests.SqlServer.EfCore.Configuration
 
         public static UserManager<User> UserManager { get; }
 
-        public static ITodoRepository Repository => new TodoRepository(Dao);
+        public static ITodoRepository Repository => new TodoRepository(DatabaseFactory);
     }
 }

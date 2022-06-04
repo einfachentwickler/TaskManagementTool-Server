@@ -6,7 +6,7 @@ namespace TaskManagementTool.BusinessLogic.Contracts
 {
     public interface ICopyService
     {
-        public Task<Todo> CopyTodoAsync(UpdateTodoDto todo);
+        public Task<TodoEntry> CopyTodoAsync(UpdateTodoDto todo);
 
         public Task<User> CopyUserAsync(User todo);
     }
