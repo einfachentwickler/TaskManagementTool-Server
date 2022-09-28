@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagementTool.UnitTest
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagementTool.Common", "TaskManagementTool.Common\TaskManagementTool.Common.csproj", "{BD93BBEC-AE71-436C-BCEB-D7A8741B9AAD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTests", "IntegrationTests", "{B8F63255-523D-4875-AC88-3D13C6B7C245}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B8F63255-523D-4875-AC88-3D13C6B7C245}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests.SqlServer.EfCore", "IntegrationTests.SqlServer.EfCore\IntegrationTests.SqlServer.EfCore.csproj", "{B28650F4-6518-479A-9B1B-D8A972D193A2}"
 EndProject

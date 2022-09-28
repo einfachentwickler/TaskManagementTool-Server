@@ -51,8 +51,8 @@ namespace TaskManagementTool.BusinessLogic.Services
                 };
             }
 
-            bool result = await _userManager.CheckPasswordAsync(user, model.Password);
-            if (!result)
+            bool isValid = await _userManager.CheckPasswordAsync(user, model.Password);
+            if (!isValid)
             {
                 return new UserManagerResponse
                 {

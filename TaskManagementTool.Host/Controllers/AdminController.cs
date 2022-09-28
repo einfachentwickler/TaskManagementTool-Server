@@ -18,9 +18,7 @@ namespace TaskManagementTool.Host.Controllers
         private readonly ITodoService _todoService;
 
         public AdminController(IAdminService service, ITodoService todoService)
-        {
-            (_adminService, _todoService) = (service, todoService);
-        }
+            => (_adminService, _todoService) = (service, todoService);
 
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers()

@@ -18,7 +18,8 @@ namespace TaskManagementTool.BusinessLogic.Services.Utils
 
         public string GetUserId(HttpContext context)
         {
-            string userId = context?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            string userId = context?.User
+                                .FindFirst(ClaimTypes.NameIdentifier)?.Value
                             ?? throw new TaskManagementToolException("User id is null");
 
             return userId;

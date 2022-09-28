@@ -27,24 +27,37 @@ namespace IntegrationTests.SqlServer.EfCore
         [Test]
         public async Task GetAsync_Test()
         {
+            string expectedName = Guid.NewGuid().ToString();
+
+            int id = await TestTodoDatabaseUtils.AddTempRecordAndReturnId(expectedName);
+
+            //act
             IEnumerable<TodoDto> actualResult = await _instance.GetAsync(SearchCriteriaEnum.GetAll);
 
             Assert.That(actualResult.Any());
+
+            await TestTodoDatabaseUtils.CleanupDatabase(id);
         }
 
         [Test]
-        [TestCase(1)]
-        public async Task GetSingleAsync_CorrectIdTest(int id)
+        public async Task GetSingleAsync_CorrectIdTest()
         {
+            string expectedName = Guid.NewGuid().ToString();
+
+            int id = await TestTodoDatabaseUtils.AddTempRecordAndReturnId(expectedName);
+
             TodoDto actualResult = await _instance.FindByIdAsync(id);
 
             Assert.That(actualResult is not null);
+
+            await TestTodoDatabaseUtils.CleanupDatabase(id);
         }
 
         [Test]
         [TestCase(9999)]
         public void GetSingleAsync_WrongIdTest(int id)
         {
+            //assert && act
             Assert.ThrowsAsync<InvalidOperationException>(async () => await _instance.FindByIdAsync(id));
         }
 

@@ -31,7 +31,9 @@ namespace TaskManagementTool.BusinessLogic.Services
         public async Task<IEnumerable<UserDto>> GetUsersAsync()
         {
             IEnumerable<User> users = await _userManager.Users.ToListAsync();
+
             IEnumerable<UserDto> mappedUsers = _mapper.Map<IEnumerable<UserDto>>(users);
+
             return mappedUsers;
         }
 
@@ -40,6 +42,7 @@ namespace TaskManagementTool.BusinessLogic.Services
             User singleUser = await _userManager.Users.FirstAsync(user => user.Id == id);
 
             UserDto mappedUser = _mapper.Map<User, UserDto>(singleUser);
+
             return mappedUser;
         }
 
@@ -50,7 +53,9 @@ namespace TaskManagementTool.BusinessLogic.Services
 
             if (!identityResult.Succeeded)
             {
-                throw new TaskManagementToolException("Update failed: " + string.Join("\n", identityResult.Errors));
+                string errors = string.Join("\n", identityResult.Errors);
+
+                throw new TaskManagementToolException($"Update failed: {errors}");
             }
         }
 
@@ -72,7 +77,9 @@ namespace TaskManagementTool.BusinessLogic.Services
             IdentityResult identityResult = await _userManager.DeleteAsync(user);
             if (!identityResult.Succeeded)
             {
-                throw new TaskManagementToolException("Update failed: " + string.Join("\n", identityResult.Errors));
+                string errors = string.Join("\n", identityResult.Errors);
+
+                throw new TaskManagementToolException($"Update failed: {errors}");
             }
         }
 

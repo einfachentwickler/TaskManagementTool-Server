@@ -28,9 +28,8 @@ namespace IntegrationTests.SqlServer.EfCore
         {
             //arrange
             string email = $"{Guid.NewGuid()}@example.com";
-            const bool isBlocked = false;
 
-            await TestUserDatabaseUtils.RegisterTempUserAsync(email, isBlocked);
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email, false);
 
             LoginDto model = new()
             {
@@ -52,9 +51,8 @@ namespace IntegrationTests.SqlServer.EfCore
         {
             //arrange
             string email = $"{Guid.NewGuid()}@example.com";
-            const bool isBlocked = true;
 
-            await TestUserDatabaseUtils.RegisterTempUserAsync(email, isBlocked);
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email, true);
 
             LoginDto model = new()
             {
@@ -97,9 +95,8 @@ namespace IntegrationTests.SqlServer.EfCore
         {
             //arrange
             string email = $"{Guid.NewGuid()}@example.com";
-            const bool isBlocked = false;
 
-            await TestUserDatabaseUtils.RegisterTempUserAsync(email, isBlocked);
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email, false);
 
             LoginDto model = new()
             {
@@ -122,15 +119,14 @@ namespace IntegrationTests.SqlServer.EfCore
         {
             //arrange
             string email = $"{Guid.NewGuid()}@example.com";
-            const bool confirmPasswordSuccesses = true;
 
-            RegisterDto registerDto = TestUserDatabaseUtils.GetRegisterDto(email, confirmPasswordSuccesses);
+            RegisterDto registerDto = TestUserDatabaseUtils.GetRegisterDto(email, true);
 
             //act
             UserManagerResponse response = await _instance.RegisterUserAsync(registerDto);
 
             //assert
-            Assert.That(response.IsSuccess);
+            Assert.True(response.IsSuccess);
 
             await TestUserDatabaseUtils.CleanupDatabase(email);
         }
@@ -140,9 +136,8 @@ namespace IntegrationTests.SqlServer.EfCore
         {
             //arrange
             string email = $"{Guid.NewGuid()}@example.com";
-            const bool confirmPasswordSuccesses = false;
 
-            RegisterDto registerDto = TestUserDatabaseUtils.GetRegisterDto(email, confirmPasswordSuccesses);
+            RegisterDto registerDto = TestUserDatabaseUtils.GetRegisterDto(email, false);
 
             //act
             UserManagerResponse response = await _instance.RegisterUserAsync(registerDto);

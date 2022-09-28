@@ -1,5 +1,4 @@
-﻿using IntegrationTests.SqlServer.EfCore.Configuration;
-using IntegrationTests.SqlServer.EfCore.Utils;
+﻿using IntegrationTests.SqlServer.EfCore.Utils;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -10,6 +9,7 @@ using TaskManagementTool.BusinessLogic.Services;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.DataAccess.Repositories;
+using static IntegrationTests.SqlServer.EfCore.Configuration.TestStartup;
 
 namespace IntegrationTests.SqlServer.EfCore
 {
@@ -21,15 +21,21 @@ namespace IntegrationTests.SqlServer.EfCore
         [SetUp]
         public void Setup()
         {
-            _instance = new AdminService(TestStartup.Mapper, TestStartup.UserManager, new TodoRepository(TestStartup.DatabaseFactory));
+            _instance = new AdminService(Mapper, UserManager, new TodoRepository(DatabaseFactory));
         }
 
         [Test]
         public async Task GetUsers_SuccessTest()
         {
+            string email = $"{Guid.NewGuid()}@example.com";
+
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email, false);
+
             IEnumerable<UserDto> actualResult = await _instance.GetUsersAsync();
 
             Assert.That(actualResult.Any());
+
+            await TestUserDatabaseUtils.CleanupDatabase(email);
         }
 
         [Test]
@@ -110,9 +116,8 @@ namespace IntegrationTests.SqlServer.EfCore
         {
             //arrange
             string email = $"{Guid.NewGuid()}@example.com";
-            const bool isBlocked = false;
 
-            await TestUserDatabaseUtils.RegisterTempUserAsync(email, isBlocked);
+            await TestUserDatabaseUtils.RegisterTempUserAsync(email, false);
 
             User user = await TestUserDatabaseUtils.GetUserAsync(email);
 

@@ -16,7 +16,7 @@ using TaskManagementTool.Host.Configuration.Profiles;
 
 namespace IntegrationTests.SqlServer.EfCore.Configuration
 {
-    public class TestStartup
+    public static class TestStartup
     {
         public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
             .SetBasePath(AppDomain.CurrentDomain.BaseDirectory + "/Configuration")
@@ -28,9 +28,8 @@ namespace IntegrationTests.SqlServer.EfCore.Configuration
         static TestStartup()
         {
             #region Dao setup
-            DbContextOptionsBuilder<TaskManagementToolDatabase> builder =
-                new DbContextOptionsBuilder<TaskManagementToolDatabase>()
-                    .UseSqlServer(Configuration.GetSection("ConnectionString").Value);
+            var builder = new DbContextOptionsBuilder<TaskManagementToolDatabase>()
+                .UseSqlServer(Configuration.GetSection("ConnectionString").Value);
 
             DbContextOptions<TaskManagementToolDatabase> options = builder.Options;
 
@@ -60,7 +59,8 @@ namespace IntegrationTests.SqlServer.EfCore.Configuration
             UserManager = new UserManager<User>(
                 userStore,
                 null,
-                hasher, validators,
+                hasher,
+                validators,
                 null,
                 null,
                 null,
@@ -71,6 +71,7 @@ namespace IntegrationTests.SqlServer.EfCore.Configuration
             // Set-up token providers.
             IUserTwoFactorTokenProvider<User> tokenProvider = new EmailTokenProvider<User>();
             UserManager.RegisterTokenProvider("Default", tokenProvider);
+
             IUserTwoFactorTokenProvider<User> phoneTokenProvider = new PhoneNumberTokenProvider<User>();
             UserManager.RegisterTokenProvider("PhoneTokenProvider", phoneTokenProvider);
             #endregion

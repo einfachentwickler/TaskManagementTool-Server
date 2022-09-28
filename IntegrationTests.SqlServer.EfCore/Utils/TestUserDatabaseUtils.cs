@@ -33,13 +33,20 @@ namespace IntegrationTests.SqlServer.EfCore.Utils
                 IsBlocked = isBlocked
             };
 
-            IdentityResult result = await TestStartup.UserManager.CreateAsync(registerUser, MockDataConstants.TEMP_USER_PASSWORD);
+            IdentityResult result = await TestStartup.UserManager.CreateAsync(
+                registerUser,
+                MockDataConstants.TEMP_USER_PASSWORD
+                );
 
             if (!result.Succeeded)
             {
-                throw new TaskManagementToolException(
-                    $"User was not created: {string.Join("\n", result.Errors.Select(error => new { error.Code, error.Description }))}"
-                );
+                string errors = string.Join("\n", result.Errors.Select(error => new
+                {
+                    error.Code,
+                    error.Description
+                }));
+
+                throw new TaskManagementToolException($"User was not created: {errors}");
             }
         }
 
@@ -63,7 +70,7 @@ namespace IntegrationTests.SqlServer.EfCore.Utils
         {
             string confirmPassword = confirmPasswordMatchesPassword ? MockDataConstants.TEMP_USER_PASSWORD : "wrong";
 
-            RegisterDto registerDto = new()
+            return new RegisterDto
             {
                 Age = 14,
                 Password = MockDataConstants.TEMP_USER_PASSWORD,
@@ -72,10 +79,6 @@ namespace IntegrationTests.SqlServer.EfCore.Utils
                 FirstName = "First name",
                 LastName = "Last name"
             };
-
-            return registerDto;
         }
-
-
     }
 }

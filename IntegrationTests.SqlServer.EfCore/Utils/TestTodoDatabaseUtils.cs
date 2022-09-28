@@ -9,11 +9,11 @@ namespace IntegrationTests.SqlServer.EfCore.Utils
 {
     public static class TestTodoDatabaseUtils
     {
-        public static async Task<int> AddTempRecordAndReturnId(string updatedname, string updatedContent = null)
+        public static async Task<int> AddTempRecordAndReturnId(string updatedName, string updatedContent = null)
         {
             TodoEntry entity = new()
             {
-                Name = updatedname,
+                Name = updatedName,
                 Content = updatedContent
             };
 
@@ -28,24 +28,20 @@ namespace IntegrationTests.SqlServer.EfCore.Utils
 
         public static CreateTodoDto GetCreateTodoDto(string expectedName)
         {
-            CreateTodoDto entity = new()
+            return new CreateTodoDto
             {
                 Name = expectedName
             };
-
-            return entity;
         }
 
         public static UpdateTodoDto GetUpdateTodoDto(int id, string updatedName, string updatedContent)
         {
-            UpdateTodoDto entityToUpdate = new()
+            return new UpdateTodoDto
             {
                 Id = id,
                 Name = updatedName,
                 Content = updatedContent
             };
-
-            return entityToUpdate;
         }
     }
 }
