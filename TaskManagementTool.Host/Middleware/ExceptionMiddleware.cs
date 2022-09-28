@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 
@@ -12,7 +10,7 @@ namespace TaskManagementTool.Host.Middleware
 
         public ExceptionMiddleware(RequestDelegate next) => _next = next;
 
-        public async Task Invoke(HttpContext context, ILogger<ExceptionMiddleware> logger)
+        public async Task Invoke(HttpContext context)
         {
             try
             {
@@ -25,8 +23,8 @@ namespace TaskManagementTool.Host.Middleware
                     nameof(NotImplementedException) => 501,
                     _ => 500
                 };
-                logger.LogError(JsonConvert.SerializeObject(exception));
-                await context.Response.WriteAsync("Error happened...");
+
+                await context.Response.WriteAsync("Internal server error");
             }
         }
     }

@@ -5,9 +5,9 @@ namespace TaskManagementTool.BusinessLogic.ViewModels
 {
     public class UserManagerResponse
     {
-        public string Message { get; set; }
+        public string Message { get; init; }
 
-        public bool IsSuccess { get; set; }
+        public bool IsSuccess { get; init; }
 
         public IEnumerable<string> Errors { get; set; }
 

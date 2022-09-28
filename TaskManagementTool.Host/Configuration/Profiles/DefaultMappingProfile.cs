@@ -4,7 +4,7 @@ using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
 using TaskManagementTool.DataAccess.Entities;
 
-namespace TaskManagementTool.Host.Profiles
+namespace TaskManagementTool.Host.Configuration.Profiles
 {
     public class DefaultMappingProfile : Profile
     {
@@ -13,14 +13,14 @@ namespace TaskManagementTool.Host.Profiles
             CreateMap<User, UserDto>();
             CreateMap<UserDto, User>();
 
-            CreateMap<Todo, TodoDto>();
-            CreateMap<TodoDto, Todo>();
+            CreateMap<TodoEntry, TodoDto>();
+            CreateMap<TodoDto, TodoEntry>();
 
-            CreateMap<CreateTodoDto, Todo>();
-            CreateMap<UpdateTodoDto, Todo>();
+            CreateMap<CreateTodoDto, TodoEntry>();
+            CreateMap<UpdateTodoDto, TodoEntry>();
 
-            CreateMap<ICollection<Todo>, List<TodoDto>>();
-            CreateMap<ICollection<User>, List<UserDto>>();
+            CreateMap<IEnumerable<TodoEntry>, List<TodoDto>>();
+            CreateMap<IEnumerable<User>, List<UserDto>>();
         }
     }
 }

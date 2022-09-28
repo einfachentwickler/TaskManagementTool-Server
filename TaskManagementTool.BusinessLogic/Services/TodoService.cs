@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Contracts;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
+using TaskManagementTool.Common.Enums;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.Entities;
 
@@ -17,30 +18,31 @@ namespace TaskManagementTool.BusinessLogic.Services
 
         public TodoService(IMapper mapper, ITodoRepository todoRepository) => (_todoRepository, _mapper) = (todoRepository, mapper);
 
-        public async Task<ICollection<TodoDto>> GetAsync()
+        public async Task<IEnumerable<TodoDto>> GetAsync(SearchCriteriaEnum searchCriteria, string userId = null)
         {
-            ICollection<Todo> todos = await _todoRepository.GetAsync();
-            ICollection<TodoDto> mappedTodos = _mapper.Map<ICollection<TodoDto>>(todos);
+            IEnumerable<TodoEntry> todos = await _todoRepository.GetAsync(searchCriteria, userId);
+
+            IEnumerable<TodoDto> mappedTodos = _mapper.Map<IEnumerable<TodoDto>>(todos);
             return mappedTodos;
         }
 
-        public async Task<TodoDto> GetSingleAsync(int id)
+        public async Task<TodoDto> FindByIdAsync(int id)
         {
-            Todo todo = await _todoRepository.GetSingleAsync(id);
-            TodoDto mappedTodo = _mapper.Map<Todo, TodoDto>(todo);
+            TodoEntry todoEntry = await _todoRepository.FirstAsync(id);
+            TodoDto mappedTodo = _mapper.Map<TodoEntry, TodoDto>(todoEntry);
 
             return mappedTodo;
         }
 
         public async Task AddAsync(CreateTodoDto todoPar)
         {
-            Todo todo = _mapper.Map<CreateTodoDto, Todo>(todoPar);
-            await _todoRepository.AddAsync(todo);
+            TodoEntry todoEntry = _mapper.Map<CreateTodoDto, TodoEntry>(todoPar);
+            await _todoRepository.AddAsync(todoEntry);
         }
 
         public async Task UpdateAsync(UpdateTodoDto todo)
         {
-            Todo item = await _todoRepository.GetSingleAsync(todo.Id);
+            TodoEntry item = await _todoRepository.FirstAsync(todo.Id);
 
             item.Name = todo.Name;
             item.IsCompleted = todo.IsCompleted;

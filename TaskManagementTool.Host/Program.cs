@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NLog.Web;
 using System;
 using System.Threading.Tasks;
-using NLog.Web;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using TaskManagementTool.DataAccess;
 using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.DataAccess.Initializers;
@@ -20,13 +23,16 @@ namespace TaskManagementTool.Host
             using (IServiceScope scope = host.Services.CreateScope())
             {
                 IServiceProvider services = scope.ServiceProvider;
+                IConfiguration configuration = services.GetRequiredService<IConfiguration>();
+
                 UserManager<User> userManager = services.GetRequiredService<UserManager<User>>();
                 RoleManager<IdentityRole> rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                DbContext context = services.GetRequiredService<DbContext>();
+                TaskManagementToolDatabase context = services.GetRequiredService<TaskManagementToolDatabase>();
 
-                if (await context.Database.EnsureCreatedAsync())
+                if (!await context.Database.GetService<IRelationalDatabaseCreator>().ExistsAsync())
                 {
-                    await DbInitializer.InitializeAsync(context, userManager, rolesManager);
+                    await context.Database.EnsureCreatedAsync();
+                    await EfCoreCodeFirstInitializer.InitializeAsync(context, userManager, rolesManager, configuration);
                 }
             }
 
