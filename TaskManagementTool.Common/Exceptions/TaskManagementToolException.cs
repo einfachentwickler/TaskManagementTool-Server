@@ -1,9 +1,12 @@
 ﻿using System;
 
-namespace TaskManagementTool.Common.Exceptions
+namespace TaskManagementTool.Common.Exceptions;
+
+public class TaskManagementToolException : Exception
 {
-    public class TaskManagementToolException : Exception
-    {
-        public TaskManagementToolException(string message) : base(message) { }
-    }
+    public TaskManagementToolException() { }
+
+    public TaskManagementToolException(string message, Exception innerException = null) : base(message, innerException) { }
+
+    public TaskManagementToolException(string message) : base(message) { }
 }

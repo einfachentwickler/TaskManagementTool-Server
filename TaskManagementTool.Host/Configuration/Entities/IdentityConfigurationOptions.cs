@@ -1,23 +1,22 @@
 ﻿using Microsoft.Extensions.Configuration;
+using TaskManagementTool.Common.Constants;
+using TaskManagementTool.Common.Exceptions;
 
-namespace TaskManagementTool.Host.Configuration.Entities
+namespace TaskManagementTool.Host.Configuration.Entities;
+
+public class IdentityConfigurationOptions(IConfiguration configuration)
 {
-    public class IdentityConfigurationOptions
-    {
-        private readonly IConfiguration _configuration;
+    private readonly IConfiguration _configuration = configuration;
 
-        public IdentityConfigurationOptions(IConfiguration configuration) => _configuration = configuration;
+    public int RequiredPasswordLength => int.Parse(_configuration.GetSection("IdentityPasswordOptions:RequiredLength").Value ?? throw new TaskManagementToolException(ConfigErrorMessagesConstants.CONFIG_VALUE_NOT_FOUND + "IdentityPasswordOptions:RequiredLength"));
 
-        public int RequiredPasswordLength => int.Parse(_configuration.GetSection("IdentityPasswordOptions:RequiredLength").Value);
+    public int RequiredUniqueChart => int.Parse(_configuration.GetSection("IdentityPasswordOptions:RequiredUniqueChars").Value ?? throw new TaskManagementToolException(ConfigErrorMessagesConstants.CONFIG_VALUE_NOT_FOUND + "IdentityPasswordOptions:RequiredUniqueChars"));
 
-        public int RequiredUniqueChart => int.Parse(_configuration.GetSection("IdentityPasswordOptions:RequiredUniqueChars").Value);
+    public bool IsDigitRequired => bool.Parse(_configuration.GetSection("IdentityPasswordOptions:RequireDigit").Value ?? throw new TaskManagementToolException(ConfigErrorMessagesConstants.CONFIG_VALUE_NOT_FOUND + "IdentityPasswordOptions:RequireDigit"));
 
-        public bool IsDigitRequired => bool.Parse(_configuration.GetSection("IdentityPasswordOptions:RequireDigit").Value);
+    public bool IsLowercaseRequired => bool.Parse(_configuration.GetSection("IdentityPasswordOptions:RequireLowercase").Value ?? throw new TaskManagementToolException(ConfigErrorMessagesConstants.CONFIG_VALUE_NOT_FOUND + "IdentityPasswordOptions:RequireLowercase"));
 
-        public bool IsLowercaseRequired => bool.Parse(_configuration.GetSection("IdentityPasswordOptions:RequireLowercase").Value);
+    public bool IsNonAlphaNumericRequired => bool.Parse(_configuration.GetSection("IdentityPasswordOptions:RequireNonAlphanumeric").Value ?? throw new TaskManagementToolException(ConfigErrorMessagesConstants.CONFIG_VALUE_NOT_FOUND + "IdentityPasswordOptions:RequireNonAlphanumeric"));
 
-        public bool IsNonAlphaNumericRequired => bool.Parse(_configuration.GetSection("IdentityPasswordOptions:RequireNonAlphanumeric").Value);
-
-        public bool IsUppercaseRequired => bool.Parse(_configuration.GetSection("IdentityPasswordOptions:RequireUppercase").Value);
-    }
+    public bool IsUppercaseRequired => bool.Parse(_configuration.GetSection("IdentityPasswordOptions:RequireUppercase").Value ?? throw new TaskManagementToolException(ConfigErrorMessagesConstants.CONFIG_VALUE_NOT_FOUND + "IdentityPasswordOptions:RequireUppercase"));
 }

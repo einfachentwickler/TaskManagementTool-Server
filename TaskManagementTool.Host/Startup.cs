@@ -3,31 +3,23 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using TaskManagementTool.BusinessLogic.Contracts;
-using TaskManagementTool.BusinessLogic.Services;
-using TaskManagementTool.BusinessLogic.Services.Utils;
-using TaskManagementTool.DataAccess.Contracts;
-using TaskManagementTool.DataAccess.Factories;
-using TaskManagementTool.DataAccess.Repositories;
 using TaskManagementTool.Host.Configuration.Constants;
 using TaskManagementTool.Host.Configuration.Entities;
+using TaskManagementTool.Host.Configuration.Profiles;
 using TaskManagementTool.Host.Extensions;
 using TaskManagementTool.Host.Middleware;
 
 namespace TaskManagementTool.Host
 {
-    public class Startup
+    public class Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration) => Configuration = configuration;
+        public IConfiguration Configuration { get; } = configuration;
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
 
-            services.ConfigureAutoMapper();
+            services.AddAutoMapper(typeof(DefaultMappingProfile));
 
             services.ConfigureCors();
 
@@ -39,15 +31,7 @@ namespace TaskManagementTool.Host
                 new AuthSettings(Configuration)
                 );
 
-            services.AddTransient<ITodoRepository, TodoRepository>();
-            services.AddTransient<ITodoService, TodoService>();
-
-            services.AddTransient<IAdminService, AdminService>();
-            services.AddTransient<IAuthService, AuthService>();
-
-            services.AddTransient<IDatabaseFactory, DatabaseFactory>();
-
-            services.AddTransient<IAuthUtils, AuthUtils>();
+            services.RegisterDependencies();
 
             services.AddSwaggerGen();
         }

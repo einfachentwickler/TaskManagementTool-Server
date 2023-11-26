@@ -1,7 +1,6 @@
-﻿namespace TaskManagementTool.Host.Configuration.Constants
+﻿namespace TaskManagementTool.Host.Configuration.Constants;
+
+public static class CorsPolicyNameConstants
 {
-    public static class CorsPolicyNameConstants
-    {
-        public const string DEFAULT_POLICY_NAME = "CorsPolicy";
-    }
+    public const string DEFAULT_POLICY_NAME = "CorsPolicy";
 }

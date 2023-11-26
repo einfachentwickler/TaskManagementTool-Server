@@ -1,8 +1,7 @@
-﻿namespace TaskManagementTool.Common.Enums
+﻿namespace TaskManagementTool.Common.Enums;
+
+public enum SearchCriteriaEnum
 {
-    public enum SearchCriteriaEnum
-    {
-        GetAll,
-        GetById
-    }
+    GetAll,
+    GetById
 }

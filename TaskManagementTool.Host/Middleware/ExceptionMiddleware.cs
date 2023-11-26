@@ -2,30 +2,27 @@
 using System;
 using System.Threading.Tasks;
 
-namespace TaskManagementTool.Host.Middleware
+namespace TaskManagementTool.Host.Middleware;
+
+public class ExceptionMiddleware(RequestDelegate next)
 {
-    public class ExceptionMiddleware
+    private readonly RequestDelegate _next = next;
+
+    public async Task Invoke(HttpContext context)
     {
-        private readonly RequestDelegate _next;
-
-        public ExceptionMiddleware(RequestDelegate next) => _next = next;
-
-        public async Task Invoke(HttpContext context)
+        try
         {
-            try
+            await _next(context);
+        }
+        catch (Exception exception)
+        {
+            context.Response.StatusCode = exception.GetType().Name switch
             {
-                await _next(context);
-            }
-            catch (Exception exception)
-            {
-                context.Response.StatusCode = exception.GetType().Name switch
-                {
-                    nameof(NotImplementedException) => 501,
-                    _ => 500
-                };
+                nameof(NotImplementedException) => 501,
+                _ => 500
+            };
 
-                await context.Response.WriteAsync("Internal server error");
-            }
+            await context.Response.WriteAsync("Internal server error");
         }
     }
 }

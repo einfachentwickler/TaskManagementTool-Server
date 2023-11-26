@@ -52,7 +52,7 @@ namespace TaskManagementTool.DataAccess.Initializers
                 }
 
                 TodoEntry[] todos =
-                {
+                [
                     new()
                     {
                         Name = "Todo 1 init",
@@ -69,7 +69,7 @@ namespace TaskManagementTool.DataAccess.Initializers
                         Importance = 2,
                         Creator = admin
                     }
-                };
+                ];
 
                 foreach (TodoEntry todo in todos)
                 {

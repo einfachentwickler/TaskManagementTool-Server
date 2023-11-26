@@ -19,6 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests.SqlServer.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{E1F4B0D1-2DE8-460D-9624-ACC35AA6EB56}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{09622DDA-9756-4753-B9BA-DE86A0985199}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +60,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1C8245BD-E87D-4FB1-B80F-E6F3E4C24E89} = {E1F4B0D1-2DE8-460D-9624-ACC35AA6EB56}
+		{C7E31477-E3ED-470B-973B-C5D6C4248956} = {B8F63255-523D-4875-AC88-3D13C6B7C245}
 		{B28650F4-6518-479A-9B1B-D8A972D193A2} = {B8F63255-523D-4875-AC88-3D13C6B7C245}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

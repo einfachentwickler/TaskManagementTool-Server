@@ -1,13 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
+using TaskManagementTool.Common.Constants;
+using TaskManagementTool.Common.Exceptions;
 
-namespace TaskManagementTool.Host.Configuration.Entities
+namespace TaskManagementTool.Host.Configuration.Entities;
+
+public class DatabaseConfigurationOptions(IConfiguration configuration)
 {
-    public class DatabaseConfigurationOptions
-    {
-        private readonly IConfiguration _configuration;
+    private readonly IConfiguration _configuration = configuration;
 
-        public DatabaseConfigurationOptions(IConfiguration configuration) => _configuration = configuration;
-
-        public string ConnectionString => _configuration.GetSection("ConnectionString").Value;
-    }
+    public string ConnectionString => _configuration.GetSection("ConnectionString").Value ?? throw new TaskManagementToolException(ConfigErrorMessagesConstants.CONFIG_VALUE_NOT_FOUND + "ConnectionString");
 }

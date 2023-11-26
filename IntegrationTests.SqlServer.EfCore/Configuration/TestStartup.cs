@@ -14,73 +14,72 @@ using TaskManagementTool.DataAccess.Factories;
 using TaskManagementTool.DataAccess.Repositories;
 using TaskManagementTool.Host.Configuration.Profiles;
 
-namespace IntegrationTests.SqlServer.EfCore.Configuration
+namespace IntegrationTests.SqlServer.EfCore.Configuration;
+
+public static class TestStartup
 {
-    public static class TestStartup
+    public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
+        .SetBasePath(AppDomain.CurrentDomain.BaseDirectory + "/Configuration")
+        .AddJsonFile("appsettings.test.json")
+        .Build();
+
+    public static IDatabaseFactory DatabaseFactory { get; }
+
+    static TestStartup()
     {
-        public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
-            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory + "/Configuration")
-            .AddJsonFile("appsettings.test.json")
-            .Build();
+        #region Dao setup
+        var builder = new DbContextOptionsBuilder<TaskManagementToolDatabase>()
+            .UseSqlServer(Configuration.GetSection("ConnectionString").Value);
 
-        public static IDatabaseFactory DatabaseFactory { get; }
+        DbContextOptions<TaskManagementToolDatabase> options = builder.Options;
 
-        static TestStartup()
-        {
-            #region Dao setup
-            var builder = new DbContextOptionsBuilder<TaskManagementToolDatabase>()
-                .UseSqlServer(Configuration.GetSection("ConnectionString").Value);
+        DatabaseFactory = new DatabaseFactory(options);
+        #endregion
 
-            DbContextOptions<TaskManagementToolDatabase> options = builder.Options;
+        #region Mapper setup
+        DefaultMappingProfile defaultProfile = new();
 
-            DatabaseFactory = new DatabaseFactory(options);
-            #endregion
+        void AddProfile(IMapperConfigurationExpression expression) => expression.AddProfile(defaultProfile);
 
-            #region Mapper setup
-            DefaultMappingProfile defaultProfile = new();
+        MapperConfiguration config = new(AddProfile);
 
-            void AddProfile(IMapperConfigurationExpression expression) => expression.AddProfile(defaultProfile);
+        Mapper = config.CreateMapper();
+        #endregion
 
-            MapperConfiguration config = new(AddProfile);
+        #region User manager setup
+        IUserStore<User> userStore = new UserStore<User>(DatabaseFactory.Create().DbContext);
 
-            Mapper = config.CreateMapper();
-            #endregion
+        IPasswordHasher<User> hasher = new PasswordHasher<User>();
 
-            #region User manager setup
-            IUserStore<User> userStore = new UserStore<User>(DatabaseFactory.Create().DbContext);
+        UserValidator<User> validator = new();
+        List<UserValidator<User>> validators = [validator];
 
-            IPasswordHasher<User> hasher = new PasswordHasher<User>();
+        ILogger<UserManager<User>> logger = new Mock<ILogger<UserManager<User>>>().Object;
 
-            UserValidator<User> validator = new();
-            List<UserValidator<User>> validators = new() { validator };
+        UserManager = new UserManager<User>(
+            userStore,
+            null,
+            hasher,
+            validators,
+            null,
+            null,
+            null,
+            null,
+            logger
+        );
 
-            ILogger<UserManager<User>> logger = new Mock<ILogger<UserManager<User>>>().Object;
+        // Set-up token providers.
+        IUserTwoFactorTokenProvider<User> tokenProvider = new EmailTokenProvider<User>();
+        UserManager.RegisterTokenProvider("Default", tokenProvider);
 
-            UserManager = new UserManager<User>(
-                userStore,
-                null,
-                hasher,
-                validators,
-                null,
-                null,
-                null,
-                null,
-                logger
-            );
-
-            // Set-up token providers.
-            IUserTwoFactorTokenProvider<User> tokenProvider = new EmailTokenProvider<User>();
-            UserManager.RegisterTokenProvider("Default", tokenProvider);
-
-            IUserTwoFactorTokenProvider<User> phoneTokenProvider = new PhoneNumberTokenProvider<User>();
-            UserManager.RegisterTokenProvider("PhoneTokenProvider", phoneTokenProvider);
-            #endregion
-        }
-
-        public static IMapper Mapper { get; }
-
-        public static UserManager<User> UserManager { get; }
-
-        public static ITodoRepository Repository => new TodoRepository(DatabaseFactory);
+        IUserTwoFactorTokenProvider<User> phoneTokenProvider = new PhoneNumberTokenProvider<User>();
+        UserManager.RegisterTokenProvider("PhoneTokenProvider", phoneTokenProvider);
+        #endregion
     }
+
+    public static IMapper Mapper { get; }
+
+    public static UserManager<User> UserManager { get; }
+
+    public static ITodoRepository Repository => new TodoRepository(DatabaseFactory);
 }
