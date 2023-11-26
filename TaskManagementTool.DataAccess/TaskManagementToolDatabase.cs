@@ -3,19 +3,16 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using TaskManagementTool.DataAccess.Entities;
 
-namespace TaskManagementTool.DataAccess
+namespace TaskManagementTool.DataAccess;
+
+public class TaskManagementToolDatabase(DbContextOptions<TaskManagementToolDatabase> options) : IdentityDbContext<User>(options), ITaskManagementToolDatabase
 {
-    public class TaskManagementToolDatabase : IdentityDbContext<User>, ITaskManagementToolDatabase
+    public DbSet<TodoEntry> Todos { get; set; }
+
+    public DbContext DbContext => this;
+
+    public async Task SaveChangesAsync()
     {
-        public TaskManagementToolDatabase(DbContextOptions<TaskManagementToolDatabase> options) : base(options) { }
-
-        public DbSet<TodoEntry> Todos { get; set; }
-
-        public DbContext DbContext => this;
-
-        public async Task SaveChangesAsync()
-        {
-            await base.SaveChangesAsync();
-        }
+        await base.SaveChangesAsync();
     }
 }

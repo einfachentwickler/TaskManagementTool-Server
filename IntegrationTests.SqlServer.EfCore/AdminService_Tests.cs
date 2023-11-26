@@ -15,12 +15,12 @@ namespace IntegrationTests.SqlServer.EfCore;
 [TestFixture]
 public class AdminService_Tests
 {
-    private AdminService _instance;
+    private AdminHandler _instance;
 
     [SetUp]
     public void Setup()
     {
-        _instance = new AdminService(Mapper, UserManager, new TodoRepository(DatabaseFactory));
+        _instance = new AdminHandler(Mapper, UserManager, new TodoRepository(DatabaseFactory));
     }
 
     [Test]

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using TaskManagementTool.BusinessLogic.Contracts;
+using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
 using TaskManagementTool.Host.ActionFilters;
@@ -10,9 +10,9 @@ namespace TaskManagementTool.Host.Controllers;
 [Route("api/auth")]
 [ApiController]
 [ModelStateFilter]
-public class AuthController(IAuthService service) : ControllerBase
+public class AuthController(IAuthHandler service) : ControllerBase
 {
-    private readonly IAuthService _userService = service;
+    private readonly IAuthHandler _userService = service;
 
     [HttpPost("register")]
     public async Task<IActionResult> RegisterAsync([FromBody] RegisterDto model)

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TaskManagementTool.BusinessLogic.Contracts;
+using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.Services.Utils;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
@@ -15,9 +15,9 @@ namespace TaskManagementTool.Host.Controllers;
 [Route("api/home")]
 [ApiController, Authorize]
 [ModelStateFilter]
-public class HomeController(ITodoService service, IHttpContextAccessor httpContextAccessor, IAuthUtils utils) : ControllerBase
+public class HomeController(ITodoHandler service, IHttpContextAccessor httpContextAccessor, IAuthUtils utils) : ControllerBase
 {
-    private readonly ITodoService _todoService = service;
+    private readonly ITodoHandler _todoService = service;
 
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 

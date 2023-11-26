@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TaskManagementTool.BusinessLogic.Contracts;
+using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.Common.Enums;
 using TaskManagementTool.Common.Exceptions;
@@ -13,37 +13,26 @@ using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.BusinessLogic.Services
 {
-    public class AdminService : IAdminService
+    public class AdminHandler(IMapper mapper, UserManager<User> manager, ITodoRepository todoRepository) : IAdminHandler
     {
-        private readonly ITodoRepository _todoRepository;
+        private readonly ITodoRepository _todoRepository = todoRepository;
 
-        private readonly IMapper _mapper;
+        private readonly IMapper _mapper = mapper;
 
-        private readonly UserManager<User> _userManager;
-
-        public AdminService(IMapper mapper, UserManager<User> manager, ITodoRepository todoRepository)
-        {
-            _mapper = mapper;
-            _userManager = manager;
-            _todoRepository = todoRepository;
-        }
+        private readonly UserManager<User> _userManager = manager;
 
         public async Task<IEnumerable<UserDto>> GetUsersAsync()
         {
             IEnumerable<User> users = await _userManager.Users.ToListAsync();
 
-            IEnumerable<UserDto> mappedUsers = _mapper.Map<IEnumerable<UserDto>>(users);
-
-            return mappedUsers;
+            return _mapper.Map<IEnumerable<UserDto>>(users);
         }
 
         public async Task<UserDto> GetUserAsync(string id)
         {
             User singleUser = await _userManager.Users.FirstAsync(user => user.Id == id);
 
-            UserDto mappedUser = _mapper.Map<User, UserDto>(singleUser);
-
-            return mappedUser;
+            return _mapper.Map<User, UserDto>(singleUser);
         }
 
         public async Task UpdateUserAsync(UserDto user)

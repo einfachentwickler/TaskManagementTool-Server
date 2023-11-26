@@ -8,7 +8,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Constants;
-using TaskManagementTool.BusinessLogic.Contracts;
+using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
 using TaskManagementTool.Common.Constants;
@@ -17,7 +17,7 @@ using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.BusinessLogic.Services;
 
-public class AuthService(UserManager<User> managerPar, IConfiguration configuration) : IAuthService
+public class AuthHandler(UserManager<User> managerPar, IConfiguration configuration) : IAuthHandler
 {
     private readonly UserManager<User> _userManager = managerPar;
 

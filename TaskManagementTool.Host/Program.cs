@@ -29,9 +29,8 @@ namespace TaskManagementTool.Host
             RoleManager<IdentityRole> rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
             TaskManagementToolDatabase context = services.GetRequiredService<TaskManagementToolDatabase>();
 
-            if (!await context.Database.GetService<IRelationalDatabaseCreator>().ExistsAsync())
+            if (!await context.Database.EnsureCreatedAsync())
             {
-                await context.Database.EnsureCreatedAsync();
                 await EfCoreCodeFirstInitializer.InitializeAsync(context, userManager, rolesManager, configuration);
             }
 

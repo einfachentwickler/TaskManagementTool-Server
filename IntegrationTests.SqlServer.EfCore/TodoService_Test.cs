@@ -15,12 +15,12 @@ namespace IntegrationTests.SqlServer.EfCore;
 [TestFixture]
 public class TodoService_Test
 {
-    private TodoService _instance;
+    private TodoHandler _instance;
 
     [SetUp]
     public void Setup()
     {
-        _instance = new TodoService(TestStartup.Mapper, TestStartup.Repository);
+        _instance = new TodoHandler(TestStartup.Mapper, TestStartup.Repository);
     }
 
     [Test]

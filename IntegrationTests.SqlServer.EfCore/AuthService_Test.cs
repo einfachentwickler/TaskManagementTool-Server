@@ -14,12 +14,12 @@ namespace IntegrationTests.SqlServer.EfCore;
 [TestFixture]
 public class AuthService_Test
 {
-    private AuthService _instance;
+    private AuthHandler _instance;
 
     [SetUp]
     public void Setup()
     {
-        _instance = new AuthService(TestStartup.UserManager, TestStartup.Configuration);
+        _instance = new AuthHandler(TestStartup.UserManager, TestStartup.Configuration);
     }
 
     [Test]
