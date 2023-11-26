@@ -1,6 +1,4 @@
-﻿using AutoFixture;
-using AutoFixture.AutoNSubstitute;
-using AutoMapper;
+﻿using AutoMapper;
 using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -23,7 +21,6 @@ namespace TaskManagementTool.UnitTests.BusinessLogic
         public void Setup()
         {
             DefaultMappingProfile defaultMappingProfile = new();
-            AutoNSubstituteCustomization autoNSubstituteCustomization = new();
 
             void AddProfile(IMapperConfigurationExpression configuration) => configuration.AddProfile(defaultMappingProfile);
 
@@ -31,9 +28,7 @@ namespace TaskManagementTool.UnitTests.BusinessLogic
 
             IMapper mapper = config.CreateMapper();
 
-            IFixture fixture = new Fixture().Customize(autoNSubstituteCustomization);
-
-            ITodoRepository todoRepository = fixture.Create<ITodoRepository>();
+            ITodoRepository todoRepository = Substitute.For<ITodoRepository>();
 
             todoRepository.FirstAsync(1).Returns(Task.FromResult(SeedData.Todos.First()));
             todoRepository.FirstAsync(2).Returns(Task.FromResult(SeedData.Todos.Skip(1).First()));
