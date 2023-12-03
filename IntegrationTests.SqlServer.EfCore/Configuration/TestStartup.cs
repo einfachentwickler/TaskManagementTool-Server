@@ -27,16 +27,11 @@ public static class TestStartup
 
     static TestStartup()
     {
-        #region Dao setup
         var builder = new DbContextOptionsBuilder<TaskManagementToolDatabase>()
             .UseSqlServer(Configuration.GetSection("ConnectionString").Value);
 
-        DbContextOptions<TaskManagementToolDatabase> options = builder.Options;
+        DatabaseFactory = new DatabaseFactory(builder.Options);
 
-        DatabaseFactory = new DatabaseFactory(options);
-        #endregion
-
-        #region Mapper setup
         DefaultMappingProfile defaultProfile = new();
 
         void AddProfile(IMapperConfigurationExpression expression) => expression.AddProfile(defaultProfile);
@@ -44,15 +39,12 @@ public static class TestStartup
         MapperConfiguration config = new(AddProfile);
 
         Mapper = config.CreateMapper();
-        #endregion
 
-        #region User manager setup
         IUserStore<User> userStore = new UserStore<User>(DatabaseFactory.Create().DbContext);
 
         IPasswordHasher<User> hasher = new PasswordHasher<User>();
 
-        UserValidator<User> validator = new();
-        List<UserValidator<User>> validators = [validator];
+        List<UserValidator<User>> validators = [new UserValidator<User>()];
 
         ILogger<UserManager<User>> logger = new Mock<ILogger<UserManager<User>>>().Object;
 
@@ -68,13 +60,9 @@ public static class TestStartup
             logger
         );
 
-        // Set-up token providers.
-        IUserTwoFactorTokenProvider<User> tokenProvider = new EmailTokenProvider<User>();
-        UserManager.RegisterTokenProvider("Default", tokenProvider);
-
-        IUserTwoFactorTokenProvider<User> phoneTokenProvider = new PhoneNumberTokenProvider<User>();
-        UserManager.RegisterTokenProvider("PhoneTokenProvider", phoneTokenProvider);
-        #endregion
+        //Set up token providers.
+        UserManager.RegisterTokenProvider("Default", new EmailTokenProvider<User>());
+        UserManager.RegisterTokenProvider("PhoneTokenProvider", new PhoneNumberTokenProvider<User>());
     }
 
     public static IMapper Mapper { get; }

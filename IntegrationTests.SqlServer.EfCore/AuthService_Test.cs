@@ -23,9 +23,9 @@ public class AuthService_Test
     }
 
     [Test]
-    public async Task LoginUserAsync_SuccessTest()
+    public async Task LoginUserAsync_Success_ReturnsSuccess()
     {
-        //arrange
+        //Arrange
         string email = $"{Guid.NewGuid()}@example.com";
 
         await TestUserDatabaseUtils.RegisterTempUserAsync(email, false);
@@ -36,19 +36,17 @@ public class AuthService_Test
             Password = MockDataConstants.TEMP_USER_PASSWORD
         };
 
-        //act
+        //Act
         UserManagerResponse actualResult = await _instance.LoginUserAsync(model);
 
-        //assert
-        Assert.That(actualResult.IsSuccess);
-
-        await TestUserDatabaseUtils.CleanupDatabase(email);
+        //Assert
+        Assert.That(actualResult.IsSuccess, Is.True);
     }
 
     [Test]
-    public async Task LoginUserAsync_BlockedTest()
+    public async Task LoginUserAsync_Blocked_ReturnsFailure()
     {
-        //arrange
+        //Arrange
         string email = $"{Guid.NewGuid()}@example.com";
 
         await TestUserDatabaseUtils.RegisterTempUserAsync(email, true);
@@ -59,20 +57,18 @@ public class AuthService_Test
             Password = MockDataConstants.TEMP_USER_PASSWORD
         };
 
-        //act
+        //Act
         UserManagerResponse actualResult = await _instance.LoginUserAsync(model);
 
-        //assert
-        Assert.That(!actualResult.IsSuccess);
-        Assert.That(actualResult.Message == UserManagerResponseMessages.BLOCKED_EMAIL);
-
-        await TestUserDatabaseUtils.CleanupDatabase(email);
+        //Assert
+        Assert.That(actualResult.IsSuccess, Is.False);
+        Assert.That(actualResult.Message, Is.EqualTo(UserManagerResponseMessages.BLOCKED_EMAIL));
     }
 
     [Test]
-    public async Task LoginUserAsync_WrongEmailTest()
+    public async Task LoginUserAsync_WrongEmail_ReturnsFailure()
     {
-        //arrange
+        //Arrange
         string email = $"{Guid.NewGuid()}@example.com";
 
         LoginDto model = new()
@@ -81,18 +77,18 @@ public class AuthService_Test
             Password = MockDataConstants.TEMP_USER_PASSWORD
         };
 
-        //act
+        //Act
         UserManagerResponse actualResult = await _instance.LoginUserAsync(model);
 
-        //assert
-        Assert.That(!actualResult.IsSuccess);
-        Assert.That(actualResult.Message == UserManagerResponseMessages.USER_DOES_NOT_EXIST);
+        //Assert
+        Assert.That(actualResult.IsSuccess, Is.False);
+        Assert.That(actualResult.Message, Is.EqualTo(UserManagerResponseMessages.USER_DOES_NOT_EXIST));
     }
 
     [Test]
-    public async Task LoginUserAsync_WrongPasswordTest()
+    public async Task LoginUserAsync_WrongPassword_ReturnsFailure()
     {
-        //arrange
+        //Arrange
         string email = $"{Guid.NewGuid()}@example.com";
 
         await TestUserDatabaseUtils.RegisterTempUserAsync(email, false);
@@ -103,46 +99,42 @@ public class AuthService_Test
             Password = MockDataConstants.TEMP_USER_PASSWORD + "wrong"
         };
 
-        //act
+        //Act
         UserManagerResponse actualResult = await _instance.LoginUserAsync(model);
 
-        //assert
-        Assert.That(!actualResult.IsSuccess);
-        Assert.That(actualResult.Message == UserManagerResponseMessages.INVALID_CREDENTIALS);
-
-        await TestUserDatabaseUtils.CleanupDatabase(email);
+        //Assert
+        Assert.That(actualResult.IsSuccess, Is.False);
+        Assert.That(actualResult.Message, Is.EqualTo(UserManagerResponseMessages.INVALID_CREDENTIALS));
     }
 
     [Test]
-    public async Task RegisterUserAsync_SuccessTest()
+    public async Task RegisterUserAsync_Success_ReturnsSuccess()
     {
-        //arrange
+        //Arrange
         string email = $"{Guid.NewGuid()}@example.com";
 
         RegisterDto registerDto = TestUserDatabaseUtils.GetRegisterDto(email, true);
 
-        //act
+        //Act
         UserManagerResponse response = await _instance.RegisterUserAsync(registerDto);
 
-        //assert
-        Assert.True(response.IsSuccess);
-
-        await TestUserDatabaseUtils.CleanupDatabase(email);
+        //Assert
+        Assert.That(response.IsSuccess, Is.True);
     }
 
     [Test]
-    public async Task RegisterUserAsync_PasswordDoesNotMatchTest()
+    public async Task RegisterUserAsync_PasswordDoesNotMatch_ReturnsFailure()
     {
-        //arrange
+        //Arrange
         string email = $"{Guid.NewGuid()}@example.com";
 
         RegisterDto registerDto = TestUserDatabaseUtils.GetRegisterDto(email, false);
 
-        //act
+        //Act
         UserManagerResponse response = await _instance.RegisterUserAsync(registerDto);
 
-        //assert
-        Assert.That(!response.IsSuccess);
-        Assert.That(response.Message == UserManagerResponseMessages.CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD);
+        //Assert
+        Assert.That(response.IsSuccess, Is.False);
+        Assert.That(response.Message, Is.EqualTo(UserManagerResponseMessages.CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD));
     }
 }

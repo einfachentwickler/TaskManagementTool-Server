@@ -9,76 +9,68 @@ using TaskManagementTool.Common.Constants;
 using TaskManagementTool.Common.Exceptions;
 using TaskManagementTool.DataAccess.Entities;
 
-namespace IntegrationTests.SqlServer.EfCore.Utils
+namespace IntegrationTests.SqlServer.EfCore.Utils;
+
+public static class TestUserDatabaseUtils
 {
-    public static class TestUserDatabaseUtils
+    public static async Task RegisterTempUserAsync(string email, bool isBlocked)
     {
-        public static async Task CleanupDatabase(string email)
+        User registerUser = new()
         {
-            User user = await TestStartup.UserManager.FindByEmailAsync(email);
+            Age = 14,
+            Email = email,
+            FirstName = "First name",
+            LastName = "Last name",
+            UserName = email,
+            Role = UserRoles.USER_ROLE,
+            IsBlocked = isBlocked
+        };
 
-            await TestStartup.UserManager.DeleteAsync(user);
-        }
+        IdentityResult result = await TestStartup.UserManager.CreateAsync(
+            registerUser,
+            MockDataConstants.TEMP_USER_PASSWORD
+            );
 
-        public static async Task RegisterTempUserAsync(string email, bool isBlocked)
+        if (!result.Succeeded)
         {
-            User registerUser = new()
+            string errors = string.Join("\n", result.Errors.Select(error => new
             {
-                Age = 14,
-                Email = email,
-                FirstName = "First name",
-                LastName = "Last name",
-                UserName = email,
-                Role = UserRoles.USER_ROLE,
-                IsBlocked = isBlocked
-            };
+                error.Code,
+                error.Description
+            }));
 
-            IdentityResult result = await TestStartup.UserManager.CreateAsync(
-                registerUser,
-                MockDataConstants.TEMP_USER_PASSWORD
-                );
-
-            if (!result.Succeeded)
-            {
-                string errors = string.Join("\n", result.Errors.Select(error => new
-                {
-                    error.Code,
-                    error.Description
-                }));
-
-                throw new TaskManagementToolException($"User was not created: {errors}");
-            }
+            throw new TaskManagementToolException($"User was not created: {errors}");
         }
+    }
 
-        public static async Task<UserDto> GetUserDtoAsync(string email)
+    public static async Task<UserDto> GetUserDtoAsync(string email)
+    {
+        User user = await TestStartup.UserManager.FindByEmailAsync(email);
+
+        UserDto userToReturn = TestStartup.Mapper.Map<User, UserDto>(user);
+
+        return userToReturn;
+    }
+
+    public static async Task<User> GetUserAsync(string email)
+    {
+        User user = await TestStartup.UserManager.FindByEmailAsync(email);
+
+        return user;
+    }
+
+    public static RegisterDto GetRegisterDto(string email, bool confirmPasswordMatchesPassword)
+    {
+        string confirmPassword = confirmPasswordMatchesPassword ? MockDataConstants.TEMP_USER_PASSWORD : "wrong";
+
+        return new RegisterDto
         {
-            User user = await TestStartup.UserManager.FindByEmailAsync(email);
-
-            UserDto userToReturn = TestStartup.Mapper.Map<User, UserDto>(user);
-
-            return userToReturn;
-        }
-
-        public static async Task<User> GetUserAsync(string email)
-        {
-            User user = await TestStartup.UserManager.FindByEmailAsync(email);
-
-            return user;
-        }
-
-        public static RegisterDto GetRegisterDto(string email, bool confirmPasswordMatchesPassword)
-        {
-            string confirmPassword = confirmPasswordMatchesPassword ? MockDataConstants.TEMP_USER_PASSWORD : "wrong";
-
-            return new RegisterDto
-            {
-                Age = 14,
-                Password = MockDataConstants.TEMP_USER_PASSWORD,
-                ConfirmPassword = confirmPassword,
-                Email = email,
-                FirstName = "First name",
-                LastName = "Last name"
-            };
-        }
+            Age = 14,
+            Password = MockDataConstants.TEMP_USER_PASSWORD,
+            ConfirmPassword = confirmPassword,
+            Email = email,
+            FirstName = "First name",
+            LastName = "Last name"
+        };
     }
 }

@@ -24,82 +24,86 @@ public class TodoService_Test
     }
 
     [Test]
-    public async Task GetAsync_Test()
+    public async Task GetAsync_ValidData_ReturnsTodos()
     {
+        //Arrange
         string expectedName = Guid.NewGuid().ToString();
 
         int id = await TestTodoDatabaseUtils.AddTempRecordAndReturnId(expectedName);
 
-        //act
+        //Act
         IEnumerable<TodoDto> actualResult = await _instance.GetAsync(SearchCriteriaEnum.GetAll);
 
-        Assert.That(actualResult.Any());
+        //Assert
+        Assert.That(actualResult, Is.Not.Empty);
 
         await TestTodoDatabaseUtils.CleanupDatabase(id);
     }
 
     [Test]
-    public async Task GetSingleAsync_CorrectIdTest()
+    public async Task GetSingleAsync_ValidData_ReturnsTodo()
     {
+        //Arrange
         string expectedName = Guid.NewGuid().ToString();
 
         int id = await TestTodoDatabaseUtils.AddTempRecordAndReturnId(expectedName);
 
+        //Act
         TodoDto actualResult = await _instance.FindByIdAsync(id);
 
-        Assert.That(actualResult is not null);
+        //Assert
+        Assert.That(actualResult, Is.Not.Null);
 
         await TestTodoDatabaseUtils.CleanupDatabase(id);
     }
 
-    [Test]
     [TestCase(9999)]
-    public void GetSingleAsync_WrongIdTest(int id)
+    public void GetSingleAsync_WrongId_Throws(int id)
     {
-        //assert && act
+        //Act && Assert
         Assert.ThrowsAsync<InvalidOperationException>(async () => await _instance.FindByIdAsync(id));
     }
 
     [Test]
-    public async Task AddAsync_Test()
+    public async Task AddAsync_Success_TodoIdAdded()
     {
-        //arrange
+        //Arrange
         string expectedName = Guid.NewGuid().ToString();
 
-        //act
+        //Act
         CreateTodoDto entity = TestTodoDatabaseUtils.GetCreateTodoDto(expectedName);
 
         await _instance.AddAsync(entity);
 
-        //assert
+        //Assert
         int id = (await _instance.GetAsync(SearchCriteriaEnum.GetAll)).Last().Id;
 
         TodoDto actualResult = await _instance.FindByIdAsync(id);
 
-        Assert.That(actualResult.Name == expectedName);
+        Assert.That(actualResult.Name, Is.EqualTo(expectedName));
 
         await TestTodoDatabaseUtils.CleanupDatabase(id);
     }
 
     [Test]
-    public async Task DeleteAsync_Test()
+    public async Task DeleteAsync_Success_TodoIsDeleted()
     {
-        //arrange
+        //Arrange
         string expectedName = Guid.NewGuid().ToString();
 
         int id = await TestTodoDatabaseUtils.AddTempRecordAndReturnId(expectedName);
 
-        //act
+        //Act
         await _instance.DeleteAsync(id);
 
-        //assert
+        //Assert
         Assert.ThrowsAsync<InvalidOperationException>(async () => await _instance.FindByIdAsync(id));
     }
 
     [Test]
-    public async Task UpdateAsync_Test()
+    public async Task UpdateAsync_Success_TodoIsUpdated()
     {
-        //arrange
+        //Arrange
         string updatedName = Guid.NewGuid().ToString();
         string updatedContent = Guid.NewGuid().ToString();
 
@@ -107,14 +111,14 @@ public class TodoService_Test
 
         UpdateTodoDto entityToUpdate = TestTodoDatabaseUtils.GetUpdateTodoDto(id, updatedName, updatedContent);
 
-        //act
+        //Act
         await _instance.UpdateAsync(entityToUpdate);
 
         TodoDto actualresult = await _instance.FindByIdAsync(id);
 
-        //assert
-        Assert.That(actualresult.Name == updatedName);
-        Assert.That(actualresult.Content == updatedContent);
+        //Assert
+        Assert.That(actualresult.Name, Is.EqualTo(updatedName));
+        Assert.That(actualresult.Content, Is.EqualTo(updatedContent));
 
         await TestTodoDatabaseUtils.CleanupDatabase(id);
     }

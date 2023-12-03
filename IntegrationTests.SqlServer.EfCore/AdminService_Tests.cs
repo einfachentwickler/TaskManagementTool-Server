@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Services;
 using TaskManagementTool.BusinessLogic.ViewModels;
@@ -24,23 +23,24 @@ public class AdminService_Tests
     }
 
     [Test]
-    public async Task GetUsers_SuccessTest()
+    public async Task GetUsers_Success_ReturnsUsers()
     {
+        //Arrange
         string email = $"{Guid.NewGuid()}@example.com";
 
         await TestUserDatabaseUtils.RegisterTempUserAsync(email, false);
 
+        //Act
         IEnumerable<UserDto> actualResult = await _instance.GetUsersAsync();
 
-        Assert.That(actualResult.Any());
-
-        await TestUserDatabaseUtils.CleanupDatabase(email);
+        //Assert
+        Assert.That(actualResult, Is.Not.Empty);
     }
 
     [Test]
-    public async Task GetUser_SuccessTest()
+    public async Task GetUser_Success_User()
     {
-        //arrange
+        //Arrange
         string email = $"{Guid.NewGuid()}@example.com";
         const bool isBlocked = false;
 
@@ -48,44 +48,38 @@ public class AdminService_Tests
 
         User user = await TestUserDatabaseUtils.GetUserAsync(email);
 
-        //act
+        //Act
         UserDto actualResult = await _instance.GetUserAsync(user.Id);
 
-        //assert
-        Assert.That(actualResult is not null);
-
-        Assert.That(actualResult.Email is not null);
-
-        await TestUserDatabaseUtils.CleanupDatabase(email);
+        //Assert
+        Assert.That(actualResult, Is.Not.Null);
+        Assert.That(actualResult.Email, Is.Not.Null);
     }
 
-    [Test]
     [TestCase(false)]
     [TestCase(true)]
-    public async Task BlockOrUnblockUserAsync_SuccessTest(bool isBlocked)
+    public async Task BlockOrUnblockUserAsync_Success_CheckIfBlocked(bool isBlocked)
     {
-        //arrange
+        //Arrange
         string email = $"{Guid.NewGuid()}@example.com";
 
         await TestUserDatabaseUtils.RegisterTempUserAsync(email, isBlocked);
 
-        //act
+        //Act
         User userBeforeUpdate = await TestUserDatabaseUtils.GetUserAsync(email);
 
         await _instance.BlockOrUnblockUserAsync(userBeforeUpdate.Id);
 
         User userAfterUpdate = await TestUserDatabaseUtils.GetUserAsync(email);
 
-        //assert
-        Assert.That(userAfterUpdate.IsBlocked != isBlocked);
-
-        await TestUserDatabaseUtils.CleanupDatabase(email);
+        //Assert
+        Assert.That(userAfterUpdate.IsBlocked, Is.Not.EqualTo(isBlocked));
     }
 
     [Test]
-    public async Task UpdateUserAsync_SuccessTest()
+    public async Task UpdateUserAsync_Success_ReturnsUpdatedUser()
     {
-        //arrange
+        //Arrange
         string email = $"{Guid.NewGuid()}@example.com";
         const bool isBlocked = false;
 
@@ -97,33 +91,30 @@ public class AdminService_Tests
 
         userToUpdate.FirstName = firstName;
 
-        //act
+        //Act
         await _instance.UpdateUserAsync(userToUpdate);
 
-        //assert
+        //Assert
         User userAfterUpdate = await TestUserDatabaseUtils.GetUserAsync(email);
 
-        Assert.That(userAfterUpdate is not null);
-
-        Assert.That(userAfterUpdate.FirstName == firstName);
-
-        await TestUserDatabaseUtils.CleanupDatabase(email);
+        Assert.That(userAfterUpdate, Is.Not.Null);
+        Assert.That(userAfterUpdate.FirstName, Is.EqualTo(firstName));
     }
 
     [Test]
-    public async Task DeleteUserAsync_SuccessTest()
+    public async Task DeleteUserAsync_Success_Deletes()
     {
-        //arrange
+        //Arrange
         string email = $"{Guid.NewGuid()}@example.com";
 
         await TestUserDatabaseUtils.RegisterTempUserAsync(email, false);
 
         User user = await TestUserDatabaseUtils.GetUserAsync(email);
 
-        //act
+        //Act
         await _instance.DeleteUserAsync(user.Id);
 
-        //assert
+        //Assert
         Assert.ThrowsAsync<InvalidOperationException>(async () => await _instance.GetUserAsync(user.Id));
     }
 }

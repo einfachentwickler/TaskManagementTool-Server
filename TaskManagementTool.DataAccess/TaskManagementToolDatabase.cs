@@ -5,8 +5,13 @@ using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.DataAccess;
 
-public class TaskManagementToolDatabase(DbContextOptions<TaskManagementToolDatabase> options) : IdentityDbContext<User>(options), ITaskManagementToolDatabase
+public class TaskManagementToolDatabase : IdentityDbContext<User>, ITaskManagementToolDatabase
 {
+    public TaskManagementToolDatabase(DbContextOptions<TaskManagementToolDatabase> options) : base(options)
+    {
+        Database.EnsureCreated();
+    }
+
     public DbSet<TodoEntry> Todos { get; set; }
 
     public DbContext DbContext => this;

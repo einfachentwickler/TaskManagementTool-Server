@@ -5,43 +5,40 @@ using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
 using TaskManagementTool.Common.Enums;
 using TaskManagementTool.DataAccess.Entities;
 
-namespace IntegrationTests.SqlServer.EfCore.Utils
+namespace IntegrationTests.SqlServer.EfCore.Utils;
+
+public static class TestTodoDatabaseUtils
 {
-    public static class TestTodoDatabaseUtils
+    public static async Task<int> AddTempRecordAndReturnId(string updatedName, string updatedContent = null)
     {
-        public static async Task<int> AddTempRecordAndReturnId(string updatedName, string updatedContent = null)
+        TodoEntry entity = new()
         {
-            TodoEntry entity = new()
-            {
-                Name = updatedName,
-                Content = updatedContent
-            };
+            Name = updatedName,
+            Content = updatedContent
+        };
 
-            await TestStartup.Repository.AddAsync(entity);
+        await TestStartup.Repository.AddAsync(entity);
 
-            int id = (await TestStartup.Repository.GetAsync(SearchCriteriaEnum.GetAll)).Last().Id;
+        return (await TestStartup.Repository.GetAsync(SearchCriteriaEnum.GetAll)).Last().Id;
+    }
 
-            return id;
-        }
+    public static async Task CleanupDatabase(int id) => await TestStartup.Repository.DeleteAsync(id);
 
-        public static async Task CleanupDatabase(int id) => await TestStartup.Repository.DeleteAsync(id);
-
-        public static CreateTodoDto GetCreateTodoDto(string expectedName)
+    public static CreateTodoDto GetCreateTodoDto(string expectedName)
+    {
+        return new CreateTodoDto
         {
-            return new CreateTodoDto
-            {
-                Name = expectedName
-            };
-        }
+            Name = expectedName
+        };
+    }
 
-        public static UpdateTodoDto GetUpdateTodoDto(int id, string updatedName, string updatedContent)
+    public static UpdateTodoDto GetUpdateTodoDto(int id, string updatedName, string updatedContent)
+    {
+        return new UpdateTodoDto
         {
-            return new UpdateTodoDto
-            {
-                Id = id,
-                Name = updatedName,
-                Content = updatedContent
-            };
-        }
+            Id = id,
+            Name = updatedName,
+            Content = updatedContent
+        };
     }
 }

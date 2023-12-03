@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagementTool.Common",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B8F63255-523D-4875-AC88-3D13C6B7C245}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests.SqlServer.EfCore", "IntegrationTests.SqlServer.EfCore\IntegrationTests.SqlServer.EfCore.csproj", "{B28650F4-6518-479A-9B1B-D8A972D193A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "IntegrationTests.SqlServer.EfCore\IntegrationTests.csproj", "{B28650F4-6518-479A-9B1B-D8A972D193A2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{E1F4B0D1-2DE8-460D-9624-ACC35AA6EB56}"
 EndProject
