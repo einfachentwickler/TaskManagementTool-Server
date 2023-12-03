@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
+using System.Net;
 using System.Threading.Tasks;
+using TaskManagementTool.BusinessLogic.Exceptions.Todo;
 
 namespace TaskManagementTool.Host.Middleware;
 
@@ -18,11 +20,17 @@ public class ExceptionMiddleware(RequestDelegate next)
         {
             context.Response.StatusCode = exception.GetType().Name switch
             {
-                nameof(NotImplementedException) => 501,
+                nameof(NotImplementedException) => (int)HttpStatusCode.NotImplemented,
+                nameof(TodoNotFoundException) => (int)HttpStatusCode.BadRequest,
                 _ => 500
             };
 
-            await context.Response.WriteAsync("Internal server error");
+            await context.Response.WriteAsync(exception switch
+            {
+                NotImplementedException => "Internal server error",
+                TodoNotFoundException => TodoNotFoundException.ErrorCode.ToString(),
+                _ => ""
+            });
         }
     }
 }

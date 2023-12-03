@@ -51,15 +51,13 @@ namespace TaskManagementTool.DataAccess.Repositories
             return todos;
         }
 
-        public async Task<TodoEntry> FirstAsync(int id)
+        public async Task<TodoEntry> FirstOrDefaultAsync(int id)
         {
             await using ITaskManagementToolDatabase db = _factory.Create();
 
-            TodoEntry item = await db.Todos
+            return await db.Todos
                 .Include(todo => todo.Creator)
-                .FirstAsync(todo => todo.Id == id);
-
-            return item;
+                .FirstOrDefaultAsync(todo => todo.Id == id);
         }
 
         public async Task AddAsync(TodoEntry item)

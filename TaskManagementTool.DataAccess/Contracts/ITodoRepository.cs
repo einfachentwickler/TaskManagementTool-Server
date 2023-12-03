@@ -9,7 +9,7 @@ namespace TaskManagementTool.DataAccess.Contracts
     {
         public Task<IEnumerable<TodoEntry>> GetAsync(SearchCriteriaEnum searchCriteria, string userId = null);
 
-        public Task<TodoEntry> FirstAsync(int id);
+        public Task<TodoEntry> FirstOrDefaultAsync(int id);
 
         public Task AddAsync(TodoEntry item);
 

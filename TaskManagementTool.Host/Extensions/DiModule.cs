@@ -12,14 +12,14 @@ public static class DiModule
 {
     public static void RegisterDependencies(this IServiceCollection services)
     {
-        services.AddTransient<ITodoRepository, TodoRepository>();
-        services.AddTransient<ITodoHandler, TodoHandler>();
+        services.AddScoped<ITodoRepository, TodoRepository>();
+        services.AddScoped<ITodoHandler, TodoHandler>();
 
-        services.AddTransient<IAdminHandler, AdminHandler>();
-        services.AddTransient<IAuthHandler, AuthHandler>();
+        services.AddScoped<IAdminHandler, AdminHandler>();
+        services.AddScoped<IAuthHandler, AuthHandler>();
 
-        services.AddTransient<IDatabaseFactory, DatabaseFactory>();
+        services.AddScoped<IDatabaseFactory, DatabaseFactory>();
 
-        services.AddTransient<IAuthUtils, AuthUtils>();
+        services.AddScoped<IAuthUtils, AuthUtils>();
     }
 }

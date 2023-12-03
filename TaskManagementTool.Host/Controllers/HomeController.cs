@@ -89,13 +89,6 @@ public class HomeController(ITodoHandler service, IHttpContextAccessor httpConte
     [SwaggerResponse((int)HttpStatusCode.Forbidden)]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        TodoDto model = await _todoService.FindByIdAsync(id);
-
-        if (model is null)
-        {
-            return NotFound(id);
-        }
-
         if (!await _authUtils.IsAllowedAction(_httpContextAccessor.HttpContext, id))
         {
             return Forbid();

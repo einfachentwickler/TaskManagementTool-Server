@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TaskManagementTool.BusinessLogic.Exceptions.Todo;
 using TaskManagementTool.BusinessLogic.Interfaces;
+using TaskManagementTool.BusinessLogic.Services.Utils;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
 using TaskManagementTool.Common.Enums;
@@ -25,7 +27,7 @@ public class TodoHandler(IMapper mapper, ITodoRepository todoRepository) : ITodo
 
     public async Task<TodoDto> FindByIdAsync(int id)
     {
-        TodoEntry todoEntry = await _todoRepository.FirstAsync(id);
+        TodoEntry todoEntry = await _todoRepository.FirstOrDefaultAsync(id);
 
         return _mapper.Map<TodoEntry, TodoDto>(todoEntry);
     }
@@ -39,7 +41,7 @@ public class TodoHandler(IMapper mapper, ITodoRepository todoRepository) : ITodo
 
     public async Task UpdateAsync(UpdateTodoDto todo)
     {
-        TodoEntry item = await _todoRepository.FirstAsync(todo.Id);
+        TodoEntry item = await _todoRepository.FirstOrDefaultAsync(todo.Id);
 
         item.Name = todo.Name;
         item.IsCompleted = todo.IsCompleted;
@@ -49,5 +51,10 @@ public class TodoHandler(IMapper mapper, ITodoRepository todoRepository) : ITodo
         await _todoRepository.UpdateAsync(item);
     }
 
-    public async Task DeleteAsync(int id) => await _todoRepository.DeleteAsync(id);
+    public async Task DeleteAsync(int id)
+    {
+        TodoEntry entity = await _todoRepository.FirstOrDefaultAsync(id) ?? throw new TodoNotFoundException();
+
+        await _todoRepository.DeleteAsync(id);
+    }
 }
