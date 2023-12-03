@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.ViewModels;
@@ -18,6 +20,8 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler adminServi
     private readonly ITodoHandler _todoHandler = adminService;
 
     [HttpGet("users")]
+    [SwaggerResponse((int)HttpStatusCode.OK)]
+    [Consumes("application/json")]
     public async Task<IActionResult> GetUsers()
     {
         IEnumerable<UserDto> users = await _adminHandler.GetUsersAsync();
@@ -25,7 +29,8 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler adminServi
     }
 
     [HttpPost("reverse-status/{id}")]
-    public async Task<IActionResult> ReverseStatus(string id)
+    [SwaggerResponse((int)HttpStatusCode.NoContent)]
+    public async Task<IActionResult> ReverseStatus([FromRoute] string id)
     {
         UserDto user = await _adminHandler.GetUserAsync(id);
 
@@ -35,11 +40,13 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler adminServi
         }
 
         await _adminHandler.BlockOrUnblockUserAsync(id);
-        return Ok(user);
+        return NoContent();
     }
 
     [HttpDelete("users/{id}")]
-    public async Task<IActionResult> DeleteUser(string id)
+    [SwaggerResponse((int)HttpStatusCode.NoContent)]
+    [SwaggerResponse((int)HttpStatusCode.NotFound)]
+    public async Task<IActionResult> DeleteUser([FromRoute] string id)
     {
         if (await _adminHandler.GetUserAsync(id) is null)
         {
@@ -50,6 +57,8 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler adminServi
     }
 
     [HttpGet("todos")]
+    [Produces("application/json")]
+    [SwaggerResponse((int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetTodos()
     {
         IEnumerable<TodoDto> todos = await _todoHandler.GetAsync(SearchCriteriaEnum.GetAll);
@@ -57,13 +66,14 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler adminServi
     }
 
     [HttpDelete("todos/{id:int}")]
-    public async Task<IActionResult> DeleteUser(int id)
+    [SwaggerResponse((int)HttpStatusCode.NoContent)]
+    public async Task<IActionResult> DeleteUser([FromRoute] int id)
     {
         if (await _todoHandler.FindByIdAsync(id) is null)
         {
             return NotFound(id);
         }
         await _todoHandler.DeleteAsync(id);
-        return Ok(id);
+        return NoContent();
     }
 }

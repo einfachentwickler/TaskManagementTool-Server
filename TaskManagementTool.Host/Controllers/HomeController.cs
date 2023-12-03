@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.Services.Utils;
@@ -24,6 +26,8 @@ public class HomeController(ITodoHandler service, IHttpContextAccessor httpConte
     private readonly IAuthUtils _authUtils = utils;
 
     [HttpGet]
+    [Produces("application/json")]
+    [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(IEnumerable<TodoDto>))]
     public async Task<IActionResult> GetAll()
     {
         string userId = _authUtils.GetUserId(_httpContextAccessor.HttpContext);
@@ -34,12 +38,17 @@ public class HomeController(ITodoHandler service, IHttpContextAccessor httpConte
     }
 
     [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id)
+    [Produces("application/json")]
+    [Consumes("application/json")]
+    [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(TodoDto))]
+    [SwaggerResponse((int)HttpStatusCode.NotFound)]
+    [SwaggerResponse((int)HttpStatusCode.Forbidden)]
+    public async Task<IActionResult> GetById([FromRoute] int id)
     {
         TodoDto todo = await _todoService.FindByIdAsync(id);
         if (todo is null)
         {
-            return NotFound(id);
+            return NotFound();
         }
 
         if (!await _authUtils.IsAllowedAction(_httpContextAccessor.HttpContext, id))
@@ -51,15 +60,20 @@ public class HomeController(ITodoHandler service, IHttpContextAccessor httpConte
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add(CreateTodoDto model)
+    [Consumes("application/json")]
+    [SwaggerResponse((int)HttpStatusCode.Created)]
+    public async Task<IActionResult> Add([FromBody] CreateTodoDto model)
     {
         model.CreatorId = _authUtils.GetUserId(_httpContextAccessor.HttpContext);
         await _todoService.AddAsync(model);
-        return Ok(model);
+        return Created();
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update(UpdateTodoDto model)
+    [SwaggerResponse((int)HttpStatusCode.NoContent)]
+    [SwaggerResponse((int)HttpStatusCode.Forbidden)]
+    [Consumes("application/json")]
+    public async Task<IActionResult> Update([FromBody] UpdateTodoDto model)
     {
         if (!await _authUtils.IsAllowedAction(_httpContextAccessor.HttpContext, model.Id))
         {
@@ -70,7 +84,10 @@ public class HomeController(ITodoHandler service, IHttpContextAccessor httpConte
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id)
+    [SwaggerResponse((int)HttpStatusCode.NoContent)]
+    [SwaggerResponse((int)HttpStatusCode.NotFound)]
+    [SwaggerResponse((int)HttpStatusCode.Forbidden)]
+    public async Task<IActionResult> Delete([FromRoute] int id)
     {
         TodoDto model = await _todoService.FindByIdAsync(id);
 
@@ -85,6 +102,6 @@ public class HomeController(ITodoHandler service, IHttpContextAccessor httpConte
         }
 
         await _todoService.DeleteAsync(id);
-        return Ok(model);
+        return NoContent();
     }
 }
