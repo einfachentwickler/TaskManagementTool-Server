@@ -1,4 +1,4 @@
-﻿namespace TaskManagementTool.Host.Configuration.Constants;
+﻿namespace TaskManagementTool.Host.Constants;
 
 public static class CorsPolicyNameConstants
 {

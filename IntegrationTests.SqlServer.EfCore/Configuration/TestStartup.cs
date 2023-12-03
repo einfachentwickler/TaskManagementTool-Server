@@ -12,7 +12,7 @@ using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.DataAccess.Factories;
 using TaskManagementTool.DataAccess.Repositories;
-using TaskManagementTool.Host.Configuration.Profiles;
+using TaskManagementTool.Host.Profiles;
 
 namespace IntegrationTests.SqlServer.EfCore.Configuration;
 

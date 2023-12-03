@@ -2,7 +2,7 @@
 using TaskManagementTool.Common.Constants;
 using TaskManagementTool.Common.Exceptions;
 
-namespace TaskManagementTool.Host.Configuration.Entities;
+namespace TaskManagementTool.Common.Configuration;
 
 public class AuthSettings(IConfiguration configuration)
 {

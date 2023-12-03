@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using TaskManagementTool.Host.Configuration.Constants;
-using TaskManagementTool.Host.Configuration.Entities;
-using TaskManagementTool.Host.Configuration.Profiles;
+using TaskManagementTool.Common.Configuration;
+using TaskManagementTool.Host.Constants;
 using TaskManagementTool.Host.Extensions;
 using TaskManagementTool.Host.Middleware;
+using TaskManagementTool.Host.Profiles;
 
 namespace TaskManagementTool.Host
 {

@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using TaskManagementTool.Common.Configuration;
 using TaskManagementTool.DataAccess;
 using TaskManagementTool.DataAccess.Entities;
-using TaskManagementTool.Host.Configuration.Constants;
-using TaskManagementTool.Host.Configuration.Entities;
+using TaskManagementTool.Host.Constants;
 
 namespace TaskManagementTool.Host.Extensions;
 

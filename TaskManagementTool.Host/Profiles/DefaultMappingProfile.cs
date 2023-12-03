@@ -4,7 +4,7 @@ using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
 using TaskManagementTool.DataAccess.Entities;
 
-namespace TaskManagementTool.Host.Configuration.Profiles;
+namespace TaskManagementTool.Host.Profiles;
 
 public class DefaultMappingProfile : Profile
 {
