@@ -46,10 +46,6 @@ public class HomeController(ITodoHandler service, IHttpContextAccessor httpConte
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
         TodoDto todo = await _todoService.FindByIdAsync(id);
-        if (todo is null)
-        {
-            return NotFound();
-        }
 
         if (!await _authUtils.IsAllowedAction(_httpContextAccessor.HttpContext, id))
         {

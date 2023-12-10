@@ -2,7 +2,7 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using TaskManagementTool.BusinessLogic.Exceptions.Todo;
+using TaskManagementTool.Common.Exceptions;
 
 namespace TaskManagementTool.Host.Middleware;
 
@@ -21,15 +21,21 @@ public class ExceptionMiddleware(RequestDelegate next)
             context.Response.StatusCode = exception.GetType().Name switch
             {
                 nameof(NotImplementedException) => (int)HttpStatusCode.NotImplemented,
+
                 nameof(TodoNotFoundException) => (int)HttpStatusCode.BadRequest,
+
+                nameof(UserNotFoundExpection) => (int)HttpStatusCode.BadRequest,
+
                 _ => 500
             };
 
             await context.Response.WriteAsync(exception switch
             {
-                NotImplementedException => "Internal server error",
                 TodoNotFoundException => TodoNotFoundException.ErrorCode.ToString(),
-                _ => ""
+
+                UserNotFoundExpection => UserNotFoundExpection.ErrorCode.ToString(),
+
+                _ => "Internal server error"
             });
         }
     }

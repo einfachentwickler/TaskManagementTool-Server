@@ -30,28 +30,18 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler adminServi
 
     [HttpPost("reverse-status/{id}")]
     [SwaggerResponse((int)HttpStatusCode.NoContent)]
+    [SwaggerResponse((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> ReverseStatus([FromRoute] string id)
     {
-        UserDto user = await _adminHandler.GetUserAsync(id);
-
-        if (user is null)
-        {
-            return NotFound(id);
-        }
-
         await _adminHandler.BlockOrUnblockUserAsync(id);
         return NoContent();
     }
 
     [HttpDelete("users/{id}")]
     [SwaggerResponse((int)HttpStatusCode.NoContent)]
-    [SwaggerResponse((int)HttpStatusCode.NotFound)]
+    [SwaggerResponse((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> DeleteUser([FromRoute] string id)
     {
-        if (await _adminHandler.GetUserAsync(id) is null)
-        {
-            return NotFound(id);
-        }
         await _adminHandler.DeleteUserAsync(id);
         return NoContent();
     }
@@ -67,12 +57,9 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler adminServi
 
     [HttpDelete("todos/{id:int}")]
     [SwaggerResponse((int)HttpStatusCode.NoContent)]
+    [SwaggerResponse((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> DeleteUser([FromRoute] int id)
     {
-        if (await _todoHandler.FindByIdAsync(id) is null)
-        {
-            return NotFound(id);
-        }
         await _todoHandler.DeleteAsync(id);
         return NoContent();
     }

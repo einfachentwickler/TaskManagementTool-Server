@@ -30,9 +30,9 @@ namespace TaskManagementTool.BusinessLogic.Services
 
         public async Task<UserDto> GetUserAsync(string id)
         {
-            User singleUser = await _userManager.Users.FirstAsync(user => user.Id == id);
+            User user = await _userManager.Users.FirstOrDefaultAsync(user => user.Id == id);
 
-            return _mapper.Map<User, UserDto>(singleUser);
+            return user is null ? throw new UserNotFoundExpection() : _mapper.Map<User, UserDto>(user);
         }
 
         public async Task UpdateUserAsync(UserDto user)
@@ -59,9 +59,9 @@ namespace TaskManagementTool.BusinessLogic.Services
 
         public async Task DeleteUserAsync(string id)
         {
-            await DeleteUsersTodos(id);
+            User user = await _userManager.Users.FirstAsync(usr => usr.Id == id) ?? throw new UserNotFoundExpection();
 
-            User user = await _userManager.Users.FirstAsync(usr => usr.Id == id);
+            await DeleteUsersTodos(id);
 
             IdentityResult identityResult = await _userManager.DeleteAsync(user);
             if (!identityResult.Succeeded)

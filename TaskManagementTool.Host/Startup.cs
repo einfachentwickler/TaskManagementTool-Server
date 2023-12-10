@@ -44,8 +44,6 @@ namespace TaskManagementTool.Host
                 options.SwaggerEndpoint(SwaggerSetupConstants.URL, SwaggerSetupConstants.APPLICATION_NAME);
             }
 
-            static void ConfigureEndpoints(IEndpointRouteBuilder builder) => builder.MapControllers();
-
             app.UseSwagger();
 
             app.UseSwaggerUI(ConfigureSwagger);
@@ -59,7 +57,7 @@ namespace TaskManagementTool.Host
             app.UseRouting();
             app.UseAuthorization();
 
-            app.UseEndpoints(ConfigureEndpoints);
+            app.UseEndpoints(builder => builder.MapControllers());
         }
     }
 }
