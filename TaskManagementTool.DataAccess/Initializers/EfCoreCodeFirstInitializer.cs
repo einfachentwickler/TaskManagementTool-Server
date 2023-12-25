@@ -15,6 +15,7 @@ namespace TaskManagementTool.DataAccess.Initializers
             IConfiguration configuration
             )
         {
+#warning TODO move to config
             const string password = "password";
 
             User admin = new()
