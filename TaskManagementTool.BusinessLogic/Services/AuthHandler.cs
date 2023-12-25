@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -12,20 +13,15 @@ using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
 using TaskManagementTool.Common.Constants;
-using TaskManagementTool.Common.Exceptions;
 using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.BusinessLogic.Services;
 
-public class AuthHandler(UserManager<User> managerPar, IConfiguration configuration) : IAuthHandler
+public class AuthHandler(UserManager<User> userManager, IConfiguration configuration, IValidator<RegisterDto> validator) : IAuthHandler
 {
-    private readonly UserManager<User> _userManager = managerPar;
-
-    private readonly IConfiguration _configuration = configuration;
-
     public async Task<UserManagerResponse> LoginUserAsync(LoginDto model)
     {
-        User user = await _userManager.FindByEmailAsync(model.Email);
+        User user = await userManager.FindByEmailAsync(model.Email);
 
         if (user is null)
         {
@@ -45,7 +41,7 @@ public class AuthHandler(UserManager<User> managerPar, IConfiguration configurat
             };
         }
 
-        bool isValid = await _userManager.CheckPasswordAsync(user, model.Password);
+        bool isValid = await userManager.CheckPasswordAsync(user, model.Password);
         if (!isValid)
         {
             return new UserManagerResponse
@@ -67,11 +63,6 @@ public class AuthHandler(UserManager<User> managerPar, IConfiguration configurat
 
     public async Task<UserManagerResponse> RegisterUserAsync(RegisterDto model)
     {
-        if (model is null)
-        {
-            throw new TaskManagementToolException("Register model is null");
-        }
-
         if (model.Password != model.ConfirmPassword)
         {
             return new UserManagerResponse
@@ -90,7 +81,7 @@ public class AuthHandler(UserManager<User> managerPar, IConfiguration configurat
             Role = UserRoles.USER_ROLE
         };
 
-        IdentityResult result = await _userManager.CreateAsync(identityUser, model.Password);
+        IdentityResult result = await userManager.CreateAsync(identityUser, model.Password);
 
         if (result.Succeeded)
         {
@@ -117,15 +108,15 @@ public class AuthHandler(UserManager<User> managerPar, IConfiguration configurat
             new("role", user.Role)
         ];
 
-        byte[] authKey = Encoding.UTF8.GetBytes(_configuration["AuthSettings:Key"]);
+        byte[] authKey = Encoding.UTF8.GetBytes(configuration["AuthSettings:Key"]);
 
         SymmetricSecurityKey key = new(authKey);
 
         JwtSecurityToken token = new(
-             _configuration["AuthSettings:Issuer"],
-             _configuration["AuthSettings:Audience"],
+             configuration["AuthSettings:Issuer"],
+             configuration["AuthSettings:Audience"],
             claims,
-            expires: DateTime.Now.AddDays(30),
+            expires: DateTime.UtcNow.AddDays(30),
             signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
         );
 

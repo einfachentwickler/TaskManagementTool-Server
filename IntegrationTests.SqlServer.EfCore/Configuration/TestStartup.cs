@@ -7,12 +7,12 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
+using TaskManagementTool.BusinessLogic.MappingProfiles;
 using TaskManagementTool.DataAccess;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.DataAccess.Factories;
 using TaskManagementTool.DataAccess.Repositories;
-using TaskManagementTool.Host.Profiles;
 
 namespace IntegrationTests.SqlServer.EfCore.Configuration;
 

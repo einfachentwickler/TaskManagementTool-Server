@@ -15,9 +15,6 @@ public static class DiModule
         services.AddScoped<ITodoRepository, TodoRepository>();
         services.AddScoped<ITodoHandler, TodoHandler>();
 
-        services.AddScoped<IAdminHandler, AdminHandler>();
-        services.AddScoped<IAuthHandler, AuthHandler>();
-
         services.AddScoped<IDatabaseFactory, DatabaseFactory>();
 
         services.AddScoped<IAuthUtils, AuthUtils>();

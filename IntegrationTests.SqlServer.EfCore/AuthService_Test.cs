@@ -19,7 +19,7 @@ public class AuthService_Test
     [SetUp]
     public void Setup()
     {
-        _instance = new AuthHandler(TestStartup.UserManager, TestStartup.Configuration);
+        _instance = new AuthHandler(TestStartup.UserManager, TestStartup.Configuration, null);
     }
 
     [Test]
