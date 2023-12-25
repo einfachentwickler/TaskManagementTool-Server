@@ -16,14 +16,12 @@ namespace TaskManagementTool.Host.Controllers;
 [Produces("application/json")]
 public class AuthController(IAuthHandler service) : ControllerBase
 {
-    private readonly IAuthHandler _userService = service;
-
     [HttpPost("register")]
     [SwaggerResponse((int)HttpStatusCode.OK)]
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> RegisterAsync([FromBody] RegisterDto model)
+    public async Task<IActionResult> Register([FromBody] RegisterDto model)
     {
-        UserManagerResponse result = await _userService.RegisterUserAsync(model);
+        UserManagerResponse result = await service.RegisterUserAsync(model);
 
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
@@ -31,9 +29,9 @@ public class AuthController(IAuthHandler service) : ControllerBase
     [HttpPost("login")]
     [SwaggerResponse((int)HttpStatusCode.OK)]
     [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
-    public async Task<IActionResult> LoginAsync([FromBody] LoginDto model)
+    public async Task<IActionResult> Login([FromBody] LoginDto model)
     {
-        UserManagerResponse result = await _userService.LoginUserAsync(model);
+        UserManagerResponse result = await service.LoginUserAsync(model);
 
         return result.IsSuccess ? Ok(result) : Unauthorized(result);
     }

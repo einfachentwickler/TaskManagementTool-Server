@@ -12,20 +12,18 @@ namespace TaskManagementTool.Host;
 
 public class Startup(IConfiguration configuration)
 {
-    public IConfiguration Configuration { get; } = configuration;
-
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
 
         services.ConfigureCors();
 
-        services.ConfigureSqlContext(new DatabaseConfigurationOptions(Configuration));
+        services.ConfigureSqlContext(new DatabaseConfigurationOptions(configuration));
 
         services.ConfigureIdentity(
-            new IdentityConfigurationOptions(Configuration),
-            new TokenValidationOptions(Configuration),
-            new AuthSettings(Configuration)
+            new IdentityConfigurationOptions(configuration),
+            new TokenValidationOptions(configuration),
+            new AuthSettings(configuration)
             );
 
         services.RegisterDependencies();
