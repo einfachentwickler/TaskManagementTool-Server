@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using TaskManagementTool.BusinessLogic.Handlers;
 using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.MappingProfiles;
-using TaskManagementTool.BusinessLogic.Services;
 using TaskManagementTool.BusinessLogic.Validation;
 using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
 

@@ -5,8 +5,8 @@ using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using TaskManagementTool.BusinessLogic.Handlers.Utils;
 using TaskManagementTool.BusinessLogic.Interfaces;
-using TaskManagementTool.BusinessLogic.Services.Utils;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
 using TaskManagementTool.Common.Enums;
@@ -17,23 +17,17 @@ namespace TaskManagementTool.Host.Controllers;
 [Route("api/home")]
 [ApiController, Authorize]
 [ModelStateFilter]
-public class HomeController(ITodoHandler service, IHttpContextAccessor httpContextAccessor, IAuthUtils utils) : ControllerBase
+public class HomeController(ITodoHandler todoHandler, IHttpContextAccessor httpContextAccessor, IAuthUtils authUtils) : ControllerBase
 {
-    private readonly ITodoHandler _todoService = service;
-
-    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-
-    private readonly IAuthUtils _authUtils = utils;
-
     [HttpGet]
     [Produces("application/json")]
     [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(IEnumerable<TodoDto>))]
 #warning Add paging
     public async Task<IActionResult> GetAll()
     {
-        string userId = _authUtils.GetUserId(_httpContextAccessor.HttpContext);
+        string userId = authUtils.GetUserId(httpContextAccessor.HttpContext);
 
-        IEnumerable<TodoDto> messages = await _todoService.GetAsync(SearchCriteriaEnum.GetById, userId);
+        IEnumerable<TodoDto> messages = await todoHandler.GetAsync(SearchCriteriaEnum.GetById, userId);
 
         return Ok(messages);
     }
@@ -46,9 +40,9 @@ public class HomeController(ITodoHandler service, IHttpContextAccessor httpConte
     [SwaggerResponse((int)HttpStatusCode.Forbidden)]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
-        TodoDto todo = await _todoService.FindByIdAsync(id);
+        TodoDto todo = await todoHandler.FindByIdAsync(id);
 
-        if (!await _authUtils.IsAllowedAction(_httpContextAccessor.HttpContext, id))
+        if (!await authUtils.IsAllowedAction(httpContextAccessor.HttpContext, id))
         {
             return Forbid();
         }
@@ -61,8 +55,8 @@ public class HomeController(ITodoHandler service, IHttpContextAccessor httpConte
     [SwaggerResponse((int)HttpStatusCode.Created)]
     public async Task<IActionResult> Create([FromBody] CreateTodoDto model)
     {
-        model.CreatorId = _authUtils.GetUserId(_httpContextAccessor.HttpContext);
-        return Ok(await _todoService.CreateAsync(model));
+        model.CreatorId = authUtils.GetUserId(httpContextAccessor.HttpContext);
+        return Ok(await todoHandler.CreateAsync(model));
     }
 
     [HttpPut]
@@ -71,11 +65,11 @@ public class HomeController(ITodoHandler service, IHttpContextAccessor httpConte
     [Consumes("application/json")]
     public async Task<IActionResult> Update([FromBody] UpdateTodoDto model)
     {
-        if (!await _authUtils.IsAllowedAction(_httpContextAccessor.HttpContext, model.Id))
+        if (!await authUtils.IsAllowedAction(httpContextAccessor.HttpContext, model.Id))
         {
             return Forbid();
         }
-        await _todoService.UpdateAsync(model);
+        await todoHandler.UpdateAsync(model);
         return NoContent();
     }
 
@@ -85,12 +79,12 @@ public class HomeController(ITodoHandler service, IHttpContextAccessor httpConte
     [SwaggerResponse((int)HttpStatusCode.Forbidden)]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        if (!await _authUtils.IsAllowedAction(_httpContextAccessor.HttpContext, id))
+        if (!await authUtils.IsAllowedAction(httpContextAccessor.HttpContext, id))
         {
             return Forbid();
         }
 
-        await _todoService.DeleteAsync(id);
+        await todoHandler.DeleteAsync(id);
         return NoContent();
     }
 }

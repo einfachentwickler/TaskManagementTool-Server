@@ -15,9 +15,9 @@ using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
 using TaskManagementTool.Common.Constants;
 using TaskManagementTool.DataAccess.Entities;
 
-namespace TaskManagementTool.BusinessLogic.Services;
+namespace TaskManagementTool.BusinessLogic.Handlers;
 
-public class AuthHandler(UserManager<User> userManager, IConfiguration configuration, IValidator<RegisterDto> validator) : IAuthHandler
+public class AuthHandler(UserManager<User> userManager, IConfiguration configuration) : IAuthHandler
 {
     public async Task<UserManagerResponse> LoginUserAsync(LoginDto model)
     {

@@ -13,18 +13,14 @@ namespace TaskManagementTool.Host.Controllers;
 [Route("api/admin/")]
 [ApiController]
 [Authorize(Roles = "Admin")]
-public class AdminController(IAdminHandler adminHandler, ITodoHandler adminService) : ControllerBase
+public class AdminController(IAdminHandler adminHandler, ITodoHandler todoHandler) : ControllerBase
 {
-    private readonly IAdminHandler _adminHandler = adminHandler;
-
-    private readonly ITodoHandler _todoHandler = adminService;
-
     [HttpGet("users")]
     [SwaggerResponse((int)HttpStatusCode.OK)]
     [Consumes("application/json")]
     public async Task<IActionResult> GetUsers()
     {
-        IEnumerable<UserDto> users = await _adminHandler.GetUsersAsync();
+        IEnumerable<UserDto> users = await adminHandler.GetUsersAsync();
         return Ok(users);
     }
 
@@ -33,7 +29,7 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler adminServi
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> ReverseStatus([FromRoute] string id)
     {
-        await _adminHandler.BlockOrUnblockUserAsync(id);
+        await adminHandler.BlockOrUnblockUserAsync(id);
         return NoContent();
     }
 
@@ -42,7 +38,7 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler adminServi
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> DeleteUser([FromRoute] string id)
     {
-        await _adminHandler.DeleteUserAsync(id);
+        await adminHandler.DeleteUserAsync(id);
         return NoContent();
     }
 
@@ -51,7 +47,7 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler adminServi
     [SwaggerResponse((int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetTodos()
     {
-        IEnumerable<TodoDto> todos = await _todoHandler.GetAsync(SearchCriteriaEnum.GetAll);
+        IEnumerable<TodoDto> todos = await todoHandler.GetAsync(SearchCriteriaEnum.GetAll);
         return Ok(todos);
     }
 
@@ -60,7 +56,7 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler adminServi
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> DeleteUser([FromRoute] int id)
     {
-        await _todoHandler.DeleteAsync(id);
+        await todoHandler.DeleteAsync(id);
         return NoContent();
     }
 }
