@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using TaskManagementTool.DataAccess;
+using TaskManagementTool.DataAccess.DatabaseContext;
 using TaskManagementTool.Host;
 
 namespace IntegrationTests;

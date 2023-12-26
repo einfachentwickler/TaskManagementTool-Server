@@ -1,49 +1,71 @@
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using NLog.Web;
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using TaskManagementTool.BusinessLogic;
+using TaskManagementTool.Common.Configuration;
 using TaskManagementTool.DataAccess;
+using TaskManagementTool.DataAccess.DatabaseContext;
 using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.DataAccess.Initializers;
+using TaskManagementTool.Host.Constants;
+using TaskManagementTool.Host.Middleware;
 
 namespace TaskManagementTool.Host;
 
-[SuppressMessage("Roslynator", "RCS1102:Make class static", Justification = "<Pending>")]
+[SuppressMessage("Roslynator", "RCS1102:Make class static", Justification = "Used in integration tests")]
 public class Program
 {
     public static async Task Main(string[] args)
     {
-        IHost host = CreateHostBuilder(args).Build();
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-        using IServiceScope scope = host.Services.CreateScope();
+        builder.Services.AddControllers();
 
-        IServiceProvider services = scope.ServiceProvider;
-        IConfiguration configuration = services.GetRequiredService<IConfiguration>();
+        builder.Services.ConfigureCors();
 
-        UserManager<User> userManager = services.GetRequiredService<UserManager<User>>();
-        RoleManager<IdentityRole> rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-        TaskManagementToolDatabase context = services.GetRequiredService<TaskManagementToolDatabase>();
+        builder.Services.ConfigureDataAccess(new DatabaseConfigurationOptions(builder.Configuration));
+
+        builder.Services.ConfigureIdentity(
+            new IdentityConfigurationOptions(builder.Configuration),
+            new TokenValidationOptions(builder.Configuration),
+            new AuthSettings(builder.Configuration)
+            );
+
+        builder.Services.RegisterDependencies();
+
+        builder.Services.ConfigureBll();
+
+        builder.Services.AddSwaggerGen();
+
+        WebApplication app = builder.Build();
+
+        using IServiceScope scope = app.Services.CreateScope();
+
+        app.UseSwagger();
+
+        app.UseSwaggerUI(options => options.SwaggerEndpoint(SwaggerSetupConstants.URL, SwaggerSetupConstants.APPLICATION_NAME));
+
+        app.UseMiddleware<ExceptionMiddleware>();
+
+        app.UseHttpsRedirection();
+        app.UseCors(CorsPolicyNameConstants.DEFAULT_POLICY_NAME);
+
+        app.UseAuthentication();
+        app.UseRouting();
+        app.UseAuthorization();
+        app.MapControllers();
+
+        UserManager<User> userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        RoleManager<IdentityRole> rolesManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        TaskManagementToolDatabase context = scope.ServiceProvider.GetRequiredService<TaskManagementToolDatabase>();
 
         if (!await context.Database.EnsureCreatedAsync())
         {
-            await EfCoreCodeFirstInitializer.InitializeAsync(context, userManager, rolesManager, configuration);
+            await EfCoreCodeFirstInitializer.InitializeAsync(context, userManager, rolesManager, builder.Configuration);
         }
 
-        await host.RunAsync();
+        await app.RunAsync();
     }
-
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Microsoft.Extensions.Hosting.Host
-            .CreateDefaultBuilder(args)
-            .UseNLog()
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder
-                    .UseStartup<Startup>();
-            });
 }

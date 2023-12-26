@@ -2,24 +2,25 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using TaskManagementTool.BusinessLogic.Interfaces;
+using TaskManagementTool.BusinessLogic.Services;
+using TaskManagementTool.BusinessLogic.Services.Utils;
 using TaskManagementTool.Common.Configuration;
-using TaskManagementTool.DataAccess;
+using TaskManagementTool.DataAccess.DatabaseContext;
 using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.Host.Constants;
 
-namespace TaskManagementTool.Host.Extensions;
+namespace TaskManagementTool.Host;
 
-public static class ServiceCollectionExtension
+public static class DiModule
 {
-    public static void ConfigureSqlContext(this IServiceCollection services, DatabaseConfigurationOptions options)
+    public static void RegisterDependencies(this IServiceCollection services)
     {
-        void UseSqlServer(DbContextOptionsBuilder builder) => builder.UseSqlServer(options.ConnectionString);
-
-        services.AddDbContext<TaskManagementToolDatabase>(UseSqlServer);
+        services.AddScoped<ITodoHandler, TodoHandler>();
+        services.AddScoped<IAuthUtils, AuthUtils>();
     }
 
     public static void ConfigureCors(this IServiceCollection service)

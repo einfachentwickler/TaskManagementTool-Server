@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using TaskManagementTool.DataAccess.Entities;
 
-namespace TaskManagementTool.DataAccess;
+namespace TaskManagementTool.DataAccess.DatabaseContext;
 
 public class TaskManagementToolDatabase : IdentityDbContext<User>, ITaskManagementToolDatabase
 {
