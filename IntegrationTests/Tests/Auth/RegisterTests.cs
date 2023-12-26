@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using IntegrationTests.Constants;
+using IntegrationTests.Utils;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using System.Net;
@@ -26,19 +27,8 @@ public class RegisterTests
     [Test]
     public async Task RegisterUserAsync_ValidData_Returns200()
     {
-        //Arrange
-        RegisterDto registerDto = new()
-        {
-            Age = 34,
-            Password = "password",
-            ConfirmPassword = "password",
-            Email = "user1@email.com",
-            FirstName = "First name",
-            LastName = "Last name"
-        };
-
-        //Act
-        var response = await _client.PostAsJsonAsync(UriConstants.REGISTER_URI, registerDto);
+        //Arrange && Act
+        var response = await TestsHelper.RegisterUserAsync(_client, "user1@email.com", "password", "password");
 
         //Assert
         response.EnsureSuccessStatusCode();
@@ -52,19 +42,8 @@ public class RegisterTests
     [Test]
     public async Task RegisterUserAsync_PasswordDoesNotMatch_Returns400()
     {
-        //Arrange
-        RegisterDto registerDto = new()
-        {
-            Age = 34,
-            Password = "password",
-            ConfirmPassword = "password2",
-            Email = "user1@email.com",
-            FirstName = "First name",
-            LastName = "Last name"
-        };
-
-        //Act
-        var response = await _client.PostAsJsonAsync(UriConstants.REGISTER_URI, registerDto);
+        //Arrange && Act
+        var response = await TestsHelper.RegisterUserAsync(_client, "user1@email.com", "password", "password1");
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -73,6 +52,25 @@ public class RegisterTests
 
         actualResult!.Message.Should().Be(UserManagerResponseMessages.CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD);
         actualResult.IsSuccess.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task RegisterUserAsync_UserAlreadyExists_Returns400()
+    {
+        //Arrange
+        await TestsHelper.RegisterUserAsync(_client, "email1@email.com", "password", "password");
+        
+        //Act
+        HttpResponseMessage response = await TestsHelper.RegisterUserAsync(_client, "email1@email.com", "password", "password");
+
+        //Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var actualResult = await response.Content.ReadFromJsonAsync<UserManagerResponse>();
+
+        actualResult!.Message.Should().Be(UserManagerResponseMessages.USER_WAS_NOT_CREATED);
+        actualResult.IsSuccess.Should().BeFalse();
+#warning TODO add error codes check
     }
 
     [Test]

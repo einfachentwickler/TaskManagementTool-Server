@@ -18,9 +18,9 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler todoHandle
     [HttpGet("users")]
     [SwaggerResponse((int)HttpStatusCode.OK)]
     [Consumes("application/json")]
-    public async Task<IActionResult> GetUsers()
+    public async Task<IActionResult> GetUsers([FromQuery] int pageNumber, [FromQuery] int pageSize)
     {
-        IEnumerable<UserDto> users = await adminHandler.GetUsersAsync();
+        IEnumerable<UserDto> users = await adminHandler.GetUsersAsync(pageNumber, pageSize);
         return Ok(users);
     }
 

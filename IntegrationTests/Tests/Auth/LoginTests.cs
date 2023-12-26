@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using IntegrationTests.Constants;
+using IntegrationTests.Utils;
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
@@ -80,7 +81,20 @@ public class LoginTests
         actualResult.IsSuccess.Should().BeFalse();
     }
 
-#warning TODO Test case blocked user
+    [Test]
+    public async Task LoginUser_UserIsBlocked_Returns401()
+    {
+#warning finish this tests
+        //Arrange
+        await TestsHelper.RegisterUserAsync(_client, "user1@email.com", "password", "password");
+        await TestsHelper.LoginAsync(_client, "admin@example.com", "password");
+
+        HttpResponseMessage response = await _client.GetAsync(UriConstants.ADMIN_GET_USERS_URI + $"?pageSize={10}&pageNumber={1}");
+        //Act
+
+        //Assert
+
+    }
 
     [Test]
     public async Task LoginUser_InvalidPassword_Returns401()

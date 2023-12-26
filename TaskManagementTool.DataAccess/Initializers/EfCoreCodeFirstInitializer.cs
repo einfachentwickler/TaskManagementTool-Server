@@ -16,9 +16,6 @@ public static class EfCoreCodeFirstInitializer
         IConfiguration configuration
         )
     {
-#warning TODO move to config
-        const string password = "password";
-
         User admin = new()
         {
             Age = int.Parse(configuration.GetSection("AdminCredentials:Age").Value),
@@ -46,7 +43,7 @@ public static class EfCoreCodeFirstInitializer
 
         if (await userManager.FindByNameAsync(admin.Email) is null)
         {
-            IdentityResult result = await userManager.CreateAsync(admin, password);
+            IdentityResult result = await userManager.CreateAsync(admin, configuration.GetSection("AdminCredentials:Password").Value);
 
             if (result.Succeeded)
             {

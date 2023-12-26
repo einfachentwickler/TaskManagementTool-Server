@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
 using IntegrationTests.Constants;
+using IntegrationTests.Utils;
 using NUnit.Framework;
 using System.Net.Http.Json;
 using TaskManagementTool.BusinessLogic.ViewModels;
-using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
 
 namespace IntegrationTests.Tests.Home;
@@ -25,7 +25,8 @@ public class TodoCreationTests
     public async Task CreateTodo_ValidData_TodoIsCreated()
     {
         //Arrange
-        await RegisterAndLoginUserAsync();
+        await TestsHelper.RegisterUserAsync(_client, "user1@email.com", "password", "password");
+        await TestsHelper.LoginAsync(_client, "user1@email.com", "password");
 
         CreateTodoDto createTodoDto = new()
         {
@@ -56,7 +57,8 @@ public class TodoCreationTests
     public async Task UpdateTodo_ValidData_TodoIsUpdated()
     {
         //Arrange
-        await RegisterAndLoginUserAsync();
+        await TestsHelper.RegisterUserAsync(_client, "user1@email.com", "password", "password");
+        await TestsHelper.LoginAsync(_client, "user1@email.com", "password");
 
         CreateTodoDto createTodoDto = new()
         {
@@ -93,33 +95,6 @@ public class TodoCreationTests
         todoFromDb.Name.Should().Be(updateTodoDto.Name);
         todoFromDb.Importance.Should().Be(updateTodoDto.Importance);
         todoFromDb.Id.Should().Be(todo.Id);
-    }
-
-    private async Task RegisterAndLoginUserAsync()
-    {
-        RegisterDto registerDto = new()
-        {
-            Age = 34,
-            Password = "password",
-            ConfirmPassword = "password",
-            Email = "user1@email.com",
-            FirstName = "First name",
-            LastName = "Last name"
-        };
-
-        await _client.PostAsJsonAsync(UriConstants.REGISTER_URI, registerDto);
-
-        LoginDto loginDto = new()
-        {
-            Email = registerDto.Email,
-            Password = registerDto.Password
-        };
-
-        HttpResponseMessage loginResponse = await _client.PostAsJsonAsync(UriConstants.LOGIN_URI, loginDto);
-
-        string token = (await loginResponse.Content.ReadFromJsonAsync<UserManagerResponse>())!.Message;
-
-        _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
     }
 
     [TearDown]

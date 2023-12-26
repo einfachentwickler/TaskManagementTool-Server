@@ -15,9 +15,9 @@ namespace TaskManagementTool.BusinessLogic.Handlers;
 
 public class AdminHandler(IMapper mapper, UserManager<User> userManager, ITodoRepository todoRepository) : IAdminHandler
 {
-    public async Task<IEnumerable<UserDto>> GetUsersAsync()
+    public async Task<IEnumerable<UserDto>> GetUsersAsync(int pageNumber, int pageSize)
     {
-        IEnumerable<User> users = await userManager.Users.ToListAsync();
+        IEnumerable<User> users = await userManager.Users.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
 
         return mapper.Map<IEnumerable<UserDto>>(users);
     }

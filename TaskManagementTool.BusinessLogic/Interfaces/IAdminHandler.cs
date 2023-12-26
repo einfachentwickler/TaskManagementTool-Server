@@ -6,7 +6,7 @@ namespace TaskManagementTool.BusinessLogic.Interfaces;
 
 public interface IAdminHandler
 {
-    public Task<IEnumerable<UserDto>> GetUsersAsync();
+    public Task<IEnumerable<UserDto>> GetUsersAsync(int pageNumber, int pageSize);
 
     public Task<UserDto> GetUserAsync(string id);
 
