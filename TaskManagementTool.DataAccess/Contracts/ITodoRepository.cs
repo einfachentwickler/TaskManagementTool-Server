@@ -11,7 +11,7 @@ namespace TaskManagementTool.DataAccess.Contracts
 
         public Task<TodoEntry> FirstOrDefaultAsync(int id);
 
-        public Task AddAsync(TodoEntry item);
+        public Task<TodoEntry> CreateAsync(TodoEntry item);
 
         public Task UpdateAsync(TodoEntry item);
 

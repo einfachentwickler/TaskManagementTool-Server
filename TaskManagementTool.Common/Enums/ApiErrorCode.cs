@@ -1,6 +1,6 @@
 ﻿namespace TaskManagementTool.Common.Enums;
 
-public enum ApiErrorCodes
+public enum ApiErrorCode
 {
     UserNotFound,
     TodoNotFound

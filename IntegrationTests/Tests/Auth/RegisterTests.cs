@@ -8,7 +8,7 @@ using TaskManagementTool.BusinessLogic.Constants;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
 
-namespace IntegrationTests.Tests;
+namespace IntegrationTests.Tests.Auth;
 
 [TestFixture]
 public class RegisterTests
@@ -152,7 +152,7 @@ public class RegisterTests
     }
 
     [TearDown]
-    public async Task TearDown()
+    public async Task TearDownAsync()
     {
         _client.Dispose();
         await _application.DisposeAsync();

@@ -28,6 +28,7 @@ public class HomeController(ITodoHandler service, IHttpContextAccessor httpConte
     [HttpGet]
     [Produces("application/json")]
     [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(IEnumerable<TodoDto>))]
+#warning Add paging
     public async Task<IActionResult> GetAll()
     {
         string userId = _authUtils.GetUserId(_httpContextAccessor.HttpContext);
@@ -58,11 +59,10 @@ public class HomeController(ITodoHandler service, IHttpContextAccessor httpConte
     [HttpPost]
     [Consumes("application/json")]
     [SwaggerResponse((int)HttpStatusCode.Created)]
-    public async Task<IActionResult> Add([FromBody] CreateTodoDto model)
+    public async Task<IActionResult> Create([FromBody] CreateTodoDto model)
     {
         model.CreatorId = _authUtils.GetUserId(_httpContextAccessor.HttpContext);
-        await _todoService.AddAsync(model);
-        return Created();
+        return Ok(await _todoService.CreateAsync(model));
     }
 
     [HttpPut]

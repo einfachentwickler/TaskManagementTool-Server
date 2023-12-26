@@ -28,14 +28,14 @@ public class TodoHandler(IMapper mapper, ITodoRepository todoRepository) : ITodo
     {
         TodoEntry todoEntry = await _todoRepository.FirstOrDefaultAsync(id);
 
-        return todoEntry is null ? throw new TodoNotFoundException() : _mapper.Map<TodoEntry, TodoDto>(todoEntry);
+        return todoEntry is null ? throw new TaskManagementToolException(ApiErrorCode.TodoNotFound, $"Todo with id {id} was not found") : _mapper.Map<TodoEntry, TodoDto>(todoEntry);
     }
 
-    public async Task AddAsync(CreateTodoDto todoPar)
+    public async Task<TodoDto> CreateAsync(CreateTodoDto todoPar)
     {
         TodoEntry todoEntry = _mapper.Map<CreateTodoDto, TodoEntry>(todoPar);
 
-        await _todoRepository.AddAsync(todoEntry);
+        return _mapper.Map<TodoEntry, TodoDto>(await _todoRepository.CreateAsync(todoEntry));
     }
 
     public async Task UpdateAsync(UpdateTodoDto todo)
@@ -52,7 +52,7 @@ public class TodoHandler(IMapper mapper, ITodoRepository todoRepository) : ITodo
 
     public async Task DeleteAsync(int id)
     {
-        _ = await _todoRepository.FirstOrDefaultAsync(id) ?? throw new TodoNotFoundException();
+        _ = await _todoRepository.FirstOrDefaultAsync(id) ?? throw new TaskManagementToolException(ApiErrorCode.TodoNotFound, $"Todo with id {id} was not found");
 
         await _todoRepository.DeleteAsync(id);
     }

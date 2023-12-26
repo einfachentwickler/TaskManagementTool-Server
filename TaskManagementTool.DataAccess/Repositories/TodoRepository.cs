@@ -49,12 +49,14 @@ public class TodoRepository(IDatabaseFactory factory) : ITodoRepository
             .FirstOrDefaultAsync(todo => todo.Id == id);
     }
 
-    public async Task AddAsync(TodoEntry item)
+    public async Task<TodoEntry> CreateAsync(TodoEntry item)
     {
         await using ITaskManagementToolDatabase db = _factory.Create();
 
-        await db.Todos.AddAsync(item);
+        TodoEntry createdTodo = (await db.Todos.AddAsync(item)).Entity;
         await db.SaveChangesAsync();
+
+        return createdTodo;
     }
 
     public async Task UpdateAsync(TodoEntry item)

@@ -12,7 +12,7 @@ public interface ITodoHandler
 
     public Task<TodoDto> FindByIdAsync(int id);
 
-    public Task AddAsync(CreateTodoDto toDoPar);
+    public Task<TodoDto> CreateAsync(CreateTodoDto toDoPar);
 
     public Task UpdateAsync(UpdateTodoDto todo);
 

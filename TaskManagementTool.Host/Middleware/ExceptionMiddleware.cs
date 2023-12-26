@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using TaskManagementTool.BusinessLogic.Dto.Errors;
 using TaskManagementTool.Common.Exceptions;
 
 namespace TaskManagementTool.Host.Middleware;
@@ -20,20 +22,14 @@ public class ExceptionMiddleware(RequestDelegate next)
         {
             context.Response.StatusCode = exception.GetType().Name switch
             {
-                nameof(NotImplementedException) => (int)HttpStatusCode.NotImplemented,
-
-                nameof(TodoNotFoundException) => (int)HttpStatusCode.BadRequest,
-
-                nameof(UserNotFoundExpection) => (int)HttpStatusCode.BadRequest,
+                nameof(TaskManagementToolException) => (int)HttpStatusCode.BadRequest,
 
                 _ => 500
             };
 
             await context.Response.WriteAsync(exception switch
             {
-                TodoNotFoundException => TodoNotFoundException.ErrorCode.ToString(),
-
-                UserNotFoundExpection => UserNotFoundExpection.ErrorCode.ToString(),
+                TaskManagementToolException ex => JsonConvert.SerializeObject(new ErrorDto(ex.ErrorCode, ex.ErrorMessage)),
 
                 _ => "Internal server error"
             });
