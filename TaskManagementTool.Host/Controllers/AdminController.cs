@@ -47,6 +47,7 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler todoHandle
     [SwaggerResponse((int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetTodos()
     {
+#warning add paging
         IEnumerable<TodoDto> todos = await todoHandler.GetAsync(SearchCriteriaEnum.GetAll);
         return Ok(todos);
     }
@@ -54,7 +55,7 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler todoHandle
     [HttpDelete("todos/{id:int}")]
     [SwaggerResponse((int)HttpStatusCode.NoContent)]
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> DeleteUser([FromRoute] int id)
+    public async Task<IActionResult> DeleteTodo([FromRoute] int id)
     {
         await todoHandler.DeleteAsync(id);
         return NoContent();
