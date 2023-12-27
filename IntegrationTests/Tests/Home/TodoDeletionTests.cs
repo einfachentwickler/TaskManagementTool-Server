@@ -36,9 +36,18 @@ public class TodoDeletionTests
             Importance = 5
         };
 
+        CreateTodoDto createTodoDto2 = new()
+        {
+            Name = "Todo 2",
+            Content = "Content 2",
+            Importance = 7
+        };
+
         HttpResponseMessage createResponse = await _client.PostAsJsonAsync(UriConstants.CREATE_TODO_URI, createTodoDto);
+        HttpResponseMessage createResponse2 = await _client.PostAsJsonAsync(UriConstants.CREATE_TODO_URI, createTodoDto2);
 
         TodoDto? createdTodo = await createResponse.Content.ReadFromJsonAsync<TodoDto>();
+        TodoDto? createdTodo2 = await createResponse2.Content.ReadFromJsonAsync<TodoDto>();
 
         //Act
         HttpResponseMessage deleteResponse = await _client.DeleteAsync(UriConstants.DELETE_TODO_URI + createdTodo!.Id);
@@ -48,6 +57,9 @@ public class TodoDeletionTests
 
         HttpResponseMessage deleteResponse2 = await _client.DeleteAsync(UriConstants.DELETE_TODO_URI + createdTodo!.Id);
         deleteResponse2.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        HttpResponseMessage getResponse = await _client.GetAsync(UriConstants.GET_TODO_URI + createdTodo2!.Id);
+        getResponse.EnsureSuccessStatusCode();
     }
 
     [Test]

@@ -16,4 +16,6 @@ public interface ITodoRepository
     public Task UpdateAsync(TodoEntry item);
 
     public Task DeleteAsync(int id);
+
+    public Task BulkDeleteAsync(string userId);
 }

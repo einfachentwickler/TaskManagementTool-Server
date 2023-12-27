@@ -72,10 +72,19 @@ public class TodoRepository(IDatabaseFactory factory) : ITodoRepository
     {
         await using ITaskManagementToolDatabase db = _factory.Create();
 
-        TodoEntry customer = new() { Id = id };
-        db.Todos.Attach(customer);
-        db.Todos.Remove(customer);
+        await db.Todos.Where(x => x.Id == id).ExecuteDeleteAsync();
 
         await db.SaveChangesAsync();
+    }
+
+    public async Task BulkDeleteAsync(string userId)
+    {
+        //await using ITaskManagementToolDatabase db = _factory.Create();
+
+        //TodoEntry customer = new() { Id = id };
+        //db.Todos.e(customer);
+        //db.Todos.Remove(customer);
+
+        //await db.SaveChangesAsync();
     }
 }
