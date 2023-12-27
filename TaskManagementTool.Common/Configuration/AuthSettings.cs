@@ -6,11 +6,9 @@ namespace TaskManagementTool.Common.Configuration;
 
 public class AuthSettings(IConfiguration configuration)
 {
-    private readonly IConfiguration _configuration = configuration;
+    public string Audience => configuration.GetSection("AuthSettings:Audience").Value ?? throw new TaskManagementToolException(ConfigErrorMessagesConstants.CONFIG_VALUE_NOT_FOUND + "AuthSettings:Audience");
 
-    public string Audience => _configuration.GetSection("AuthSettings:Audience").Value ?? throw new TaskManagementToolException(ConfigErrorMessagesConstants.CONFIG_VALUE_NOT_FOUND + "AuthSettings:Audience");
+    public string Issuer => configuration.GetSection("AuthSettings:Issuer").Value ?? throw new TaskManagementToolException(ConfigErrorMessagesConstants.CONFIG_VALUE_NOT_FOUND + "AuthSettings:Issuer");
 
-    public string Issuer => _configuration.GetSection("AuthSettings:Issuer").Value ?? throw new TaskManagementToolException(ConfigErrorMessagesConstants.CONFIG_VALUE_NOT_FOUND + "AuthSettings:Issuer");
-
-    public string Key => _configuration.GetSection("AuthSettings:Key").Value ?? throw new TaskManagementToolException(ConfigErrorMessagesConstants.CONFIG_VALUE_NOT_FOUND + "AuthSettings:Key");
+    public string Key => configuration.GetSection("AuthSettings:Key").Value ?? throw new TaskManagementToolException(ConfigErrorMessagesConstants.CONFIG_VALUE_NOT_FOUND + "AuthSettings:Key");
 }

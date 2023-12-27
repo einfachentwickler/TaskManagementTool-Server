@@ -21,7 +21,6 @@ public class HomeController(ITodoHandler todoHandler, IHttpContextAccessor httpC
     [HttpGet]
     [Produces("application/json")]
     [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(IEnumerable<TodoDto>))]
-
     public async Task<IActionResult> GetUsersTodos([FromQuery] int pageNumber, [FromQuery] int pageSize)
     {
         string userId = authUtils.GetUserId(httpContextAccessor.HttpContext);

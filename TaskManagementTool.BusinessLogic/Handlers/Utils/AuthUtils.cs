@@ -10,8 +10,6 @@ namespace TaskManagementTool.BusinessLogic.Handlers.Utils;
 
 public class AuthUtils(ITodoHandler service) : IAuthUtils
 {
-    private readonly ITodoHandler _service = service;
-
     public string GetUserId(HttpContext context)
     {
         return context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new TaskManagementToolException(ApiErrorCode.Unautorized, "User id was not found in claims");
@@ -21,7 +19,7 @@ public class AuthUtils(ITodoHandler service) : IAuthUtils
     {
         string userId = GetUserId(context);
 
-        TodoDto todo = await _service.FindByIdAsync(todoId);
+        TodoDto todo = await service.FindByIdAsync(todoId);
 
         return todo is not null && todo.Creator.Id == userId;
     }
