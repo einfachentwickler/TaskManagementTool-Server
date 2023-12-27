@@ -15,23 +15,23 @@ namespace TaskManagementTool.BusinessLogic.Handlers;
 
 public class AdminHandler(IMapper mapper, UserManager<User> userManager, ITodoRepository todoRepository) : IAdminHandler
 {
-    public async Task<IEnumerable<UserDto>> GetUsersAsync(int pageNumber, int pageSize)
+    public async Task<IEnumerable<UserDto>> GetAsync(int pageNumber, int pageSize)
     {
         IEnumerable<User> users = await userManager.Users.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
 
         return mapper.Map<IEnumerable<UserDto>>(users);
     }
 
-    public async Task<UserDto> GetUserAsync(string id)
+    public async Task<UserDto> GetAsync(string id)
     {
         User user = await userManager.Users.FirstOrDefaultAsync(user => user.Id == id);
 
         return user is null ? throw new TaskManagementToolException(ApiErrorCode.UserNotFound, $"User with id {id} was not found") : mapper.Map<User, UserDto>(user);
     }
 
-    public async Task UpdateUserAsync(UserDto user)
+    public async Task UpdateAsync(UserDto user)
     {
-        User entityToUpdate = await CopyUserAsync(user);
+        User entityToUpdate = await CopyAsync(user);
         IdentityResult identityResult = await userManager.UpdateAsync(entityToUpdate);
 
         if (!identityResult.Succeeded)
@@ -42,20 +42,20 @@ public class AdminHandler(IMapper mapper, UserManager<User> userManager, ITodoRe
         }
     }
 
-    public async Task BlockOrUnblockUserAsync(string userId)
+    public async Task BlockOrUnblockAsync(string userId)
     {
-        UserDto user = await GetUserAsync(userId);
+        UserDto user = await GetAsync(userId);
 
         user.IsBlocked = !user.IsBlocked;
 
-        await UpdateUserAsync(user);
+        await UpdateAsync(user);
     }
 
-    public async Task DeleteUserAsync(string id)
+    public async Task DeleteAsync(string userId)
     {
-        User user = await userManager.Users.FirstOrDefaultAsync(usr => usr.Id == id) ?? throw new TaskManagementToolException(ApiErrorCode.UserNotFound, $"User with id {id} was not found");
+        User user = await userManager.Users.FirstOrDefaultAsync(usr => usr.Id == userId) ?? throw new TaskManagementToolException(ApiErrorCode.UserNotFound, $"User with id {userId} was not found");
 
-        await DeleteUsersTodos(id);
+        await todoRepository.DeleteAsync(todo => todo.CreatorId == userId);
 
         IdentityResult identityResult = await userManager.DeleteAsync(user);
         if (!identityResult.Succeeded)
@@ -66,22 +66,7 @@ public class AdminHandler(IMapper mapper, UserManager<User> userManager, ITodoRe
         }
     }
 
-    private async Task DeleteUsersTodos(string id)
-    {
-        IEnumerable<TodoEntry> todos = (await todoRepository.GetAsync(SearchCriteriaEnum.GetAll))
-            .Where(todo => todo.Creator?.Id == id)
-            .ToList();
-
-        if (todos.Any())
-        {
-            foreach (TodoEntry todo in todos)
-            {
-                await todoRepository.DeleteAsync(todo.Id);
-            }
-        }
-    }
-
-    private async Task<User> CopyUserAsync(UserDto user)
+    private async Task<User> CopyAsync(UserDto user)
     {
         User userTemp = await userManager.FindByEmailAsync(user.Email);
 

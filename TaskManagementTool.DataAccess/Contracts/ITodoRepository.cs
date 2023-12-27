@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using TaskManagementTool.Common.Enums;
 using TaskManagementTool.DataAccess.Entities;
@@ -15,7 +17,5 @@ public interface ITodoRepository
 
     public Task UpdateAsync(TodoEntry item);
 
-    public Task DeleteAsync(int id);
-
-    public Task BulkDeleteAsync(string userId);
+    public Task DeleteAsync(Expression<Func<TodoEntry, bool>> predicate);
 }

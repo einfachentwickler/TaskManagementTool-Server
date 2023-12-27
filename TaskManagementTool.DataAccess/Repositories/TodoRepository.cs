@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using TaskManagementTool.Common.Enums;
 using TaskManagementTool.DataAccess.Contracts;
@@ -68,23 +69,12 @@ public class TodoRepository(IDatabaseFactory factory) : ITodoRepository
         await db.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Expression<Func<TodoEntry, bool>> predicate)
     {
         await using ITaskManagementToolDatabase db = _factory.Create();
 
-        await db.Todos.Where(x => x.Id == id).ExecuteDeleteAsync();
+        await db.Todos.Where(predicate).ExecuteDeleteAsync();
 
         await db.SaveChangesAsync();
-    }
-
-    public async Task BulkDeleteAsync(string userId)
-    {
-        //await using ITaskManagementToolDatabase db = _factory.Create();
-
-        //TodoEntry customer = new() { Id = id };
-        //db.Todos.e(customer);
-        //db.Todos.Remove(customer);
-
-        //await db.SaveChangesAsync();
     }
 }

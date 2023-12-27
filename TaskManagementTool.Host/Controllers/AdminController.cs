@@ -20,7 +20,7 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler todoHandle
     [Consumes("application/json")]
     public async Task<IActionResult> GetUsers([FromQuery] int pageNumber, [FromQuery] int pageSize)
     {
-        IEnumerable<UserDto> users = await adminHandler.GetUsersAsync(pageNumber, pageSize);
+        IEnumerable<UserDto> users = await adminHandler.GetAsync(pageNumber, pageSize);
         return Ok(users);
     }
 
@@ -29,7 +29,7 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler todoHandle
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> ReverseStatus([FromRoute] string id)
     {
-        await adminHandler.BlockOrUnblockUserAsync(id);
+        await adminHandler.BlockOrUnblockAsync(id);
         return NoContent();
     }
 
@@ -38,7 +38,7 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler todoHandle
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> DeleteUser([FromRoute] string id)
     {
-        await adminHandler.DeleteUserAsync(id);
+        await adminHandler.DeleteAsync(id);
         return NoContent();
     }
 

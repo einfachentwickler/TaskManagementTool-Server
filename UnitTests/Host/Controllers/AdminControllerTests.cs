@@ -39,7 +39,7 @@ public class AdminControllerTests
 
         var users = fixture.CreateMany<UserDto>();
 
-        adminHandler.GetUsersAsync(pageNumber, pageSize).Returns(users);
+        adminHandler.GetAsync(pageNumber, pageSize).Returns(users);
 
         //Act
         IActionResult response = await sut.GetUsers(pageNumber, pageSize);
@@ -59,7 +59,7 @@ public class AdminControllerTests
         IActionResult response = await sut.ReverseStatus(userId);
 
         //Assert
-        await adminHandler.Received(1).BlockOrUnblockUserAsync(userId);
+        await adminHandler.Received(1).BlockOrUnblockAsync(userId);
 
         response.Should().BeOfType<NoContentResult>();
     }
@@ -74,7 +74,7 @@ public class AdminControllerTests
         IActionResult response = await sut.DeleteUser(userId);
 
         //Assert
-        await adminHandler.Received(1).DeleteUserAsync(userId);
+        await adminHandler.Received(1).DeleteAsync(userId);
 
         response.Should().BeOfType<NoContentResult>();
     }

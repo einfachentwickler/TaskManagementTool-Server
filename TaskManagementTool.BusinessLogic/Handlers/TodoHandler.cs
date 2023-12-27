@@ -50,6 +50,6 @@ public class TodoHandler(IMapper mapper, ITodoRepository todoRepository) : ITodo
     {
         _ = await todoRepository.FirstOrDefaultAsync(id) ?? throw new TaskManagementToolException(ApiErrorCode.TodoNotFound, $"Todo with id {id} was not found");
 
-        await todoRepository.DeleteAsync(id);
+        await todoRepository.DeleteAsync(x => x.Id == id);
     }
 }

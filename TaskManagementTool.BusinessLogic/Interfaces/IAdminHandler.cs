@@ -6,13 +6,13 @@ namespace TaskManagementTool.BusinessLogic.Interfaces;
 
 public interface IAdminHandler
 {
-    public Task<IEnumerable<UserDto>> GetUsersAsync(int pageNumber, int pageSize);
+    public Task<IEnumerable<UserDto>> GetAsync(int pageNumber, int pageSize);
 
-    public Task<UserDto> GetUserAsync(string id);
+    public Task<UserDto> GetAsync(string id);
 
-    public Task UpdateUserAsync(UserDto user);
+    public Task UpdateAsync(UserDto user);
 
-    public Task BlockOrUnblockUserAsync(string userId);
+    public Task BlockOrUnblockAsync(string userId);
 
-    public Task DeleteUserAsync(string id);
+    public Task DeleteAsync(string id);
 }
