@@ -13,9 +13,16 @@ namespace TaskManagementTool.BusinessLogic.Handlers;
 
 public class TodoHandler(IMapper mapper, ITodoRepository todoRepository) : ITodoHandler
 {
-    public async Task<IEnumerable<TodoDto>> GetAsync(SearchCriteriaEnum searchCriteria, string userId = null)
+    public async Task<IEnumerable<TodoDto>> GetAsync(int pageSize, int pageNumber)
     {
-        IEnumerable<TodoEntry> todos = await todoRepository.GetAsync(searchCriteria, userId);
+        IEnumerable<TodoEntry> todos = await todoRepository.GetAsync(pageSize, pageNumber);
+
+        return mapper.Map<IEnumerable<TodoDto>>(todos);
+    }
+
+    public async Task<IEnumerable<TodoDto>> GetAsync(string userId, int pageSize, int pageNumber)
+    {
+        IEnumerable<TodoEntry> todos = await todoRepository.GetAsync(userId, pageSize, pageNumber);
 
         return mapper.Map<IEnumerable<TodoDto>>(todos);
     }

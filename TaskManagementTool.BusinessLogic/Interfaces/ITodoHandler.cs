@@ -2,13 +2,14 @@
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
-using TaskManagementTool.Common.Enums;
 
 namespace TaskManagementTool.BusinessLogic.Interfaces;
 
 public interface ITodoHandler
 {
-    public Task<IEnumerable<TodoDto>> GetAsync(SearchCriteriaEnum searchCriteria, string userId = null);
+    public Task<IEnumerable<TodoDto>> GetAsync(int pageSize, int pageNumber);
+
+    public Task<IEnumerable<TodoDto>> GetAsync(string userId, int pageSize, int pageNumber);
 
     public Task<TodoDto> FindByIdAsync(int id);
 

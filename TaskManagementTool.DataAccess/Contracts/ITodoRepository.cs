@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using TaskManagementTool.Common.Enums;
 using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.DataAccess.Contracts;
 
 public interface ITodoRepository
 {
-    public Task<IEnumerable<TodoEntry>> GetAsync(SearchCriteriaEnum searchCriteria, string userId = null);
+    public Task<IEnumerable<TodoEntry>> GetAsync(int pageSize, int pageNumber);
+
+    public Task<IEnumerable<TodoEntry>> GetAsync(string userId, int pageSize, int pageNumber);
 
     public Task<TodoEntry> FirstOrDefaultAsync(int id);
 

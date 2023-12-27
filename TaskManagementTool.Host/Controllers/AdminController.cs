@@ -6,7 +6,6 @@ using System.Net;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.ViewModels;
-using TaskManagementTool.Common.Enums;
 
 namespace TaskManagementTool.Host.Controllers;
 
@@ -45,10 +44,9 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler todoHandle
     [HttpGet("todos")]
     [Produces("application/json")]
     [SwaggerResponse((int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetTodos()
+    public async Task<IActionResult> GetTodos([FromQuery] int pageNumber, [FromQuery] int pageSize)
     {
-#warning add paging
-        IEnumerable<TodoDto> todos = await todoHandler.GetAsync(SearchCriteriaEnum.GetAll);
+        IEnumerable<TodoDto> todos = await todoHandler.GetAsync(pageSize, pageNumber);
         return Ok(todos);
     }
 

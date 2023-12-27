@@ -9,7 +9,6 @@ using TaskManagementTool.BusinessLogic.Handlers.Utils;
 using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
-using TaskManagementTool.Common.Enums;
 using TaskManagementTool.Host.ActionFilters;
 
 namespace TaskManagementTool.Host.Controllers;
@@ -22,12 +21,12 @@ public class HomeController(ITodoHandler todoHandler, IHttpContextAccessor httpC
     [HttpGet]
     [Produces("application/json")]
     [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(IEnumerable<TodoDto>))]
-#warning Add paging
-    public async Task<IActionResult> GetAll()
+
+    public async Task<IActionResult> GetUsersTodos([FromQuery] int pageNumber, [FromQuery] int pageSize)
     {
         string userId = authUtils.GetUserId(httpContextAccessor.HttpContext);
 
-        IEnumerable<TodoDto> messages = await todoHandler.GetAsync(SearchCriteriaEnum.GetById, userId);
+        IEnumerable<TodoDto> messages = await todoHandler.GetAsync(userId, pageNumber, pageSize);
 
         return Ok(messages);
     }
