@@ -17,6 +17,9 @@ public class RegisterTests
     private TmtWebApplicationFactory _application;
     private HttpClient _client;
 
+    const string EMAIL = "user1@email.com";
+    const string PASSWORD = "password";
+
     [SetUp]
     public void Setup()
     {
@@ -27,8 +30,8 @@ public class RegisterTests
     [Test]
     public async Task RegisterUserAsync_ValidData_Returns200()
     {
-        //Arrange && Act
-        var response = await TestsHelper.RegisterUserAsync(_client, "user1@email.com", "password", "password");
+        //Act
+        var response = await TestsHelper.RegisterUserAsync(_client, EMAIL, PASSWORD, PASSWORD);
 
         //Assert
         response.EnsureSuccessStatusCode();
@@ -42,8 +45,8 @@ public class RegisterTests
     [Test]
     public async Task RegisterUserAsync_PasswordDoesNotMatch_Returns400()
     {
-        //Arrange && Act
-        var response = await TestsHelper.RegisterUserAsync(_client, "user1@email.com", "password", "password1");
+        //Act
+        var response = await TestsHelper.RegisterUserAsync(_client, EMAIL, PASSWORD, "nonsence");
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -58,10 +61,10 @@ public class RegisterTests
     public async Task RegisterUserAsync_UserAlreadyExists_Returns400()
     {
         //Arrange
-        await TestsHelper.RegisterUserAsync(_client, "email1@email.com", "password", "password");
-        
+        await TestsHelper.RegisterUserAsync(_client, EMAIL, PASSWORD, PASSWORD);
+
         //Act
-        HttpResponseMessage response = await TestsHelper.RegisterUserAsync(_client, "email1@email.com", "password", "password");
+        HttpResponseMessage response = await TestsHelper.RegisterUserAsync(_client, EMAIL, PASSWORD, PASSWORD);
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -70,7 +73,8 @@ public class RegisterTests
 
         actualResult!.Message.Should().Be(UserManagerResponseMessages.USER_WAS_NOT_CREATED);
         actualResult.IsSuccess.Should().BeFalse();
-#warning TODO add error codes check
+
+        actualResult.Errors.Should().HaveCount(1).And.AllBe($"Username '{EMAIL}' is already taken.");
     }
 
     [Test]

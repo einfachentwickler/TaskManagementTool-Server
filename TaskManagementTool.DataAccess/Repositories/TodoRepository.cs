@@ -72,10 +72,10 @@ public class TodoRepository(IDatabaseFactory factory) : ITodoRepository
     {
         await using ITaskManagementToolDatabase db = _factory.Create();
 
-        TodoEntry todoEntry = await db.Todos
-            .FirstAsync(todo => todo.Id == id);
+        TodoEntry customer = new() { Id = id };
+        db.Todos.Attach(customer);
+        db.Todos.Remove(customer);
 
-        db.Todos.Remove(todoEntry);
         await db.SaveChangesAsync();
     }
 }
