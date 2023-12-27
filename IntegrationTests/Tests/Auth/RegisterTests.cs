@@ -74,7 +74,7 @@ public class RegisterTests
         actualResult!.Message.Should().Be(UserManagerResponseMessages.USER_WAS_NOT_CREATED);
         actualResult.IsSuccess.Should().BeFalse();
 
-        actualResult.Errors.Should().HaveCount(1).And.AllBe($"Username '{EMAIL}' is already taken.");
+        actualResult.Errors.Should().Contain($"Username '{EMAIL}' is already taken.");
     }
 
     [Test]

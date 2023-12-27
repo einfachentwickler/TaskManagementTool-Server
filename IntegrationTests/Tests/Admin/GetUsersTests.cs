@@ -10,14 +10,14 @@ namespace IntegrationTests.Tests.Admin;
 [TestFixture]
 public class GetUsersTests
 {
-    private TmtWebApplicationFactory _application;
-    private HttpClient _client;
+    private TmtWebApplicationFactory application;
+    private HttpClient client;
 
     [SetUp]
     public void Setup()
     {
-        _application = new TmtWebApplicationFactory();
-        _client = _application.CreateClient();
+        application = new TmtWebApplicationFactory();
+        client = application.CreateClient();
     }
 
     [TestCase(1, 5, 5)]
@@ -27,26 +27,26 @@ public class GetUsersTests
     public async Task GetUsers_Page_ReturnsUsers(int pageNumber, int pageSize, int expectedSize)
     {
         //Arrange
-        await TestsHelper.RegisterUserAsync(_client, "user1@email.com", "password", "password");
-        await TestsHelper.RegisterUserAsync(_client, "user2@email.com", "password", "password");
-        await TestsHelper.RegisterUserAsync(_client, "user3@email.com", "password", "password");
-        await TestsHelper.RegisterUserAsync(_client, "user4@email.com", "password", "password");
-        await TestsHelper.RegisterUserAsync(_client, "user5@email.com", "password", "password");
-        await TestsHelper.RegisterUserAsync(_client, "user6@email.com", "password", "password");
-        await TestsHelper.RegisterUserAsync(_client, "user7@email.com", "password", "password");
-        await TestsHelper.RegisterUserAsync(_client, "user8@email.com", "password", "password");
-        await TestsHelper.RegisterUserAsync(_client, "user9@email.com", "password", "password");
-        await TestsHelper.RegisterUserAsync(_client, "user10@email.com", "password", "password");
-        await TestsHelper.RegisterUserAsync(_client, "user11@email.com", "password", "password");
-        await TestsHelper.RegisterUserAsync(_client, "user12@email.com", "password", "password");
-        await TestsHelper.RegisterUserAsync(_client, "user13@email.com", "password", "password");
-        await TestsHelper.RegisterUserAsync(_client, "user14@email.com", "password", "password");
-        await TestsHelper.RegisterUserAsync(_client, "user15@email.com", "password", "password");
+        await TestsHelper.RegisterUserAsync(client, "user1@email.com", "password", "password");
+        await TestsHelper.RegisterUserAsync(client, "user2@email.com", "password", "password");
+        await TestsHelper.RegisterUserAsync(client, "user3@email.com", "password", "password");
+        await TestsHelper.RegisterUserAsync(client, "user4@email.com", "password", "password");
+        await TestsHelper.RegisterUserAsync(client, "user5@email.com", "password", "password");
+        await TestsHelper.RegisterUserAsync(client, "user6@email.com", "password", "password");
+        await TestsHelper.RegisterUserAsync(client, "user7@email.com", "password", "password");
+        await TestsHelper.RegisterUserAsync(client, "user8@email.com", "password", "password");
+        await TestsHelper.RegisterUserAsync(client, "user9@email.com", "password", "password");
+        await TestsHelper.RegisterUserAsync(client, "user10@email.com", "password", "password");
+        await TestsHelper.RegisterUserAsync(client, "user11@email.com", "password", "password");
+        await TestsHelper.RegisterUserAsync(client, "user12@email.com", "password", "password");
+        await TestsHelper.RegisterUserAsync(client, "user13@email.com", "password", "password");
+        await TestsHelper.RegisterUserAsync(client, "user14@email.com", "password", "password");
+        await TestsHelper.RegisterUserAsync(client, "user15@email.com", "password", "password");
 
-        await TestsHelper.LoginAsync(_client, "admin@example.com", "password");
+        await TestsHelper.LoginAsync(client, "admin@example.com", "password");
 
         //Act
-        HttpResponseMessage response = await _client.GetAsync(UriConstants.ADMIN_GET_USERS_URI + $"?pageNumber={pageNumber}&pageSize={pageSize}");
+        HttpResponseMessage response = await client.GetAsync(UriConstants.ADMIN_GET_USERS_URI + $"?pageNumber={pageNumber}&pageSize={pageSize}");
 
         //Assert
         response.EnsureSuccessStatusCode();
@@ -60,7 +60,7 @@ public class GetUsersTests
     [TearDown]
     public async Task TearDownAsync()
     {
-        _client.Dispose();
-        await _application.DisposeAsync();
+        client.Dispose();
+        await application.DisposeAsync();
     }
 }

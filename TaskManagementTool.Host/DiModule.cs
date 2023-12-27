@@ -50,6 +50,8 @@ public static class DiModule
             identityOptions.Password.RequireUppercase = passwordOptions.IsUppercaseRequired;
             identityOptions.Password.RequiredLength = passwordOptions.RequiredPasswordLength;
             identityOptions.Password.RequiredUniqueChars = passwordOptions.RequiredUniqueChart;
+
+            identityOptions.User.RequireUniqueEmail = true;
         }
 
         static void AddAuthentication(AuthenticationOptions options)

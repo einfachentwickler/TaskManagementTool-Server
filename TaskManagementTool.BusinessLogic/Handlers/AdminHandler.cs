@@ -51,11 +51,11 @@ public class AdminHandler(IMapper mapper, UserManager<User> userManager, ITodoRe
         await UpdateAsync(user);
     }
 
-    public async Task DeleteAsync(string userId)
+    public async Task DeleteAsync(string email)
     {
-        User user = await userManager.Users.FirstOrDefaultAsync(usr => usr.Id == userId) ?? throw new TaskManagementToolException(ApiErrorCode.UserNotFound, $"User with id {userId} was not found");
+        User user = await userManager.FindByEmailAsync(email) ?? throw new TaskManagementToolException(ApiErrorCode.UserNotFound, $"User with email {email} was not found");
 
-        await todoRepository.DeleteAsync(todo => todo.CreatorId == userId);
+        await todoRepository.DeleteAsync(todo => todo.Creator.Email == email);
 
         IdentityResult identityResult = await userManager.DeleteAsync(user);
         if (!identityResult.Succeeded)

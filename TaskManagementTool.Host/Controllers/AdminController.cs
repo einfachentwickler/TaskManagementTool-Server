@@ -32,12 +32,12 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler todoHandle
         return NoContent();
     }
 
-    [HttpDelete("users/{id}")]
+    [HttpDelete("users/{email}")]
     [SwaggerResponse((int)HttpStatusCode.NoContent)]
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> DeleteUser([FromRoute] string id)
+    public async Task<IActionResult> DeleteUser([FromRoute] string email)
     {
-        await adminHandler.DeleteAsync(id);
+        await adminHandler.DeleteAsync(email);
         return NoContent();
     }
 

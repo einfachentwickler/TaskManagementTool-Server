@@ -39,11 +39,11 @@ public static class TestsHelper
         client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
     }
 
-    public static async Task<HttpResponseMessage> CreateTodoAsync(HttpClient client)
+    public static async Task<HttpResponseMessage> CreateTodoAsync(HttpClient client, string name = "Todo 1")
     {
         CreateTodoDto createTodoDto = new()
         {
-            Name = "Todo 1",
+            Name = name,
             Content = "Content 1",
             Importance = 5
         };
