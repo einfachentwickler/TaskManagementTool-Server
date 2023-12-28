@@ -9,7 +9,7 @@ using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
 namespace IntegrationTests.Tests.Home;
 
 [TestFixture]
-public class TodoCreationTests
+public class CreateAndUpdateTodoTests
 {
     private TmtWebApplicationFactory _application;
     private HttpClient _client;

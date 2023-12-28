@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.ViewModels;
@@ -10,6 +9,7 @@ using TaskManagementTool.Common.Enums;
 using TaskManagementTool.Common.Exceptions;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.Entities;
+using TaskManagementTool.DataAccess.Extensions;
 
 namespace TaskManagementTool.BusinessLogic.Handlers;
 
@@ -17,7 +17,7 @@ public class AdminHandler(IMapper mapper, UserManager<User> userManager, ITodoRe
 {
     public async Task<IEnumerable<UserDto>> GetAsync(int pageNumber, int pageSize)
     {
-        IEnumerable<User> users = await userManager.Users.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+        IEnumerable<User> users = await userManager.Users.Page(pageSize, pageNumber).ToListAsync();
 
         return mapper.Map<IEnumerable<UserDto>>(users);
     }

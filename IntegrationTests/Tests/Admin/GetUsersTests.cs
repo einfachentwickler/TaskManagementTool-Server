@@ -2,6 +2,7 @@
 using IntegrationTests.Constants;
 using IntegrationTests.Utils;
 using NUnit.Framework;
+using System.Net;
 using System.Net.Http.Json;
 using TaskManagementTool.BusinessLogic.ViewModels;
 
@@ -24,6 +25,8 @@ public class GetUsersTests
     [TestCase(2, 5, 5)]
     [TestCase(1, 10, 10)]
     [TestCase(2, 10, 6)]
+    [TestCase(10000000, 10, 10)]
+    [TestCase(1, 10000000, 10)]
     public async Task GetUsers_Page_ReturnsUsers(int pageNumber, int pageSize, int expectedSize)
     {
         //Arrange
@@ -55,6 +58,20 @@ public class GetUsersTests
 
         actualResult.Should().HaveCount(expectedSize);
         actualResult.Should().AllSatisfy(x => x.Should().NotBeNull());
+    }
+
+    [Test]
+    public async Task GetUsers_NotAdmin_Forbidden()
+    {
+        //Arrange
+        await TestsHelper.RegisterUserAsync(client, "user1@email.com", "password", "password");
+        await TestsHelper.LoginAsync(client, "user1@email.com", "password");
+
+        //Act
+        HttpResponseMessage response = await client.GetAsync(UriConstants.ADMIN_GET_USERS_URI + "?pageNumber=1&pageSize=10");
+
+        //Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [TearDown]
