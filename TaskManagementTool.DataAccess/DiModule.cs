@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
 using TaskManagementTool.Common.Configuration;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.DatabaseContext;
@@ -11,7 +12,10 @@ public static class DiModule
 {
     public static void ConfigureDataAccess(this IServiceCollection services, DatabaseConfigurationOptions options)
     {
-        void UseSqlServer(DbContextOptionsBuilder builder) => builder.UseSqlServer(options.ConnectionString);
+#warning refactor
+        string connectionString = $"Server={options.Server},{options.Port};Initial Catalog={options.DatabaseName};User ID={options.User};Password={options.Password};TrustServerCertificate=True";
+
+        void UseSqlServer(DbContextOptionsBuilder builder) => builder.UseSqlServer(connectionString);
 
         services.AddDbContext<TaskManagementToolDatabase>(UseSqlServer);
 
