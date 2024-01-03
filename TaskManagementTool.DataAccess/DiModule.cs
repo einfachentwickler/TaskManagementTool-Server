@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.Diagnostics;
 using TaskManagementTool.Common.Configuration;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.DatabaseContext;

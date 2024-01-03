@@ -18,10 +18,9 @@ public class TmtWebApplicationFactory : WebApplicationFactory<Program>
         {
             services.RemoveAll(typeof(DbContextOptionsBuilder<TaskManagementToolDatabase>));
 
-            string? connString = GetConnectionString(services);
-
+#warning todo
             services.AddDbContext<TaskManagementToolDatabase>(
-                options => options.UseSqlServer(connString,
+                options => options.UseSqlServer(string.Empty,
                 builder => builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null))
                 );
 
@@ -29,15 +28,6 @@ public class TmtWebApplicationFactory : WebApplicationFactory<Program>
 
             db.Database.EnsureDeleted();
         });
-    }
-
-    private static string? GetConnectionString(IServiceCollection services)
-    {
-        ServiceProvider provider = services.BuildServiceProvider();
-
-        IConfiguration configuration = provider.GetRequiredService<IConfiguration>();
-
-        return configuration.GetSection("TestConnectionString").Value;
     }
 
     private static TaskManagementToolDatabase CreateDbContext(IServiceCollection services)

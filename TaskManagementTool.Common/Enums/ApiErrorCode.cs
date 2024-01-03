@@ -4,5 +4,6 @@ public enum ApiErrorCode
 {
     UserNotFound,
     TodoNotFound,
-    Unautorized
+    Unautorized,
+    InvalidInput
 }

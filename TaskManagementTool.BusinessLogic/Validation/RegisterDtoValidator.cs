@@ -11,21 +11,24 @@ public class RegisterDtoValidator : AbstractValidator<RegisterDto>
 #warning TODO write unit tests
     public RegisterDtoValidator()
     {
-        RuleFor(x => x).NotNull().WithErrorCode(nameof(ValidationErrorCodes.EmptyBody));
+        RuleFor(x => x).NotNull().WithErrorCode(nameof(ValidationErrorCodes.EmptyBody))
+            .ChildRules(innerValidator =>
+            {
+                innerValidator.RuleFor(x => x.Password)
+                    .NotEmpty().WithErrorCode(nameof(ValidationErrorCodes.EmptyPassword))
+                    .MinimumLength(8).WithErrorCode(nameof(ValidationErrorCodes.WeakPassword));
 
-        RuleFor(x => x.Password)
-            .NotEmpty().WithErrorCode(nameof(ValidationErrorCodes.EmptyPassword))
-            .MinimumLength(8).WithErrorCode(nameof(ValidationErrorCodes.WeakPassword));
+                innerValidator.RuleFor(x => x.ConfirmPassword)
+                    .NotEmpty().WithErrorCode(nameof(ValidationErrorCodes.EmptyPassword))
+                    .MinimumLength(8).WithErrorCode(nameof(ValidationErrorCodes.WeakPassword))
+                    .Equal(x => x.Password).WithErrorCode(nameof(ValidationErrorCodes.ConfirmPasswordDoesNotMatch));
 
-        RuleFor(x => x.ConfirmPassword)
-            .NotEmpty().WithErrorCode(nameof(ValidationErrorCodes.EmptyPassword))
-            .MinimumLength(8).WithErrorCode(nameof(ValidationErrorCodes.WeakPassword))
-            .Equal(x => x.Password).WithErrorCode(nameof(ValidationErrorCodes.ConfirmPasswordDoesNotMatch));
+                innerValidator.RuleFor(x => x.Email)
+                    .EmailAddress().WithErrorCode(nameof(ValidationErrorCodes.InvalidEmail));
 
-        RuleFor(x => x.Email)
-            .EmailAddress().WithErrorCode(nameof(ValidationErrorCodes.InvalidEmail));
+                innerValidator.RuleFor(x => x.FirstName).NotEmpty().WithErrorCode(nameof(ValidationErrorCodes.EmptyName));
+                innerValidator.RuleFor(x => x.LastName).NotEmpty().WithErrorCode(nameof(ValidationErrorCodes.EmptyName));
+            });
 
-        RuleFor(x => x.FirstName).NotEmpty().WithErrorCode(nameof(ValidationErrorCodes.EmptyName));
-        RuleFor(x => x.LastName).NotEmpty().WithErrorCode(nameof(ValidationErrorCodes.EmptyName));
     }
 }

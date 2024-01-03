@@ -26,6 +26,7 @@ public class ExceptionMiddleware(RequestDelegate next)
                     ApiErrorCode.UserNotFound => (int)HttpStatusCode.NotFound,
                     ApiErrorCode.TodoNotFound => (int)HttpStatusCode.NotFound,
                     ApiErrorCode.Unautorized => (int)HttpStatusCode.Unauthorized,
+                    ApiErrorCode.InvalidInput => (int)HttpStatusCode.BadRequest,
 
                     _ => 500
                 };

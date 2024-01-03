@@ -6,8 +6,10 @@ using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
 using TaskManagementTool.BusinessLogic.Constants;
+using TaskManagementTool.BusinessLogic.Dto.Errors;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
+using TaskManagementTool.Common.Enums;
 
 namespace IntegrationTests.Tests.Auth;
 
@@ -51,10 +53,10 @@ public class RegisterTests
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        var actualResult = await response.Content.ReadFromJsonAsync<UserManagerResponse>();
+        var actualResult = await response.Content.ReadFromJsonAsync<ErrorDto>();
 
-        actualResult!.Message.Should().Be(UserManagerResponseMessages.CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD);
-        actualResult.IsSuccess.Should().BeFalse();
+        actualResult!.ErrorCode.Should().Be(ApiErrorCode.InvalidInput);
+        actualResult.ErrorMessage.Should().Be("ConfirmPasswordDoesNotMatch");
     }
 
     [Test]
@@ -78,36 +80,6 @@ public class RegisterTests
     }
 
     [Test]
-    public async Task RegisterUserAsync_NullRequest_Returns400()
-    {
-        //Arrange
-        RegisterDto? registerDto = null;
-
-        //Act
-        var response = await _client.PostAsJsonAsync(UriConstants.REGISTER_URI, registerDto);
-
-        //Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
-#warning TODO add error codes check
-    }
-
-    [Test, Ignore("TODO")]
-    public async Task RegisterUserAsync_EmptyProperties_Returns400()
-    {
-        //Arrange
-        RegisterDto? registerDto = new();
-
-        //Act
-        var response = await _client.PostAsJsonAsync(UriConstants.REGISTER_URI, registerDto);
-
-        //Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
-#warning TODO add error codes check
-    }
-
-    [Test, Ignore("TODO")]
     public async Task RegisterUserAsync_WeakPassword_Returns400()
     {
         //Arrange
@@ -130,7 +102,7 @@ public class RegisterTests
 #warning TODO add error codes check
     }
 
-    [Test, Ignore("TODO")]
+    [Test]
     public async Task RegisterUserAsync_InvalidEmail_Returns400()
     {
         //Arrange

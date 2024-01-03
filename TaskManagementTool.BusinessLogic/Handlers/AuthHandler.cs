@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -12,11 +14,13 @@ using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
 using TaskManagementTool.Common.Constants;
+using TaskManagementTool.Common.Enums;
+using TaskManagementTool.Common.Exceptions;
 using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.BusinessLogic.Handlers;
 
-public class AuthHandler(UserManager<User> userManager, IConfiguration configuration) : IAuthHandler
+public class AuthHandler(UserManager<User> userManager, IConfiguration configuration, IValidator<RegisterDto> registerValidator) : IAuthHandler
 {
     public async Task<UserManagerResponse> LoginUserAsync(LoginDto model)
     {
@@ -62,12 +66,11 @@ public class AuthHandler(UserManager<User> userManager, IConfiguration configura
 
     public async Task<UserManagerResponse> RegisterUserAsync(RegisterDto model)
     {
-        if (model.Password != model.ConfirmPassword)
+        ValidationResult validationResult = await registerValidator.ValidateAsync(model);
+
+        if (!validationResult.IsValid)
         {
-            return new UserManagerResponse
-            {
-                Message = UserManagerResponseMessages.CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD
-            };
+            throw new TaskManagementToolException(ApiErrorCode.InvalidInput, string.Join(", ", validationResult.Errors.Select(x => x.ErrorCode)));
         }
 
         User identityUser = new()
