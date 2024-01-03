@@ -1,22 +1,16 @@
 ﻿using Microsoft.Extensions.Configuration;
-using TaskManagementTool.Common.Constants;
-using TaskManagementTool.Common.Exceptions;
 
 namespace TaskManagementTool.Common.Configuration;
 
 public class DatabaseConfigurationOptions(IConfiguration configuration)
 {
-    public string ConnectionString => configuration.GetSection("ConnectionString").Value ?? throw new TaskManagementToolException(ConfigErrorMessagesConstants.CONFIG_VALUE_NOT_FOUND + "ConnectionString");
+    public string DatabaseName => configuration.GetSection("DatabaseConfiguration:DBName").Value;
 
-    public string DatabaseName => configuration["DBName"] ?? "TaskManagementTool";
+    public string Server => configuration.GetSection("DatabaseConfiguration:DBServer").Value;
 
-    public string Server => configuration["DBServer"] ?? "ms-sql-server";
+    public string Port => configuration.GetSection("DatabaseConfiguration:DBPort").Value;
 
-    public string Port => configuration["DBPort"] ?? "1433";
+    public string User => configuration.GetSection("DatabaseConfiguration:DBUser").Value;
 
-#warning refactor
-    public string User => configuration["DBUser"] ?? "SA";
-
-#warning refactor
-    public string Password => configuration["DBPassword"] ?? "Password123455";
+    public string Password => configuration.GetSection("DatabaseConfiguration:DBPassword").Value;
 }
