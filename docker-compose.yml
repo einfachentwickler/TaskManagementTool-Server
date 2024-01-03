@@ -9,7 +9,15 @@ services:
       MSSQL_PID: EXPRESS
     ports:
       - "1433:1433"
+    networks:
+       - default
+    restart: always
   task-management-tool-api:
     build: .
     ports:
-      - "8080:80"
+      - "8080:8080"
+    networks:
+      - default
+    depends_on:
+      - ms-sql-server
+    restart: always

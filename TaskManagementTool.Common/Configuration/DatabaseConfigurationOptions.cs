@@ -10,7 +10,7 @@ public class DatabaseConfigurationOptions(IConfiguration configuration)
 
     public string DatabaseName => configuration["DBName"] ?? "TaskManagementTool";
 
-    public string Server => configuration["DBServer"] ?? "localhost";
+    public string Server => configuration["DBServer"] ?? "ms-sql-server";
 
     public string Port => configuration["DBPort"] ?? "1433";
 
