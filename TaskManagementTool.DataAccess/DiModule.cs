@@ -14,9 +14,7 @@ public static class DiModule
 #warning refactor
         string connectionString = $"Server={options.Server},{options.Port};Initial Catalog={options.DatabaseName};User ID={options.User};Password={options.Password};TrustServerCertificate=True";
 
-        void UseSqlServer(DbContextOptionsBuilder builder) => builder.UseSqlServer(connectionString);
-
-        services.AddDbContext<TaskManagementToolDatabase>(UseSqlServer);
+        services.AddDbContext<TaskManagementToolDatabase>(builder => builder.UseSqlServer(connectionString));
 
         services.AddScoped<ITodoRepository, TodoRepository>();
         services.AddScoped<IDatabaseFactory, DatabaseFactory>();

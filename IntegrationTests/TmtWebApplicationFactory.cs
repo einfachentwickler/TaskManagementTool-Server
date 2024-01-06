@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TaskManagementTool.DataAccess.DatabaseContext;
@@ -16,11 +15,10 @@ public class TmtWebApplicationFactory : WebApplicationFactory<Program>
     {
         builder.ConfigureTestServices(services =>
         {
-            services.RemoveAll(typeof(DbContextOptionsBuilder<TaskManagementToolDatabase>));
+            services.RemoveAll(typeof(DbContextOptions<TaskManagementToolDatabase>));
 
-#warning todo
             services.AddDbContext<TaskManagementToolDatabase>(
-                options => options.UseSqlServer(string.Empty,
+                options => options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TaskManagementToolTests;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
                 builder => builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null))
                 );
 
