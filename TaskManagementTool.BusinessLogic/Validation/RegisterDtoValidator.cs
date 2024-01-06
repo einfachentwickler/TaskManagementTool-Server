@@ -29,6 +29,5 @@ public class RegisterDtoValidator : AbstractValidator<RegisterDto>
                 innerValidator.RuleFor(x => x.FirstName).NotEmpty().WithErrorCode(nameof(ValidationErrorCodes.EmptyName));
                 innerValidator.RuleFor(x => x.LastName).NotEmpty().WithErrorCode(nameof(ValidationErrorCodes.EmptyName));
             });
-
     }
 }
