@@ -10,7 +10,7 @@ using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
 using TaskManagementTool.Host.Controllers;
 
-namespace UnitTests.Host.Controllers;
+namespace Host.UnitTests.Controllers;
 
 [TestFixture]
 public class AuthControllerTests
@@ -73,6 +73,7 @@ public class AuthControllerTests
     [Test]
     public async Task Login_ValidData_Returns200()
     {
+        //Arrange
         var loginDto = fixture.Create<LoginDto>();
 
         var response = fixture.Build<UserManagerResponse>().With(x => x.IsSuccess, true).Create();

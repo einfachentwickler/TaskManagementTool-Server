@@ -8,7 +8,7 @@ using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.Host.Controllers;
 
-namespace UnitTests.Host.Controllers;
+namespace Host.UnitTests.Controllers;
 
 [TestFixture]
 public class AdminControllerTests
@@ -77,5 +77,40 @@ public class AdminControllerTests
         await adminHandler.Received(1).DeleteAsync(userId);
 
         response.Should().BeOfType<NoContentResult>();
+    }
+
+    [Test]
+    public async Task GetTodos_ValidData_ReturnsTodos()
+    {
+        //Arrange
+        const int pageSize = 10;
+        const int pageNumber = 2;
+
+        var todos = fixture.CreateMany<TodoDto>(5);
+
+        todoHandler.GetAsync(pageSize, pageNumber).Returns(todos);
+
+        //Act
+        var actualResult = await sut.GetTodos(pageNumber, pageSize);
+
+        //Assert
+        actualResult.Should().BeOfType<OkObjectResult>();
+
+        ((OkObjectResult)actualResult).Value.Should().Be(todos);
+    }
+
+    [Test]
+    public async Task DeleteTodo_ValidData_ReturnsNoContentResult()
+    {
+        //Arrange
+        const int id = 10;
+
+        //Act
+        var actualResult = await sut.DeleteTodo(id);
+
+        //Assert
+        await todoHandler.Received(1).DeleteAsync(id);
+
+        actualResult.Should().BeOfType<NoContentResult>();
     }
 }

@@ -60,12 +60,14 @@ public class TodoRepository(IDatabaseFactory factory) : ITodoRepository
         return createdTodo;
     }
 
-    public async Task UpdateAsync(TodoEntry item)
+    public async Task<TodoEntry> UpdateAsync(TodoEntry item)
     {
         await using ITaskManagementToolDatabase db = factory.Create();
 
-        db.Todos.Update(item);
+        TodoEntry updatedTodo = db.Todos.Update(item).Entity;
         await db.SaveChangesAsync();
+
+        return updatedTodo;
     }
 
     public async Task DeleteAsync(Expression<Func<TodoEntry, bool>> predicate)

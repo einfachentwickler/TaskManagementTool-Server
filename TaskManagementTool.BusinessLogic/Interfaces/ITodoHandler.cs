@@ -15,7 +15,7 @@ public interface ITodoHandler
 
     public Task<TodoDto> CreateAsync(CreateTodoDto toDoPar);
 
-    public Task UpdateAsync(UpdateTodoDto todo);
+    public Task<TodoDto> UpdateAsync(UpdateTodoDto todo);
 
     public Task DeleteAsync(int id);
 }

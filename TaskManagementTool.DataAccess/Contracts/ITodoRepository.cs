@@ -16,7 +16,7 @@ public interface ITodoRepository
 
     public Task<TodoEntry> CreateAsync(TodoEntry item);
 
-    public Task UpdateAsync(TodoEntry item);
+    public Task<TodoEntry> UpdateAsync(TodoEntry item);
 
     public Task DeleteAsync(Expression<Func<TodoEntry, bool>> predicate);
 }

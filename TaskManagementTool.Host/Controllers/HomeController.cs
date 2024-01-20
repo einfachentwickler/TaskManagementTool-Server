@@ -25,9 +25,9 @@ public class HomeController(ITodoHandler todoHandler, IHttpContextAccessor httpC
     {
         string userId = authUtils.GetUserId(httpContextAccessor.HttpContext);
 
-        IEnumerable<TodoDto> messages = await todoHandler.GetAsync(userId, pageNumber, pageSize);
+        IEnumerable<TodoDto> todos = await todoHandler.GetAsync(userId, pageNumber, pageSize);
 
-        return Ok(messages);
+        return Ok(todos);
     }
 
     [HttpGet("{id:int}")]
@@ -67,8 +67,10 @@ public class HomeController(ITodoHandler todoHandler, IHttpContextAccessor httpC
         {
             return Forbid();
         }
-        await todoHandler.UpdateAsync(model);
-        return NoContent();
+
+        TodoDto updatedTodo = await todoHandler.UpdateAsync(model);
+
+        return Ok(updatedTodo);
     }
 
     [HttpDelete("{id:int}")]

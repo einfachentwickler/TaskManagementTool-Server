@@ -41,7 +41,7 @@ public class TodoHandler(IMapper mapper, ITodoRepository todoRepository) : ITodo
         return mapper.Map<TodoEntry, TodoDto>(await todoRepository.CreateAsync(todoEntry));
     }
 
-    public async Task UpdateAsync(UpdateTodoDto todo)
+    public async Task<TodoDto> UpdateAsync(UpdateTodoDto todo)
     {
         TodoEntry item = await todoRepository.FirstOrDefaultAsync(todo.Id);
 
@@ -50,7 +50,9 @@ public class TodoHandler(IMapper mapper, ITodoRepository todoRepository) : ITodo
         item.Content = todo.Content;
         item.Importance = todo.Importance;
 
-        await todoRepository.UpdateAsync(item);
+        TodoEntry updatedTodo = await todoRepository.UpdateAsync(item);
+
+        return mapper.Map<TodoEntry, TodoDto>(updatedTodo);
     }
 
     public async Task DeleteAsync(int id)
