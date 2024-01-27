@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using TaskManagementTool.BusinessLogic.Handlers;
 using TaskManagementTool.BusinessLogic.Handlers.Utils;
@@ -15,6 +16,7 @@ using TaskManagementTool.Host.Constants;
 
 namespace TaskManagementTool.Host;
 
+[ExcludeFromCodeCoverage]
 public static class DiModule
 {
     public static void RegisterDependencies(this IServiceCollection services)

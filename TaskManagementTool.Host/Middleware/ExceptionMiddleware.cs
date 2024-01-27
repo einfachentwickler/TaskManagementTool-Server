@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
-using System.Net;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Dto.Errors;
 using TaskManagementTool.Common.Enums;
@@ -11,7 +10,7 @@ namespace TaskManagementTool.Host.Middleware;
 
 public class ExceptionMiddleware(RequestDelegate next)
 {
-    public async Task Invoke(HttpContext context)
+    public async Task InvokeAsync(HttpContext context)
     {
         try
         {
@@ -23,13 +22,16 @@ public class ExceptionMiddleware(RequestDelegate next)
             {
                 context.Response.StatusCode = customException.ErrorCode switch
                 {
-                    ApiErrorCode.UserNotFound => (int)HttpStatusCode.NotFound,
-                    ApiErrorCode.TodoNotFound => (int)HttpStatusCode.NotFound,
-                    ApiErrorCode.Unautorized => (int)HttpStatusCode.Unauthorized,
-                    ApiErrorCode.InvalidInput => (int)HttpStatusCode.BadRequest,
-
-                    _ => 500
+                    ApiErrorCode.UserNotFound => StatusCodes.Status404NotFound,
+                    ApiErrorCode.TodoNotFound => StatusCodes.Status404NotFound,
+                    ApiErrorCode.Unautorized => StatusCodes.Status401Unauthorized,
+                    ApiErrorCode.InvalidInput => StatusCodes.Status400BadRequest,
+                    _ => StatusCodes.Status500InternalServerError
                 };
+            }
+            else
+            {
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 
             await context.Response.WriteAsync(exception switch

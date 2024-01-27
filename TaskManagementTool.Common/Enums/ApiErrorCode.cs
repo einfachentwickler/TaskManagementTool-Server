@@ -1,5 +1,8 @@
-﻿namespace TaskManagementTool.Common.Enums;
+﻿using System.Text.Json.Serialization;
 
+namespace TaskManagementTool.Common.Enums;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ApiErrorCode
 {
     UserNotFound,

@@ -14,6 +14,7 @@ using TaskManagementTool.Host.Middleware;
 
 namespace TaskManagementTool.Host;
 
+[ExcludeFromCodeCoverage]
 [SuppressMessage("Roslynator", "RCS1102:Make class static", Justification = "Used in integration tests")]
 public class Program
 {
