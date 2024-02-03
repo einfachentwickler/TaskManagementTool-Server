@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic;
-using TaskManagementTool.Common.Configuration;
+using TaskManagementTool.Common.Configuration.Startup;
 using TaskManagementTool.DataAccess;
 using TaskManagementTool.DataAccess.DatabaseContext;
 using TaskManagementTool.DataAccess.Entities;

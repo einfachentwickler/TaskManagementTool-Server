@@ -2,6 +2,7 @@
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using System.Threading.Tasks;
+using TaskManagementTool.BusinessLogic.Dto.AuthModels;
 using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
@@ -34,5 +35,15 @@ public class AuthController(IAuthHandler handler) : ControllerBase
         UserManagerResponse result = await handler.LoginUserAsync(model);
 
         return result.IsSuccess ? Ok(result) : Unauthorized(result);
+    }
+
+    [HttpPost("reset-password")]
+    [SwaggerResponse((int)HttpStatusCode.OK)]
+    [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto model)
+    {
+        UserManagerResponse result = await handler.ResetPasswordAsync(model);
+
+        return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 }

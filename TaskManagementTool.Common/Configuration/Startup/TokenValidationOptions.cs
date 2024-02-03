@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace TaskManagementTool.Common.Configuration;
+namespace TaskManagementTool.Common.Configuration.Startup;
 
 public class TokenValidationOptions(IConfiguration configuration)
 {

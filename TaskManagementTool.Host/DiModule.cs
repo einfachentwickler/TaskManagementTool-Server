@@ -9,7 +9,7 @@ using System.Text;
 using TaskManagementTool.BusinessLogic.Handlers;
 using TaskManagementTool.BusinessLogic.Handlers.Utils;
 using TaskManagementTool.BusinessLogic.Interfaces;
-using TaskManagementTool.Common.Configuration;
+using TaskManagementTool.Common.Configuration.Startup;
 using TaskManagementTool.DataAccess.DatabaseContext;
 using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.Host.Constants;

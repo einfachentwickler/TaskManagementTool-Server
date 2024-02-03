@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Constants;
+using TaskManagementTool.BusinessLogic.Dto.AuthModels;
 using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
@@ -20,7 +21,12 @@ using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.BusinessLogic.Handlers;
 
-public class AuthHandler(UserManager<User> userManager, IConfiguration configuration, IValidator<RegisterDto> registerValidator) : IAuthHandler
+public class AuthHandler(
+    UserManager<User> userManager,
+    IConfiguration configuration,
+    IValidator<RegisterDto> registerValidator,
+    IValidator<ResetPasswordDto> resetPasswordRequestValudator
+    ) : IAuthHandler
 {
     public async Task<UserManagerResponse> LoginUserAsync(LoginDto model)
     {
@@ -100,6 +106,36 @@ public class AuthHandler(UserManager<User> userManager, IConfiguration configura
             IsSuccess = false,
             Errors = result.Errors.Select(identityError => identityError.Description)
         };
+    }
+
+    public async Task<UserManagerResponse> ResetPasswordAsync(ResetPasswordDto request)
+    {
+        ValidationResult validationResult = await resetPasswordRequestValudator.ValidateAsync(request);
+
+        if (!validationResult.IsValid)
+        {
+            throw new TaskManagementToolException(ApiErrorCode.InvalidInput, string.Join(", ", validationResult.Errors.Select(x => x.ErrorCode)));
+        }
+
+        User user = userManager.Users.FirstOrDefault(user => user.Email == request.Email);
+
+        if (user is null)
+        {
+            return new UserManagerResponse { IsSuccess = false, Message = UserManagerResponseMessages.USER_DOES_NOT_EXIST };
+        }
+
+        bool isCurrentPasswordValid = await userManager.CheckPasswordAsync(user, request.CurrentPassword);
+
+        if (isCurrentPasswordValid)
+        {
+            string resetToken = await userManager.GeneratePasswordResetTokenAsync(user);
+
+            IdentityResult passwordChangeResult = await userManager.ResetPasswordAsync(user, resetToken, request.NewPassword);
+
+            return new UserManagerResponse { IsSuccess = true };
+        }
+
+        return new UserManagerResponse { IsSuccess = false, Message = UserManagerResponseMessages.INVALID_CREDENTIALS };
     }
 
     private (string, JwtSecurityToken) GetToken(User user, LoginDto model)

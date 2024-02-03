@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using TaskManagementTool.Common.Configuration;
+using TaskManagementTool.Common.Configuration.Startup;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.DatabaseContext;
 using TaskManagementTool.DataAccess.Factories;

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NUnit.Framework;
 using System.Net;
+using TaskManagementTool.BusinessLogic.Dto.AuthModels;
 using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
@@ -108,5 +109,53 @@ public class AuthControllerTests
 
         actualResult.As<UnauthorizedObjectResult>().StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
         actualResult.As<UnauthorizedObjectResult>().Value.Should().BeEquivalentTo(response);
+    }
+
+    [Test]
+    public async Task ResetPasswordAsync_ValidData_Returns200()
+    {
+        //Arrange
+        var request = fixture.Create<ResetPasswordDto>();
+
+        var expectedResult = fixture
+            .Build<UserManagerResponse>()
+            .With(request => request.IsSuccess, true)
+            .Create();
+
+        authHandler.ResetPasswordAsync(request).Returns(expectedResult);
+
+        //Act
+        IActionResult actualResult = await sut.ResetPassword(request);
+
+        //Assert
+        actualResult.Should().BeOfType<OkObjectResult>();
+
+        ((OkObjectResult)actualResult).Value.Should().BeEquivalentTo(expectedResult);
+
+        await authHandler.Received(1).ResetPasswordAsync(request);
+    }
+
+    [Test]
+    public async Task ResetPasswordAsync_ValidData_Returns400()
+    {
+        //Arrange
+        var request = fixture.Create<ResetPasswordDto>();
+
+        var expectedResult = fixture
+            .Build<UserManagerResponse>()
+            .With(request => request.IsSuccess, false)
+            .Create();
+
+        authHandler.ResetPasswordAsync(request).Returns(expectedResult);
+
+        //Act
+        IActionResult actualResult = await sut.ResetPassword(request);
+
+        //Assert
+        actualResult.Should().BeOfType<BadRequestObjectResult>();
+
+        ((BadRequestObjectResult)actualResult).Value.Should().BeEquivalentTo(expectedResult);
+
+        await authHandler.Received(1).ResetPasswordAsync(request);
     }
 }
