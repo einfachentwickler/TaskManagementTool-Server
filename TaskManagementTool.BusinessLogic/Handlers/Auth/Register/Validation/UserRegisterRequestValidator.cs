@@ -1,15 +1,13 @@
 ﻿using FluentValidation;
-using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
+using TaskManagementTool.BusinessLogic.Handlers.Auth.Register.Models;
 using TaskManagementTool.Common.Constants;
 using TaskManagementTool.Common.Enums;
 
-namespace TaskManagementTool.BusinessLogic.Validation;
+namespace TaskManagementTool.BusinessLogic.Handlers.Auth.Register.Validation;
 
-public class RegisterDtoValidator : AbstractValidator<RegisterDto>
+public class UserRegisterRequestValidator : AbstractValidator<UserRegisterRequest>
 {
-#warning TODO improve password validation
-#warning TODO take password size from configuration
-    public RegisterDtoValidator()
+    public UserRegisterRequestValidator()
     {
         RuleFor(x => x).NotNull().WithErrorCode(nameof(ValidationErrorCodes.EmptyValue))
             .ChildRules(innerValidator =>

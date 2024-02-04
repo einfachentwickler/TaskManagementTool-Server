@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using System.Threading.Tasks;
-using TaskManagementTool.BusinessLogic.Dto.AuthModels;
-using TaskManagementTool.BusinessLogic.Interfaces;
-using TaskManagementTool.BusinessLogic.ViewModels;
-using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
+using TaskManagementTool.BusinessLogic.Handlers.Auth.Login.Models;
+using TaskManagementTool.BusinessLogic.Handlers.Auth.Register.Models;
+using TaskManagementTool.BusinessLogic.Handlers.Auth.ResetPassword.Models;
 using TaskManagementTool.Host.ActionFilters;
 
 namespace TaskManagementTool.Host.Controllers;
@@ -15,14 +15,14 @@ namespace TaskManagementTool.Host.Controllers;
 [ModelStateFilter]
 [Consumes("application/json")]
 [Produces("application/json")]
-public class AuthController(IAuthHandler handler) : ControllerBase
+public class AuthController(IMediator mediator) : ControllerBase
 {
     [HttpPost("register")]
     [SwaggerResponse((int)HttpStatusCode.OK)]
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> Register([FromBody] RegisterDto model)
+    public async Task<IActionResult> Register([FromBody] UserRegisterRequest request)
     {
-        UserManagerResponse result = await handler.RegisterUserAsync(model);
+        UserRegisterResponse result = await mediator.Send(request);
 
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
@@ -30,9 +30,9 @@ public class AuthController(IAuthHandler handler) : ControllerBase
     [HttpPost("login")]
     [SwaggerResponse((int)HttpStatusCode.OK)]
     [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
-    public async Task<IActionResult> Login([FromBody] LoginDto model)
+    public async Task<IActionResult> Login([FromBody] UserLoginRequest request)
     {
-        UserManagerResponse result = await handler.LoginUserAsync(model);
+        UserLoginResponse result = await mediator.Send(request);
 
         return result.IsSuccess ? Ok(result) : Unauthorized(result);
     }
@@ -40,9 +40,9 @@ public class AuthController(IAuthHandler handler) : ControllerBase
     [HttpPost("reset-password")]
     [SwaggerResponse((int)HttpStatusCode.OK)]
     [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
-    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto model)
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
     {
-        UserManagerResponse result = await handler.ResetPasswordAsync(model);
+        ResetPasswordResponse result = await mediator.Send(request);
 
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }

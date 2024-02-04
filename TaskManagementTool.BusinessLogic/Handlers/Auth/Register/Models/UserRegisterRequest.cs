@@ -1,6 +1,8 @@
-﻿namespace TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
+﻿using MediatR;
 
-public class RegisterDto
+namespace TaskManagementTool.BusinessLogic.Handlers.Auth.Register.Models;
+
+public class UserRegisterRequest : IRequest<UserRegisterResponse>
 {
     public string Email { get; init; }
 

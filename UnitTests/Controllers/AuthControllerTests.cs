@@ -1,14 +1,15 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using FluentAssertions;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NUnit.Framework;
 using System.Net;
-using TaskManagementTool.BusinessLogic.Dto.AuthModels;
-using TaskManagementTool.BusinessLogic.Interfaces;
-using TaskManagementTool.BusinessLogic.ViewModels;
-using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
+using TaskManagementTool.BusinessLogic.Constants;
+using TaskManagementTool.BusinessLogic.Handlers.Auth.Login.Models;
+using TaskManagementTool.BusinessLogic.Handlers.Auth.Register.Models;
+using TaskManagementTool.BusinessLogic.Handlers.Auth.ResetPassword.Models;
 using TaskManagementTool.Host.Controllers;
 
 namespace Host.UnitTests.Controllers;
@@ -17,7 +18,7 @@ namespace Host.UnitTests.Controllers;
 public class AuthControllerTests
 {
     private IFixture fixture;
-    private IAuthHandler authHandler;
+    private IMediator mediator;
 
     private AuthController sut;
 
@@ -26,20 +27,23 @@ public class AuthControllerTests
     {
         fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
 
-        authHandler = fixture.Freeze<IAuthHandler>();
+        mediator = fixture.Freeze<IMediator>();
 
-        sut = new AuthController(authHandler);
+        sut = new AuthController(mediator);
     }
 
     [Test]
     public async Task Register_ValidData_Returns200()
     {
         //Arrange
-        var registerDto = fixture.Create<RegisterDto>();
+        var registerDto = fixture.Create<UserRegisterRequest>();
 
-        var response = fixture.Build<UserManagerResponse>().With(x => x.IsSuccess, true).Create();
+        UserRegisterResponse expectedResult = new()
+        {
+            IsSuccess = true
+        };
 
-        authHandler.RegisterUserAsync(registerDto).Returns(response);
+        mediator.Send(registerDto).Returns(expectedResult);
 
         //Act
         IActionResult actualResult = await sut.Register(registerDto);
@@ -48,18 +52,22 @@ public class AuthControllerTests
         actualResult.Should().BeOfType<OkObjectResult>();
 
         actualResult.As<OkObjectResult>().StatusCode.Should().Be((int)HttpStatusCode.OK);
-        actualResult.As<OkObjectResult>().Value.Should().BeEquivalentTo(response);
+        actualResult.As<OkObjectResult>().Value.Should().BeEquivalentTo(expectedResult);
     }
 
     [Test]
     public async Task Register_InvalidData_Returns400()
     {
         //Arrange
-        var registerDto = fixture.Create<RegisterDto>();
+        var registerDto = fixture.Create<UserRegisterRequest>();
 
-        var response = fixture.Build<UserManagerResponse>().With(x => x.IsSuccess, false).Create();
+        UserRegisterResponse expectedResult = new()
+        {
+            IsSuccess = false,
+            Message = UserManagerResponseMessages.INVALID_CREDENTIALS,
+        };
 
-        authHandler.RegisterUserAsync(registerDto).Returns(response);
+        mediator.Send(registerDto).Returns(expectedResult);
 
         //Act
         IActionResult actualResult = await sut.Register(registerDto);
@@ -68,18 +76,18 @@ public class AuthControllerTests
         actualResult.Should().BeOfType<BadRequestObjectResult>();
 
         actualResult.As<BadRequestObjectResult>().StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        actualResult.As<BadRequestObjectResult>().Value.Should().BeEquivalentTo(response);
+        actualResult.As<BadRequestObjectResult>().Value.Should().BeEquivalentTo(expectedResult);
     }
 
     [Test]
     public async Task Login_ValidData_Returns200()
     {
         //Arrange
-        var loginDto = fixture.Create<LoginDto>();
+        var loginDto = fixture.Create<UserLoginRequest>();
 
-        var response = fixture.Build<UserManagerResponse>().With(x => x.IsSuccess, true).Create();
+        UserLoginResponse expectedResult = new() { IsSuccess = true, Token = "token" };
 
-        authHandler.LoginUserAsync(loginDto).Returns(response);
+        mediator.Send(loginDto).Returns(expectedResult);
 
         //Act
         IActionResult actualResult = await sut.Login(loginDto);
@@ -88,18 +96,18 @@ public class AuthControllerTests
         actualResult.Should().BeOfType<OkObjectResult>();
 
         actualResult.As<OkObjectResult>().StatusCode.Should().Be((int)HttpStatusCode.OK);
-        actualResult.As<OkObjectResult>().Value.Should().BeEquivalentTo(response);
+        actualResult.As<OkObjectResult>().Value.Should().BeEquivalentTo(expectedResult);
     }
 
     [Test]
     public async Task Login_InvalidData_Returns400()
     {
         //Arrange
-        var loginDto = fixture.Create<LoginDto>();
+        var loginDto = fixture.Create<UserLoginRequest>();
 
-        var response = fixture.Build<UserManagerResponse>().With(x => x.IsSuccess, false).Create();
+        UserLoginResponse expectedResult = new() { IsSuccess = false, Message = UserManagerResponseMessages.INVALID_CREDENTIALS };
 
-        authHandler.LoginUserAsync(loginDto).Returns(response);
+        mediator.Send(loginDto).Returns(expectedResult);
 
         //Act
         IActionResult actualResult = await sut.Login(loginDto);
@@ -108,21 +116,18 @@ public class AuthControllerTests
         actualResult.Should().BeOfType<UnauthorizedObjectResult>();
 
         actualResult.As<UnauthorizedObjectResult>().StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
-        actualResult.As<UnauthorizedObjectResult>().Value.Should().BeEquivalentTo(response);
+        actualResult.As<UnauthorizedObjectResult>().Value.Should().BeEquivalentTo(expectedResult);
     }
 
     [Test]
     public async Task ResetPasswordAsync_ValidData_Returns200()
     {
         //Arrange
-        var request = fixture.Create<ResetPasswordDto>();
+        var request = fixture.Create<ResetPasswordRequest>();
 
-        var expectedResult = fixture
-            .Build<UserManagerResponse>()
-            .With(request => request.IsSuccess, true)
-            .Create();
+        ResetPasswordResponse expectedResult = new() { IsSuccess = true };
 
-        authHandler.ResetPasswordAsync(request).Returns(expectedResult);
+        mediator.Send(request).Returns(expectedResult);
 
         //Act
         IActionResult actualResult = await sut.ResetPassword(request);
@@ -132,21 +137,18 @@ public class AuthControllerTests
 
         ((OkObjectResult)actualResult).Value.Should().BeEquivalentTo(expectedResult);
 
-        await authHandler.Received(1).ResetPasswordAsync(request);
+        await mediator.Received(1).Send(request);
     }
 
     [Test]
     public async Task ResetPasswordAsync_ValidData_Returns400()
     {
         //Arrange
-        var request = fixture.Create<ResetPasswordDto>();
+        var request = fixture.Create<ResetPasswordRequest>();
 
-        var expectedResult = fixture
-            .Build<UserManagerResponse>()
-            .With(request => request.IsSuccess, false)
-            .Create();
+        ResetPasswordResponse expectedResult = new() { IsSuccess = false, Message = UserManagerResponseMessages.INVALID_CREDENTIALS };
 
-        authHandler.ResetPasswordAsync(request).Returns(expectedResult);
+        mediator.Send(request).Returns(expectedResult);
 
         //Act
         IActionResult actualResult = await sut.ResetPassword(request);
@@ -156,6 +158,6 @@ public class AuthControllerTests
 
         ((BadRequestObjectResult)actualResult).Value.Should().BeEquivalentTo(expectedResult);
 
-        await authHandler.Received(1).ResetPasswordAsync(request);
+        await mediator.Received(1).Send(request);
     }
 }

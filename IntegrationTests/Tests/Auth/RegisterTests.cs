@@ -6,9 +6,7 @@ using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
 using TaskManagementTool.BusinessLogic.Constants;
-using TaskManagementTool.BusinessLogic.Dto.Errors;
-using TaskManagementTool.BusinessLogic.ViewModels;
-using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
+using TaskManagementTool.BusinessLogic.Handlers.Auth.Register.Models;
 using TaskManagementTool.Common.Enums;
 
 namespace IntegrationTests.Tests.Auth;
@@ -38,7 +36,7 @@ public class RegisterTests
         //Assert
         response.EnsureSuccessStatusCode();
 
-        var actualResult = await response.Content.ReadFromJsonAsync<UserManagerResponse>();
+        var actualResult = await response.Content.ReadFromJsonAsync<UserRegisterResponse>();
 
         actualResult!.Message.Should().Be(UserManagerResponseMessages.USER_CREATED);
         actualResult.IsSuccess.Should().BeTrue();
@@ -53,10 +51,11 @@ public class RegisterTests
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        var actualResult = await response.Content.ReadFromJsonAsync<ErrorDto>();
+        var actualResult = await response.Content.ReadFromJsonAsync<UserRegisterResponse>();
 
-        actualResult!.ErrorCode.Should().Be(ApiErrorCode.InvalidInput);
-        actualResult.ErrorMessage.Should().Be("ConfirmPasswordDoesNotMatch");
+        actualResult!.Message.Should().Be(UserManagerResponseMessages.USER_WAS_NOT_CREATED);
+        actualResult.IsSuccess.Should().Be(false);
+        actualResult.Errors.Should().BeEquivalentTo(new List<string> { nameof(ValidationErrorCodes.ConfirmPasswordDoesNotMatch) });
     }
 
     [Test]
@@ -71,7 +70,7 @@ public class RegisterTests
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        var actualResult = await response.Content.ReadFromJsonAsync<UserManagerResponse>();
+        var actualResult = await response.Content.ReadFromJsonAsync<UserRegisterResponse>();
 
         actualResult!.Message.Should().Be(UserManagerResponseMessages.USER_WAS_NOT_CREATED);
         actualResult.IsSuccess.Should().BeFalse();
@@ -83,7 +82,7 @@ public class RegisterTests
     public async Task RegisterUserAsync_WeakPassword_Returns400()
     {
         //Arrange
-        RegisterDto registerDto = new()
+        UserRegisterRequest registerDto = new()
         {
             Age = 34,
             Password = "123",
@@ -106,7 +105,7 @@ public class RegisterTests
     public async Task RegisterUserAsync_InvalidEmail_Returns400()
     {
         //Arrange
-        RegisterDto registerDto = new()
+        UserRegisterRequest registerDto = new()
         {
             Age = 34,
             Password = "password",

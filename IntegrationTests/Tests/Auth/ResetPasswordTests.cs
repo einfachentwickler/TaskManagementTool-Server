@@ -4,9 +4,8 @@ using IntegrationTests.Utils;
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
-using TaskManagementTool.BusinessLogic.Dto.AuthModels;
-using TaskManagementTool.BusinessLogic.ViewModels;
-using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
+using TaskManagementTool.BusinessLogic.Handlers.Auth.Login.Models;
+using TaskManagementTool.BusinessLogic.Handlers.Auth.ResetPassword.Models;
 
 namespace IntegrationTests.Tests.Auth;
 
@@ -34,7 +33,7 @@ public class ResetPasswordTests
 
         const string newPassword = "Qwerty123$";
 
-        ResetPasswordDto request = new()
+        ResetPasswordRequest request = new()
         {
             Email = EMAIL,
             CurrentPassword = PASSWORD,
@@ -48,11 +47,11 @@ public class ResetPasswordTests
         //Assert
         actualResponse.EnsureSuccessStatusCode();
 
-        var actualResult = await actualResponse.Content.ReadFromJsonAsync<UserManagerResponse>();
+        var actualResult = await actualResponse.Content.ReadFromJsonAsync<ResetPasswordResponse>();
 
-        actualResult.Should().BeEquivalentTo(new UserManagerResponse { IsSuccess = true });
+        actualResult.Should().BeEquivalentTo(new ResetPasswordResponse { IsSuccess = true });
 
-        LoginDto loginDto = new()
+        UserLoginRequest loginDto = new()
         {
             Email = EMAIL,
             Password = PASSWORD
@@ -67,19 +66,42 @@ public class ResetPasswordTests
     }
 
     [Test]
-    public async Task ResetPasswordAsync_InvalidCurrentPassword_Returns401()
+    public async Task ResetPasswordAsync_InvalidCurrentPassword_Returns400()
     {
         //Arrange
         await TestsHelper.RegisterUserAsync(client, EMAIL, PASSWORD, PASSWORD);
 
         const string newPassword = "Qwerty123$";
 
-        ResetPasswordDto request = new()
+        ResetPasswordRequest request = new()
         {
             Email = EMAIL,
             CurrentPassword = PASSWORD + "qwerty",
             NewPassword = newPassword,
             ConfirmNewPassword = newPassword
+        };
+
+        //Act
+        HttpResponseMessage actualResponse = await client.PostAsJsonAsync(UriConstants.RESET_PASSWORD_URI, request);
+
+        //Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Test]
+    public async Task ResetPasswordAsync_NewPasswordDoesNotMatchConfirmPassword_Returns400()
+    {
+        //Arrange
+        await TestsHelper.RegisterUserAsync(client, EMAIL, PASSWORD, PASSWORD);
+
+        const string newPassword = "Qwerty123$";
+
+        ResetPasswordRequest request = new()
+        {
+            Email = EMAIL,
+            CurrentPassword = PASSWORD,
+            NewPassword = newPassword,
+            ConfirmNewPassword = newPassword + "1"
         };
 
         //Act

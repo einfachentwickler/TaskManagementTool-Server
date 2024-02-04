@@ -1,11 +1,11 @@
 ﻿using FluentValidation;
-using TaskManagementTool.BusinessLogic.Dto.AuthModels;
+using TaskManagementTool.BusinessLogic.Handlers.Auth.ResetPassword.Models;
 using TaskManagementTool.Common.Constants;
 using TaskManagementTool.Common.Enums;
 
 namespace TaskManagementTool.BusinessLogic.Validation;
 
-public class ResetPasswordDtoValidator : AbstractValidator<ResetPasswordDto>
+public class ResetPasswordDtoValidator : AbstractValidator<ResetPasswordRequest>
 {
     public ResetPasswordDtoValidator()
     {

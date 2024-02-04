@@ -1,8 +1,8 @@
 ﻿using IntegrationTests.Constants;
 using Microsoft.AspNetCore.Http;
 using System.Net.Http.Json;
-using TaskManagementTool.BusinessLogic.ViewModels;
-using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
+using TaskManagementTool.BusinessLogic.Handlers.Auth.Login.Models;
+using TaskManagementTool.BusinessLogic.Handlers.Auth.Register.Models;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
 
 namespace IntegrationTests.Utils;
@@ -10,7 +10,7 @@ public static class TestsHelper
 {
     public static async Task<HttpResponseMessage> RegisterUserAsync(HttpClient client, string email, string password, string confirmPassword)
     {
-        RegisterDto registerDto = new()
+        UserRegisterRequest registerDto = new()
         {
             Age = 34,
             Password = password,
@@ -25,7 +25,7 @@ public static class TestsHelper
 
     public static async Task LoginAsync(HttpClient client, string email, string password)
     {
-        LoginDto loginDto = new()
+        UserLoginRequest loginDto = new()
         {
             Email = email,
             Password = password
@@ -33,7 +33,7 @@ public static class TestsHelper
 
         HttpResponseMessage loginResponse = await client.PostAsJsonAsync(UriConstants.LOGIN_URI, loginDto);
 
-        string token = (await loginResponse.Content.ReadFromJsonAsync<UserManagerResponse>())!.Message;
+        string token = (await loginResponse.Content.ReadFromJsonAsync<UserLoginResponse>())!.Message;
 
         client.DefaultRequestHeaders.Clear();
         client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);

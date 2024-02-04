@@ -5,8 +5,8 @@ using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
 using TaskManagementTool.BusinessLogic.Constants;
+using TaskManagementTool.BusinessLogic.Handlers.Auth.Login.Models;
 using TaskManagementTool.BusinessLogic.ViewModels;
-using TaskManagementTool.BusinessLogic.ViewModels.AuthModels;
 
 namespace IntegrationTests.Tests.Auth;
 
@@ -29,7 +29,7 @@ public class LoginTests
         //Arrange
         await TestsHelper.RegisterUserAsync(client, "user1@email.com", "password", "password");
 
-        LoginDto loginDto = new()
+        UserLoginRequest loginDto = new()
         {
             Email = "user1@email.com",
             Password = "password"
@@ -41,11 +41,11 @@ public class LoginTests
         //Assert
         response.EnsureSuccessStatusCode();
 
-        var actualResult = await response.Content.ReadFromJsonAsync<UserManagerResponse>();
+        var actualResult = await response.Content.ReadFromJsonAsync<UserLoginResponse>();
 
         actualResult!.Message.Should().NotBeNullOrEmpty();
         actualResult.IsSuccess.Should().BeTrue();
-        actualResult.ExpiredDate!.Value.Should().BeAfter(DateTime.UtcNow);
+        actualResult.ExpirationDate.Should().BeAfter(DateTime.UtcNow);
 
         client.DefaultRequestHeaders.Clear();
         client.DefaultRequestHeaders.Add("Authorization", "Bearer " + actualResult.Message);
@@ -57,7 +57,7 @@ public class LoginTests
     public async Task LoginUser_UserDoesNotExist_Returns401()
     {
         //Arrange
-        LoginDto loginDto = new()
+        UserLoginRequest loginDto = new()
         {
             Email = "user1@email.com",
             Password = "password"
@@ -69,7 +69,7 @@ public class LoginTests
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
 
-        var actualResult = await response.Content.ReadFromJsonAsync<UserManagerResponse>();
+        var actualResult = await response.Content.ReadFromJsonAsync<UserLoginResponse>();
 
         actualResult!.Message.Should().Be(UserManagerResponseMessages.USER_DOES_NOT_EXIST);
         actualResult.IsSuccess.Should().BeFalse();
@@ -92,7 +92,7 @@ public class LoginTests
         //Assert
         reverseStatusResponse.EnsureSuccessStatusCode();
 
-        LoginDto loginDto = new()
+        UserLoginRequest loginDto = new()
         {
             Email = "user1@email.com",
             Password = "password"
@@ -102,7 +102,7 @@ public class LoginTests
 
         loginResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
 
-        var actualResult = await loginResponse.Content.ReadFromJsonAsync<UserManagerResponse>();
+        var actualResult = await loginResponse.Content.ReadFromJsonAsync<UserLoginResponse>();
 
         actualResult!.IsSuccess.Should().BeFalse();
         actualResult.Message.Should().Be(UserManagerResponseMessages.BLOCKED_EMAIL);
@@ -114,7 +114,7 @@ public class LoginTests
         //Arrange
         await TestsHelper.RegisterUserAsync(client, "user1@email.com", "password", "password");
 
-        LoginDto loginDto = new()
+        UserLoginRequest loginDto = new()
         {
             Email = "user1@email.com",
             Password = "password12"
@@ -126,7 +126,7 @@ public class LoginTests
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
 
-        var actualResult = await response.Content.ReadFromJsonAsync<UserManagerResponse>();
+        var actualResult = await response.Content.ReadFromJsonAsync<UserLoginResponse>();
 
         actualResult!.Message.Should().Be(UserManagerResponseMessages.INVALID_CREDENTIALS);
         actualResult.IsSuccess.Should().BeFalse();
