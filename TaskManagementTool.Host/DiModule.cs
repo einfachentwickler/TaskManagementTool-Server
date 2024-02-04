@@ -2,13 +2,16 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualBasic.FileIO;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using TaskManagementTool.BusinessLogic.Commands;
 using TaskManagementTool.BusinessLogic.Commands.Utils;
 using TaskManagementTool.BusinessLogic.Interfaces;
+using TaskManagementTool.Common.Configuration;
 using TaskManagementTool.Common.Configuration.Startup;
 using TaskManagementTool.DataAccess.DatabaseContext;
 using TaskManagementTool.DataAccess.Entities;
@@ -19,6 +22,15 @@ namespace TaskManagementTool.Host;
 [ExcludeFromCodeCoverage]
 public static class DiModule
 {
+    public static void SetupOptions(this IServiceCollection services)
+    {
+        services
+            .AddOptions<AuthSettings>()
+            .BindConfiguration(nameof(AuthSettings))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+    }
+
     public static void RegisterDependencies(this IServiceCollection services)
     {
         services.AddScoped<ITodoHandler, TodoHandler>();
@@ -41,7 +53,7 @@ public static class DiModule
         this IServiceCollection services,
         IdentityConfigurationOptions passwordOptions,
         TokenValidationOptions tokenOptions,
-        AuthSettings authSettings
+        IConfiguration configuration
         )
     {
         void AddIdentity(IdentityOptions identityOptions)
@@ -68,10 +80,10 @@ public static class DiModule
             {
                 ValidateIssuer = tokenOptions.ShouldValidateIssuer,
                 ValidateAudience = tokenOptions.ShouldValidateAudience,
-                ValidAudience = authSettings.Audience,
-                ValidIssuer = authSettings.Issuer,
+                ValidAudience = configuration["AuthSettings:Audience"],
+                ValidIssuer = configuration["AuthSettings:Issuer"],
                 RequireExpirationTime = tokenOptions.ShouldRequireExpirationTime,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(authSettings.Key)),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["AuthSettings:Key"]!)),
                 ValidateIssuerSigningKey = tokenOptions.ShouldValidateIssuerSigninKey
             };
         }

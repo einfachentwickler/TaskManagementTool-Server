@@ -24,6 +24,8 @@ public class Program
 
         builder.Services.AddControllers();
 
+        builder.Services.SetupOptions();
+
         builder.Services.ConfigureCors();
 
         builder.Services.ConfigureDataAccess(new DatabaseConfigurationOptions(builder.Configuration));
@@ -31,7 +33,7 @@ public class Program
         builder.Services.ConfigureIdentity(
             new IdentityConfigurationOptions(builder.Configuration),
             new TokenValidationOptions(builder.Configuration),
-            new AuthSettings(builder.Configuration)
+            builder.Configuration
             );
 
         builder.Services.RegisterDependencies();
