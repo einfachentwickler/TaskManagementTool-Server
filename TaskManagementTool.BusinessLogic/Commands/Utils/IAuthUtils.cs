@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
-namespace TaskManagementTool.BusinessLogic.Handlers.Utils;
+namespace TaskManagementTool.BusinessLogic.Commands.Utils;
 
 public interface IAuthUtils
 {

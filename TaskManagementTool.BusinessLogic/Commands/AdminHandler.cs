@@ -11,7 +11,7 @@ using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.DataAccess.Extensions;
 
-namespace TaskManagementTool.BusinessLogic.Handlers;
+namespace TaskManagementTool.BusinessLogic.Commands;
 
 public class AdminHandler(IMapper mapper, UserManager<User> userManager, ITodoRepository todoRepository) : IAdminHandler
 {

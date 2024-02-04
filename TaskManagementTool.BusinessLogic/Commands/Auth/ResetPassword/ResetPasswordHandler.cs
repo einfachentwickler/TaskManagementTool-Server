@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
+using TaskManagementTool.BusinessLogic.Commands.Auth.ResetPassword.Models;
 using TaskManagementTool.BusinessLogic.Constants;
-using TaskManagementTool.BusinessLogic.Handlers.Auth.ResetPassword.Models;
 using TaskManagementTool.DataAccess.Entities;
 
-namespace TaskManagementTool.BusinessLogic.Handlers.Auth.ResetPassword;
+namespace TaskManagementTool.BusinessLogic.Commands.Auth.ResetPassword;
 
 public class ResetPasswordHandler(
     IValidator<ResetPasswordRequest> validator,

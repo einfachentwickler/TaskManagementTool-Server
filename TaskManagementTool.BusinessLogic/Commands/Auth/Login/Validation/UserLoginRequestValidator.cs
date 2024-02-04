@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using TaskManagementTool.BusinessLogic.Handlers.Auth.Login.Models;
+using TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
 using TaskManagementTool.Common.Constants;
 using TaskManagementTool.Common.Enums;
 
-namespace TaskManagementTool.BusinessLogic.Handlers.Auth.Login.Validation;
+namespace TaskManagementTool.BusinessLogic.Commands.Auth.Login.Validation;
 
 public class UserLoginRequestValidator : AbstractValidator<UserLoginRequest>
 {

@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using System.Threading.Tasks;
-using TaskManagementTool.BusinessLogic.Handlers.Auth.Login.Models;
-using TaskManagementTool.BusinessLogic.Handlers.Auth.Register.Models;
-using TaskManagementTool.BusinessLogic.Handlers.Auth.ResetPassword.Models;
+using TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
+using TaskManagementTool.BusinessLogic.Commands.Auth.Register.Models;
+using TaskManagementTool.BusinessLogic.Commands.Auth.ResetPassword.Models;
 using TaskManagementTool.Host.ActionFilters;
 
 namespace TaskManagementTool.Host.Controllers;

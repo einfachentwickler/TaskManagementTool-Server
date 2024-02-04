@@ -1,8 +1,8 @@
 ﻿using IntegrationTests.Constants;
 using Microsoft.AspNetCore.Http;
 using System.Net.Http.Json;
-using TaskManagementTool.BusinessLogic.Handlers.Auth.Login.Models;
-using TaskManagementTool.BusinessLogic.Handlers.Auth.Register.Models;
+using TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
+using TaskManagementTool.BusinessLogic.Commands.Auth.Register.Models;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
 
 namespace IntegrationTests.Utils;

@@ -9,7 +9,7 @@ using TaskManagementTool.Common.Exceptions;
 using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.DataAccess.Entities;
 
-namespace TaskManagementTool.BusinessLogic.Handlers;
+namespace TaskManagementTool.BusinessLogic.Commands;
 
 public class TodoHandler(IMapper mapper, ITodoRepository todoRepository) : ITodoHandler
 {

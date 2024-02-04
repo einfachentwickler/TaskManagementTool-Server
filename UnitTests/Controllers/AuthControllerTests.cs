@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NUnit.Framework;
 using System.Net;
+using TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
+using TaskManagementTool.BusinessLogic.Commands.Auth.Register.Models;
+using TaskManagementTool.BusinessLogic.Commands.Auth.ResetPassword.Models;
 using TaskManagementTool.BusinessLogic.Constants;
-using TaskManagementTool.BusinessLogic.Handlers.Auth.Login.Models;
-using TaskManagementTool.BusinessLogic.Handlers.Auth.Register.Models;
-using TaskManagementTool.BusinessLogic.Handlers.Auth.ResetPassword.Models;
 using TaskManagementTool.Host.Controllers;
 
 namespace Host.UnitTests.Controllers;

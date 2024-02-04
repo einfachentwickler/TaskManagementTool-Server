@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace TaskManagementTool.BusinessLogic.Handlers.Auth.ResetPassword.Models;
+namespace TaskManagementTool.BusinessLogic.Commands.Auth.ResetPassword.Models;
 
 public class ResetPasswordRequest : IRequest<ResetPasswordResponse>
 {

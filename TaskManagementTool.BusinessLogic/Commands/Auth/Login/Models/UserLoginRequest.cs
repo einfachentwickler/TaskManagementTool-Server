@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace TaskManagementTool.BusinessLogic.Handlers.Auth.Login.Models;
+namespace TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
 
 public class UserLoginRequest : IRequest<UserLoginResponse>
 {

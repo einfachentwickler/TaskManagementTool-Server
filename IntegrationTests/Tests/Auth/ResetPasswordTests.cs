@@ -4,8 +4,8 @@ using IntegrationTests.Utils;
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
-using TaskManagementTool.BusinessLogic.Handlers.Auth.Login.Models;
-using TaskManagementTool.BusinessLogic.Handlers.Auth.ResetPassword.Models;
+using TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
+using TaskManagementTool.BusinessLogic.Commands.Auth.ResetPassword.Models;
 
 namespace IntegrationTests.Tests.Auth;
 

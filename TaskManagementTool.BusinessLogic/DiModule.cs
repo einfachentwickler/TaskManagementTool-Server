@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using TaskManagementTool.BusinessLogic.Handlers;
-using TaskManagementTool.BusinessLogic.Handlers.Auth.Register;
-using TaskManagementTool.BusinessLogic.Handlers.Auth.Register.Validation;
+using TaskManagementTool.BusinessLogic.Commands;
+using TaskManagementTool.BusinessLogic.Commands.Auth.Register;
+using TaskManagementTool.BusinessLogic.Commands.Auth.Register.Validation;
 using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.MappingProfiles;
 

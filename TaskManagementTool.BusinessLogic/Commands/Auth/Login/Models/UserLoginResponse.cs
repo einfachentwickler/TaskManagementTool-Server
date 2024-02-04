@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TaskManagementTool.BusinessLogic.Handlers.Auth.Login.Models;
+namespace TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
 
 public class UserLoginResponse
 {

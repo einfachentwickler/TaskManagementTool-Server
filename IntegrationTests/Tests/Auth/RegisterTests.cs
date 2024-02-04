@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
+using TaskManagementTool.BusinessLogic.Commands.Auth.Register.Models;
 using TaskManagementTool.BusinessLogic.Constants;
-using TaskManagementTool.BusinessLogic.Handlers.Auth.Register.Models;
 using TaskManagementTool.Common.Enums;
 
 namespace IntegrationTests.Tests.Auth;

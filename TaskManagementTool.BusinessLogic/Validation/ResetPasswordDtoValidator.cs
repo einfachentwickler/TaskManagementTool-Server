@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using TaskManagementTool.BusinessLogic.Handlers.Auth.ResetPassword.Models;
+using TaskManagementTool.BusinessLogic.Commands.Auth.ResetPassword.Models;
 using TaskManagementTool.Common.Constants;
 using TaskManagementTool.Common.Enums;
 

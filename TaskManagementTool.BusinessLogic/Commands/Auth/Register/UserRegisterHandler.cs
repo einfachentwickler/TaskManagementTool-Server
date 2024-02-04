@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using TaskManagementTool.BusinessLogic.Commands.Auth.Register.Models;
 using TaskManagementTool.BusinessLogic.Constants;
-using TaskManagementTool.BusinessLogic.Handlers.Auth.Register.Models;
 using TaskManagementTool.Common.Constants;
 using TaskManagementTool.DataAccess.Entities;
 
-namespace TaskManagementTool.BusinessLogic.Handlers.Auth.Register;
+namespace TaskManagementTool.BusinessLogic.Commands.Auth.Register;
 
 public class UserRegisterHandler(
     IValidator<UserRegisterRequest> validator,

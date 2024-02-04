@@ -6,7 +6,7 @@ using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.Common.Enums;
 using TaskManagementTool.Common.Exceptions;
 
-namespace TaskManagementTool.BusinessLogic.Handlers.Utils;
+namespace TaskManagementTool.BusinessLogic.Commands.Utils;
 
 public class AuthUtils(ITodoHandler service) : IAuthUtils
 {

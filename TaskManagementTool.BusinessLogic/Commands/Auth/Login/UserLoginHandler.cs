@@ -10,11 +10,11 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
 using TaskManagementTool.BusinessLogic.Constants;
-using TaskManagementTool.BusinessLogic.Handlers.Auth.Login.Models;
 using TaskManagementTool.DataAccess.Entities;
 
-namespace TaskManagementTool.BusinessLogic.Handlers.Auth.Login;
+namespace TaskManagementTool.BusinessLogic.Commands.Auth.Login;
 
 public class UserLoginHandler(
     UserManager<User> userManager,

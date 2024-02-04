@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace TaskManagementTool.BusinessLogic.Handlers.Auth.Register.Models;
+namespace TaskManagementTool.BusinessLogic.Commands.Auth.Register.Models;
 
 public class UserRegisterRequest : IRequest<UserRegisterResponse>
 {
