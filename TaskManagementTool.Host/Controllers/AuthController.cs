@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
@@ -20,7 +21,7 @@ public class AuthController(IMediator mediator) : ControllerBase
     [HttpPost("register")]
     [SwaggerResponse((int)HttpStatusCode.OK)]
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> Register([FromBody] UserRegisterRequest request)
+    public async Task<IActionResult> Register([FromBody][Required] UserRegisterRequest request)
     {
         UserRegisterResponse result = await mediator.Send(request);
 
@@ -30,7 +31,7 @@ public class AuthController(IMediator mediator) : ControllerBase
     [HttpPost("login")]
     [SwaggerResponse((int)HttpStatusCode.OK)]
     [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
-    public async Task<IActionResult> Login([FromBody] UserLoginRequest request)
+    public async Task<IActionResult> Login([FromBody][Required] UserLoginRequest request)
     {
         UserLoginResponse result = await mediator.Send(request);
 
@@ -40,7 +41,7 @@ public class AuthController(IMediator mediator) : ControllerBase
     [HttpPost("reset-password")]
     [SwaggerResponse((int)HttpStatusCode.OK)]
     [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
-    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    public async Task<IActionResult> ResetPassword([FromBody][Required] ResetPasswordRequest request)
     {
         ResetPasswordResponse result = await mediator.Send(request);
 

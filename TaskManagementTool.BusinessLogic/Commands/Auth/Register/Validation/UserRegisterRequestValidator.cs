@@ -13,12 +13,12 @@ public class UserRegisterRequestValidator : AbstractValidator<UserRegisterReques
             .ChildRules(innerValidator =>
             {
                 innerValidator.RuleFor(x => x.Password)
-                .NotEmpty().WithErrorCode(nameof(ValidationErrorCodes.EmptyPassword))
+                .NotEmpty().WithErrorCode(nameof(ValidationErrorCodes.EmptyValue))
                 .MinimumLength(8).WithErrorCode(nameof(ValidationErrorCodes.WeakPassword))
                 .Must(password => password.Length <= ValidationConstants.DEFAULT_TEXT_INPUT_SIZE).WithErrorCode(nameof(ValidationErrorCodes.TextLengthExceeded));
 
                 innerValidator.RuleFor(x => x.ConfirmPassword)
-                    .NotEmpty().WithErrorCode(nameof(ValidationErrorCodes.EmptyPassword))
+                    .NotEmpty().WithErrorCode(nameof(ValidationErrorCodes.EmptyValue))
                     .MinimumLength(8).WithErrorCode(nameof(ValidationErrorCodes.WeakPassword))
                     .Equal(x => x.Password).WithErrorCode(nameof(ValidationErrorCodes.ConfirmPasswordDoesNotMatch))
                     .Must(confirmPassword => confirmPassword.Length <= ValidationConstants.DEFAULT_TEXT_INPUT_SIZE).WithErrorCode(nameof(ValidationErrorCodes.TextLengthExceeded));

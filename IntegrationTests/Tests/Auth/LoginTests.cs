@@ -132,6 +132,21 @@ public class LoginTests
         actualResult.IsSuccess.Should().BeFalse();
     }
 
+    [Test]
+    public async Task LoginUser_RequestContainsNoBody_Returns400()
+    {
+        //Arrange
+        await TestsHelper.RegisterUserAsync(client, "user1@email.com", "password", "password");
+
+        UserLoginRequest? loginDto = null;
+
+        //Act
+        var response = await client.PostAsJsonAsync(UriConstants.LOGIN_URI, loginDto);
+
+        //Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
     [TearDown]
     public async Task TearDownAsync()
     {

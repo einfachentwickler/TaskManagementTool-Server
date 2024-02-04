@@ -1,30 +1,26 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
+using TaskManagementTool.BusinessLogic.Commands.Utils.Jwt;
+using TaskManagementTool.BusinessLogic.Commands.Wrappers;
 using TaskManagementTool.BusinessLogic.Constants;
 using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.BusinessLogic.Commands.Auth.Login;
 
 public class UserLoginHandler(
-    UserManager<User> userManager,
-    IValidator<UserLoginRequest> validator,
-     IConfiguration configuration
+    IUserManagerWrapper userManager,
+    IValidator<UserLoginRequest> requestValidator,
+    IJwtSecurityTokenBuilder jwtSecurityTokenBuilder
     ) : IRequestHandler<UserLoginRequest, UserLoginResponse>
 {
     public async Task<UserLoginResponse> Handle(UserLoginRequest request, CancellationToken cancellationToken)
     {
-        ValidationResult validationResult = await validator.ValidateAsync(request, cancellationToken);
+        ValidationResult validationResult = await requestValidator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
@@ -66,7 +62,7 @@ public class UserLoginHandler(
             };
         }
 
-        (string tokenAsString, JwtSecurityToken jwtSecurityToken) = GetToken(user, request);
+        (string tokenAsString, JwtSecurityToken jwtSecurityToken) = jwtSecurityTokenBuilder.Build(user, request);
 
         return new UserLoginResponse
         {
@@ -74,30 +70,5 @@ public class UserLoginHandler(
             IsSuccess = true,
             ExpirationDate = jwtSecurityToken.ValidTo
         };
-    }
-
-    private (string, JwtSecurityToken) GetToken(User user, UserLoginRequest model)
-    {
-        Claim[] claims = [
-            new("email", model.Email),
-            new(ClaimTypes.NameIdentifier, user.Id),
-            new("role", user.Role)
-        ];
-
-        byte[] authKey = Encoding.UTF8.GetBytes(configuration["AuthSettings:Key"]);
-
-        SymmetricSecurityKey key = new(authKey);
-
-        JwtSecurityToken token = new(
-            configuration["AuthSettings:Issuer"],
-            configuration["AuthSettings:Audience"],
-            claims,
-            expires: DateTime.UtcNow.AddDays(30),
-            signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
-        );
-
-        string tokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
-
-        return (tokenAsString, token);
     }
 }

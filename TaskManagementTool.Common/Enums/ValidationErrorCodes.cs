@@ -2,8 +2,7 @@
 
 public enum ValidationErrorCodes
 {
-    EmptyPassword = 0,
-    WeakPassword,
+    WeakPassword = 0,
     ConfirmPasswordDoesNotMatch,
     InvalidEmail,
     EmptyValue,

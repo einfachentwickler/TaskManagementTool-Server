@@ -110,4 +110,11 @@ public class ResetPasswordTests
         //Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
+
+    [TearDown]
+    public async Task TearDownAsync()
+    {
+        client.Dispose();
+        await application.DisposeAsync();
+    }
 }
