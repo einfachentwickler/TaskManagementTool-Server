@@ -1,10 +1,13 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using FluentAssertions;
+using Host.UnitTests.Utils;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NUnit.Framework;
+using TaskManagementTool.BusinessLogic.Commands.Home.GetTodos.Models;
 using TaskManagementTool.BusinessLogic.Commands.Utils;
 using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.ViewModels;
@@ -18,6 +21,7 @@ public class HomeControllerTests
 {
     private IFixture fixture;
 
+    private IMediator mediator;
     private ITodoHandler todoHandler;
     private IHttpContextAccessor httpContextAccessor;
     private IAuthUtils authUtils;
@@ -32,31 +36,29 @@ public class HomeControllerTests
         todoHandler = fixture.Freeze<ITodoHandler>();
         httpContextAccessor = fixture.Freeze<IHttpContextAccessor>();
         authUtils = fixture.Freeze<IAuthUtils>();
+        mediator = fixture.Freeze<IMediator>();
 
-        sut = new HomeController(todoHandler, httpContextAccessor, authUtils);
+        sut = new HomeController(todoHandler, mediator, httpContextAccessor, authUtils);
     }
 
     [Test]
     public async Task GetUsersTodos_ValidData_ReturnsTodos()
     {
         //Arrange
-        const string userId = "user id";
-        const int pageNumber = 5;
-        const int pageSize = 10;
+        var request = fixture.Create<GetTodosRequest>();
+        var response = fixture.Create<GetTodosResponse>();
 
-        IEnumerable<TodoDto> todos = fixture.CreateMany<TodoDto>(5);
+        authUtils.GetUserId(httpContextAccessor.HttpContext).Returns(request.UserId);
 
-        authUtils.GetUserId(httpContextAccessor.HttpContext).Returns(userId);
-
-        todoHandler.GetAsync(userId, pageNumber, pageSize).Returns(todos);
+        mediator.Send(ExtendedArg.Is(request)).Returns(response);
 
         //Act
-        IActionResult actualResult = await sut.GetUsersTodos(pageNumber, pageSize);
+        IActionResult actualResult = await sut.GetTodos(request.PageNumber, request.PageSize);
 
         //Assert
         actualResult.Should().BeOfType<OkObjectResult>();
 
-        ((OkObjectResult)actualResult).Value.Should().Be(todos);
+        ((OkObjectResult)actualResult).Value.Should().BeEquivalentTo(response);
     }
 
     [Test]

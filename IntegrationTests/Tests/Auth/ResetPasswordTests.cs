@@ -61,7 +61,7 @@ public class ResetPasswordTests
         loginResponseWithOldCredentials.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
 
         await TestsHelper.LoginAsync(client, EMAIL, newPassword);
-        HttpResponseMessage getResponseWithNewCredentials = await client.GetAsync(UriConstants.GET_TODO_URI);
+        HttpResponseMessage getResponseWithNewCredentials = await client.GetAsync(UriConstants.GET_TODO_URI + "?pageNumber=1&pageSize=10");
         getResponseWithNewCredentials.EnsureSuccessStatusCode();
     }
 
