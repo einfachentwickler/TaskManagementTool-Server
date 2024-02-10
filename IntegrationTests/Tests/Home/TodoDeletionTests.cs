@@ -87,7 +87,7 @@ public class TodoDeletionTests
         HttpResponseMessage deleteResponse = await _client.DeleteAsync(UriConstants.DELETE_TODO_URI + createdTodo!.Id);
 
         //Assert
-        deleteResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        deleteResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         await TestsHelper.LoginAsync(_client, "user1@email.com", "password");
         HttpResponseMessage getTodoResponse = await _client.DeleteAsync(UriConstants.GET_TODO_URI + createdTodo!.Id);

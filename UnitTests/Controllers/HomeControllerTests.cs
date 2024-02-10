@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NUnit.Framework;
+using TaskManagementTool.BusinessLogic.Commands.Home.DeleteTodo.Models;
 using TaskManagementTool.BusinessLogic.Commands.Home.GetTodos.Models;
 using TaskManagementTool.BusinessLogic.Commands.Utils;
 using TaskManagementTool.BusinessLogic.Interfaces;
@@ -176,31 +177,18 @@ public class HomeControllerTests
         //Arrange
         const int id = 2;
 
-        authUtils.IsAllowedAction(httpContextAccessor.HttpContext, id).Returns(true);
+        DeleteTodoRequest request = new() { HttpContext = httpContextAccessor.HttpContext, TodoId = id };
+
+        DeleteTodoResponse response = new() { IsSuccess = true };
+
+        mediator.Send(ExtendedArg.Is(request)).Returns(response);
 
         //Act
         IActionResult actualResult = await sut.Delete(id);
 
         //Assert
-        actualResult.Should().BeOfType<NoContentResult>();
+        actualResult.Should().BeOfType<OkObjectResult>();
 
-        await todoHandler.Received(1).DeleteAsync(Arg.Any<int>());
-    }
-
-    [Test]
-    public async Task Delete_NotAllowedAction_ReturnsForbid()
-    {
-        //Arrange
-        const int id = 2;
-
-        authUtils.IsAllowedAction(httpContextAccessor.HttpContext, id).Returns(false);
-
-        //Act
-        IActionResult actualResult = await sut.Delete(id);
-
-        //Assert
-        actualResult.Should().BeOfType<ForbidResult>();
-
-        await todoHandler.DidNotReceiveWithAnyArgs().DeleteAsync(Arg.Any<int>());
+        ((OkObjectResult)actualResult).Value.Should().Be(response);
     }
 }

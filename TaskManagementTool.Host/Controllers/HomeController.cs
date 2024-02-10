@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
+using TaskManagementTool.BusinessLogic.Commands.Home.DeleteTodo.Models;
 using TaskManagementTool.BusinessLogic.Commands.Home.GetTodos.Models;
 using TaskManagementTool.BusinessLogic.Commands.Utils;
 using TaskManagementTool.BusinessLogic.Interfaces;
@@ -87,12 +88,14 @@ public class HomeController(ITodoHandler todoHandler, IMediator mediator, IHttpC
     [SwaggerResponse((int)HttpStatusCode.Forbidden)]
     public async Task<IActionResult> Delete([FromRoute][Required] int id)
     {
-        if (!await authUtils.IsAllowedAction(httpContextAccessor.HttpContext, id))
+        DeleteTodoRequest request = new()
         {
-            return Forbid();
-        }
+            TodoId = id,
+            HttpContext = httpContextAccessor.HttpContext
+        };
 
-        await todoHandler.DeleteAsync(id);
-        return NoContent();
+        DeleteTodoResponse response = await mediator.Send(request);
+
+        return Ok(response);
     }
 }

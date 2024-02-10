@@ -26,6 +26,7 @@ public class ExceptionMiddleware(RequestDelegate next)
                     ApiErrorCode.TodoNotFound => StatusCodes.Status404NotFound,
                     ApiErrorCode.Unautorized => StatusCodes.Status401Unauthorized,
                     ApiErrorCode.InvalidInput => StatusCodes.Status400BadRequest,
+                    ApiErrorCode.Forbidden => StatusCodes.Status404NotFound,
                     _ => StatusCodes.Status500InternalServerError
                 };
             }

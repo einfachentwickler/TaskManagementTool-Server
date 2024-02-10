@@ -8,5 +8,6 @@ public enum ApiErrorCode
     UserNotFound,
     TodoNotFound,
     Unautorized,
-    InvalidInput
+    InvalidInput,
+    Forbidden,
 }
