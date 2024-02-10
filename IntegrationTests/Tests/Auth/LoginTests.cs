@@ -36,7 +36,7 @@ public class LoginTests
         };
 
         //Act
-        var response = await client.PostAsJsonAsync(UriConstants.LOGIN_URI, loginDto);
+        var response = await client.PostAsJsonAsync(UriConstants.AUTH_LOGIN_URI, loginDto);
 
         //Assert
         response.EnsureSuccessStatusCode();
@@ -64,7 +64,7 @@ public class LoginTests
         };
 
         //Act
-        var response = await client.PostAsJsonAsync(UriConstants.LOGIN_URI, loginDto);
+        var response = await client.PostAsJsonAsync(UriConstants.AUTH_LOGIN_URI, loginDto);
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -87,7 +87,7 @@ public class LoginTests
         IEnumerable<UserDto>? users = await getResponse.Content.ReadFromJsonAsync<IEnumerable<UserDto>>();
 
         //Act
-        HttpResponseMessage reverseStatusResponse = await client.PostAsync(UriConstants.REVERSE_STATUS_URI + users!.Single(x => x.Email == "user1@email.com").Id, null);
+        HttpResponseMessage reverseStatusResponse = await client.PostAsync(UriConstants.ADMIN_REVERSE_STATUS_URI + users!.Single(x => x.Email == "user1@email.com").Id, null);
 
         //Assert
         reverseStatusResponse.EnsureSuccessStatusCode();
@@ -98,7 +98,7 @@ public class LoginTests
             Password = "password"
         };
 
-        HttpResponseMessage loginResponse = await client.PostAsJsonAsync(UriConstants.LOGIN_URI, loginDto);
+        HttpResponseMessage loginResponse = await client.PostAsJsonAsync(UriConstants.AUTH_LOGIN_URI, loginDto);
 
         loginResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
 
@@ -121,7 +121,7 @@ public class LoginTests
         };
 
         //Act
-        var response = await client.PostAsJsonAsync(UriConstants.LOGIN_URI, loginDto);
+        var response = await client.PostAsJsonAsync(UriConstants.AUTH_LOGIN_URI, loginDto);
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -141,7 +141,7 @@ public class LoginTests
         UserLoginRequest? loginDto = null;
 
         //Act
-        var response = await client.PostAsJsonAsync(UriConstants.LOGIN_URI, loginDto);
+        var response = await client.PostAsJsonAsync(UriConstants.AUTH_LOGIN_URI, loginDto);
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);

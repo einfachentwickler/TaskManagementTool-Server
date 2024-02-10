@@ -42,7 +42,7 @@ public class ResetPasswordTests
         };
 
         //Act
-        HttpResponseMessage actualResponse = await client.PostAsJsonAsync(UriConstants.RESET_PASSWORD_URI, request);
+        HttpResponseMessage actualResponse = await client.PostAsJsonAsync(UriConstants.AUTH_RESET_PASSWORD_URI, request);
 
         //Assert
         actualResponse.EnsureSuccessStatusCode();
@@ -57,11 +57,11 @@ public class ResetPasswordTests
             Password = PASSWORD
         };
 
-        HttpResponseMessage loginResponseWithOldCredentials = await client.PostAsJsonAsync(UriConstants.LOGIN_URI, loginDto);
+        HttpResponseMessage loginResponseWithOldCredentials = await client.PostAsJsonAsync(UriConstants.AUTH_LOGIN_URI, loginDto);
         loginResponseWithOldCredentials.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
 
         await TestsHelper.LoginAsync(client, EMAIL, newPassword);
-        HttpResponseMessage getResponseWithNewCredentials = await client.GetAsync(UriConstants.GET_TODO_URI + "?pageNumber=1&pageSize=10");
+        HttpResponseMessage getResponseWithNewCredentials = await client.GetAsync(UriConstants.HOME_GET_TODO_URI + "?pageNumber=1&pageSize=10");
         getResponseWithNewCredentials.EnsureSuccessStatusCode();
     }
 
@@ -82,7 +82,7 @@ public class ResetPasswordTests
         };
 
         //Act
-        HttpResponseMessage actualResponse = await client.PostAsJsonAsync(UriConstants.RESET_PASSWORD_URI, request);
+        HttpResponseMessage actualResponse = await client.PostAsJsonAsync(UriConstants.AUTH_RESET_PASSWORD_URI, request);
 
         //Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -105,7 +105,7 @@ public class ResetPasswordTests
         };
 
         //Act
-        HttpResponseMessage actualResponse = await client.PostAsJsonAsync(UriConstants.RESET_PASSWORD_URI, request);
+        HttpResponseMessage actualResponse = await client.PostAsJsonAsync(UriConstants.AUTH_RESET_PASSWORD_URI, request);
 
         //Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);

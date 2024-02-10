@@ -93,7 +93,7 @@ public class RegisterTests
         };
 
         //Act
-        var response = await _client.PostAsJsonAsync(UriConstants.REGISTER_URI, registerDto);
+        var response = await _client.PostAsJsonAsync(UriConstants.AUTH_REGISTER_URI, registerDto);
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -116,7 +116,7 @@ public class RegisterTests
         };
 
         //Act
-        var response = await _client.PostAsJsonAsync(UriConstants.REGISTER_URI, registerDto);
+        var response = await _client.PostAsJsonAsync(UriConstants.AUTH_REGISTER_URI, registerDto);
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
