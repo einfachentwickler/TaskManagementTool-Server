@@ -46,10 +46,12 @@ public class HomeControllerTests
     public async Task GetUsersTodos_ValidData_ReturnsTodos()
     {
         //Arrange
-        var request = fixture.Create<GetTodosRequest>();
-        var response = fixture.Create<GetTodosResponse>();
+        var request = fixture
+            .Build<GetTodosRequest>()
+            .With(request => request.HttpContext, httpContextAccessor.HttpContext)
+            .Create();
 
-        authUtils.GetUserId(httpContextAccessor.HttpContext).Returns(request.UserId);
+        GetTodosResponse response = fixture.Create<GetTodosResponse>();
 
         mediator.Send(ExtendedArg.Is(request)).Returns(response);
 

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Commands.Home.GetTodos.Models;
+using TaskManagementTool.BusinessLogic.Commands.Utils;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.Common.Enums;
 using TaskManagementTool.Common.Exceptions;
@@ -16,6 +17,7 @@ namespace TaskManagementTool.BusinessLogic.Commands.Home.GetTodos;
 public class GetTodosHandler(
     ITodoRepository todoRepository,
     IMapper mapper,
+    IAuthUtils authUtils,
     IValidator<GetTodosRequest> requestValidator) : IRequestHandler<GetTodosRequest, GetTodosResponse>
 {
     public async Task<GetTodosResponse> Handle(GetTodosRequest request, CancellationToken cancellationToken)
@@ -27,7 +29,9 @@ public class GetTodosHandler(
             throw new TaskManagementToolException(ApiErrorCode.InvalidInput, string.Join(", ", validationResult.Errors));
         }
 
-        IEnumerable<TodoEntry> todos = await todoRepository.GetAsync(request.UserId, request.PageSize, request.PageNumber);
+        string userId = authUtils.GetUserId(request.HttpContext);
+
+        IEnumerable<TodoEntry> todos = await todoRepository.GetAsync(userId, request.PageSize, request.PageNumber);
 
         return new GetTodosResponse { Todos = mapper.Map<IEnumerable<TodoDto>>(todos) };
     }

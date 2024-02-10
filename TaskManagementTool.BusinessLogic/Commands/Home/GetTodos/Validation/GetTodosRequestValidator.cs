@@ -8,8 +8,8 @@ public class GetTodosRequestValidator : AbstractValidator<GetTodosRequest>
 {
     public GetTodosRequestValidator()
     {
-        RuleFor(request => request.UserId).NotEmpty().WithErrorCode(nameof(ValidationErrorCodes.EmptyValue));
         RuleFor(request => request.PageNumber).NotEmpty().WithErrorCode(nameof(ValidationErrorCodes.EmptyValue));
         RuleFor(request => request.PageSize).NotEmpty().WithErrorCode(nameof(ValidationErrorCodes.EmptyValue));
+        RuleFor(request => request.HttpContext).NotEmpty().WithErrorCode(nameof(ValidationErrorCodes.EmptyValue));
     }
 }

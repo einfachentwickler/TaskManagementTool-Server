@@ -27,13 +27,11 @@ public class HomeController(ITodoHandler todoHandler, IMediator mediator, IHttpC
     [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(IEnumerable<TodoDto>))]
     public async Task<IActionResult> GetTodos([FromQuery][Required] int pageNumber, [FromQuery][Required] int pageSize)
     {
-        string userId = authUtils.GetUserId(httpContextAccessor.HttpContext);
-
         GetTodosRequest request = new()
         {
-            UserId = userId,
             PageNumber = pageNumber,
-            PageSize = pageSize
+            PageSize = pageSize,
+            HttpContext = httpContextAccessor.HttpContext
         };
 
         return Ok(await mediator.Send(request));
