@@ -19,9 +19,9 @@ public static class UriConstants
 
     public const string ADMIN_REVERSE_STATUS_URI = "https://localhost:44311/api/admin/reverse-status/";
 
-    public const string ADMIN_GET_USERS_URI = "https://localhost:44311/api/admin/users";
+    public const string ADMIN_GET_USERS_URI = "https://localhost:44311/api/admin/users?pageSize={0}&pageNumber={1}";
 
-    public const string ADMIN_GET_TODOS_URI = "https://localhost:44311/api/admin/todos";
+    public const string ADMIN_GET_TODOS_URI = "https://localhost:44311/api/admin/todos?pageSize={0}&pageNumber={1}";
 
     public const string ADMIN_DELETE_USER_URI = "https://localhost:44311/api/admin/users/";
 }

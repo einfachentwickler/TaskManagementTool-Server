@@ -4,6 +4,7 @@ using IntegrationTests.Utils;
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
+using TaskManagementTool.BusinessLogic.Commands.Admin.Models;
 using TaskManagementTool.BusinessLogic.Dto.Errors;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.Common.Enums;
@@ -48,13 +49,16 @@ public class DeleteUserTests
         //Assert
         response.EnsureSuccessStatusCode();
 
-        HttpResponseMessage getUsersResponse = await client.GetAsync(UriConstants.ADMIN_GET_USERS_URI + "?pageSize=10&pageNumber=1");
-        IEnumerable<UserDto>? users = await getUsersResponse.Content.ReadFromJsonAsync<IEnumerable<UserDto>>();
-        users.Should().HaveCount(2)
+        HttpResponseMessage getUsersResponse = await client.GetAsync(string.Format(UriConstants.ADMIN_GET_USERS_URI, 10, 1));
+
+        GetUsersResponse? users = await getUsersResponse.Content.ReadFromJsonAsync<GetUsersResponse>();
+
+        users!.Users.Should().HaveCount(2)
             .And.Contain(x => x.Email == "admin@example.com")
             .And.Contain(x => x.Email == "user1@email.com");
 
-        HttpResponseMessage getTodosResponse = await client.GetAsync(UriConstants.ADMIN_GET_TODOS_URI + "?pageSize=10&pageNumber=1");
+        HttpResponseMessage getTodosResponse = await client.GetAsync(string.Format(UriConstants.ADMIN_GET_TODOS_URI, 10, 1));
+
         IEnumerable<TodoDto>? todos = await getTodosResponse.Content.ReadFromJsonAsync<IEnumerable<TodoDto>>();
         todos.Should().HaveCount(5)
             .And.Contain(dto => dto.Name == "Todo 1")

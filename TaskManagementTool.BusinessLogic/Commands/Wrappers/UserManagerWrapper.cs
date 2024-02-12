@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Linq;
 using System.Threading.Tasks;
 using TaskManagementTool.DataAccess.Entities;
 
@@ -6,6 +7,8 @@ namespace TaskManagementTool.BusinessLogic.Commands.Wrappers;
 
 public class UserManagerWrapper(UserManager<User> userManager) : IUserManagerWrapper
 {
+    IQueryable<User> IUserManagerWrapper.Users => userManager.Users;
+
     public async Task<User> FindByEmailAsync(string email)
     {
         return await userManager.FindByEmailAsync(email);

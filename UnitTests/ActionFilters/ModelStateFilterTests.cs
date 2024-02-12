@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using FluentAssertions;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -39,7 +40,7 @@ public class ModelStateFilterTests
             actionContext,
             new List<IFilterMetadata>(),
             new Dictionary<string, object?>(),
-            new AdminController(fixture.Freeze<IAdminHandler>(), fixture.Freeze<ITodoHandler>())
+            new AdminController(fixture.Freeze<IAdminHandler>(), fixture.Freeze<ITodoHandler>(), fixture.Freeze<IMediator>())
             );
     }
 

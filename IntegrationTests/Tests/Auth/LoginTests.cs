@@ -4,9 +4,9 @@ using IntegrationTests.Utils;
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
+using TaskManagementTool.BusinessLogic.Commands.Admin.Models;
 using TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
 using TaskManagementTool.BusinessLogic.Constants;
-using TaskManagementTool.BusinessLogic.ViewModels;
 
 namespace IntegrationTests.Tests.Auth;
 
@@ -82,12 +82,12 @@ public class LoginTests
         await TestsHelper.RegisterUserAsync(client, "user1@email.com", "password", "password");
         await TestsHelper.LoginAsync(client, "admin@example.com", "password");
 
-        HttpResponseMessage getResponse = await client.GetAsync(UriConstants.ADMIN_GET_USERS_URI + $"?pageSize={10}&pageNumber={1}");
+        HttpResponseMessage getResponse = await client.GetAsync(string.Format(UriConstants.ADMIN_GET_USERS_URI, 10, 1));
 
-        IEnumerable<UserDto>? users = await getResponse.Content.ReadFromJsonAsync<IEnumerable<UserDto>>();
+        GetUsersResponse? users = await getResponse.Content.ReadFromJsonAsync<GetUsersResponse>();
 
         //Act
-        HttpResponseMessage reverseStatusResponse = await client.PostAsync(UriConstants.ADMIN_REVERSE_STATUS_URI + users!.Single(x => x.Email == "user1@email.com").Id, null);
+        HttpResponseMessage reverseStatusResponse = await client.PostAsync(UriConstants.ADMIN_REVERSE_STATUS_URI + users!.Users.Single(x => x.Email == "user1@email.com").Id, null);
 
         //Assert
         reverseStatusResponse.EnsureSuccessStatusCode();

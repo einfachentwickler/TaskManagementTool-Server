@@ -4,7 +4,7 @@ using IntegrationTests.Utils;
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
-using TaskManagementTool.BusinessLogic.ViewModels;
+using TaskManagementTool.BusinessLogic.Commands.Admin.Models;
 
 namespace IntegrationTests.Tests.Admin;
 
@@ -49,15 +49,15 @@ public class GetUsersTests
         await TestsHelper.LoginAsync(client, "admin@example.com", "password");
 
         //Act
-        HttpResponseMessage response = await client.GetAsync(UriConstants.ADMIN_GET_USERS_URI + $"?pageNumber={pageNumber}&pageSize={pageSize}");
+        HttpResponseMessage response = await client.GetAsync(string.Format(UriConstants.ADMIN_GET_USERS_URI, pageSize, pageNumber));
 
         //Assert
         response.EnsureSuccessStatusCode();
 
-        var actualResult = await response.Content.ReadFromJsonAsync<IEnumerable<UserDto>>();
+        var actualResult = await response.Content.ReadFromJsonAsync<GetUsersResponse>();
 
-        actualResult.Should().HaveCount(expectedSize);
-        actualResult.Should().AllSatisfy(x => x.Should().NotBeNull());
+        actualResult!.Users.Should().HaveCount(expectedSize);
+        actualResult.Users.Should().AllSatisfy(x => x.Should().NotBeNull());
     }
 
     [Test]
