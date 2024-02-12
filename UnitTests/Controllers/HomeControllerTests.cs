@@ -7,12 +7,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NUnit.Framework;
+using TaskManagementTool.BusinessLogic.Commands.Home.CreateTodo.Models;
 using TaskManagementTool.BusinessLogic.Commands.Home.DeleteTodo.Models;
+using TaskManagementTool.BusinessLogic.Commands.Home.GetTodoById.Models;
 using TaskManagementTool.BusinessLogic.Commands.Home.GetTodos.Models;
-using TaskManagementTool.BusinessLogic.Commands.Utils;
-using TaskManagementTool.BusinessLogic.Interfaces;
-using TaskManagementTool.BusinessLogic.ViewModels;
-using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
+using TaskManagementTool.BusinessLogic.Commands.Home.UpdateTodo.Models;
 using TaskManagementTool.Host.Controllers;
 
 namespace Host.UnitTests.Controllers;
@@ -20,13 +19,10 @@ namespace Host.UnitTests.Controllers;
 [TestFixture]
 public class HomeControllerTests
 {
-#pragma warning TODO fix tests
     private IFixture fixture;
 
     private IMediator mediator;
-    private ITodoHandler todoHandler;
     private IHttpContextAccessor httpContextAccessor;
-    private IAuthUtils authUtils;
 
     private HomeController sut;
 
@@ -35,12 +31,10 @@ public class HomeControllerTests
     {
         fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
 
-        todoHandler = fixture.Freeze<ITodoHandler>();
         httpContextAccessor = fixture.Freeze<IHttpContextAccessor>();
-        authUtils = fixture.Freeze<IAuthUtils>();
         mediator = fixture.Freeze<IMediator>();
 
-        //sut = new HomeController(todoHandler, mediator, httpContextAccessor, authUtils);
+        sut = new HomeController(mediator, httpContextAccessor);
     }
 
     [Test]
@@ -69,113 +63,69 @@ public class HomeControllerTests
     public async Task GetById_ValidData_ReturnsTodo()
     {
         //Arrange
-        const int id = 5;
+        var request = fixture
+          .Build<GetTodoByIdRequest>()
+          .With(request => request.HttpContext, httpContextAccessor.HttpContext)
+          .Create();
 
-        var todo = fixture.Create<TodoDto>();
+        var response = fixture.Create<GetTodoByIdResponse>();
 
-        todoHandler.FindByIdAsync(id).Returns(todo);
-
-        //authUtils.IsAllowedAction(httpContextAccessor.HttpContext, id).Returns(true);
+        mediator.Send(ExtendedArg.Is(request)).Returns(response);
 
         //Act
-        IActionResult actualResult = await sut.GetById(id);
+        IActionResult actualResult = await sut.GetById(request.TodoId);
 
         //Assert
         actualResult.Should().BeOfType<OkObjectResult>();
 
-        ((OkObjectResult)actualResult).Value.Should().Be(todo);
-    }
-
-    [Test]
-    public async Task GetById_NotAllowedAction_ReturnsForbid()
-    {
-        //Arrange
-        const int id = 5;
-
-        var todo = fixture.Create<TodoDto>();
-
-        todoHandler.FindByIdAsync(id).Returns(todo);
-
-        //authUtils.IsAllowedAction(httpContextAccessor.HttpContext, id).Returns(false);
-
-        //Act
-        IActionResult actualResult = await sut.GetById(id);
-
-        //Assert
-        actualResult.Should().BeOfType<ForbidResult>();
+        ((OkObjectResult)actualResult).Value.Should().Be(response);
     }
 
     [Test]
     public async Task Create_ValidData_ReturnsCreatedTodo()
     {
         //Arrange
-        const string userId = "user id";
+        var request = fixture
+            .Build<CreateTodoRequest>()
+            .With(request => request.HttpContext, httpContextAccessor.HttpContext)
+            .Create();
 
-        var createTodoDto = fixture.Create<CreateTodoDto>();
-        var expectedResult = fixture.Create<TodoDto>();
+        var response = fixture.Create<CreateTodoResponse>();
 
-        authUtils.GetUserId(httpContextAccessor.HttpContext).Returns(userId);
-
-        todoHandler.CreateAsync(createTodoDto).Returns(expectedResult);
+        mediator.Send(ExtendedArg.Is(request)).Returns(response);
 
         //Act
-        IActionResult actualResult = await sut.Create(createTodoDto);
+        IActionResult actualResult = await sut.Create(request.CreateTodoDto);
 
         //Assert
         actualResult.Should().BeOfType<OkObjectResult>();
 
-        ((OkObjectResult)actualResult).Value.Should().Be(expectedResult);
-
-        authUtils.Received(1).GetUserId(httpContextAccessor.HttpContext);
+        ((OkObjectResult)actualResult).Value.Should().BeEquivalentTo(response);
     }
 
     [Test]
     public async Task Update_ValidData_ReturnsUpdatedTodo()
     {
-        //Arrange
-        const string userId = "user id";
+        var request = fixture
+          .Build<UpdateTodoRequest>()
+          .With(request => request.HttpContext, httpContextAccessor.HttpContext)
+          .Create();
 
-        var updateTodoDto = fixture.Create<UpdateTodoDto>();
-        var expectedResult = fixture.Create<TodoDto>();
+        var response = fixture.Create<UpdateTodoResponse>();
 
-        //authUtils.IsAllowedAction(httpContextAccessor.HttpContext, updateTodoDto.Id).Returns(true);
-
-        authUtils.GetUserId(httpContextAccessor.HttpContext).Returns(userId);
-
-        todoHandler.UpdateAsync(updateTodoDto).Returns(expectedResult);
+        mediator.Send(ExtendedArg.Is(request)).Returns(response);
 
         //Act
-        IActionResult actualResult = await sut.Update(updateTodoDto);
+        IActionResult actualResult = await sut.Update(request.UpdateTodoDto);
 
         //Assert
         actualResult.Should().BeOfType<OkObjectResult>();
 
-        ((OkObjectResult)actualResult).Value.Should().Be(expectedResult);
+        ((OkObjectResult)actualResult).Value.Should().Be(response);
     }
 
     [Test]
-    public async Task Update_NotAllowedAction_ReturnsForbid()
-    {
-        //Arrange
-        const string userId = "user id";
-
-        var updateTodoDto = fixture.Create<UpdateTodoDto>();
-
-        //authUtils.IsAllowedAction(httpContextAccessor.HttpContext, updateTodoDto.Id).Returns(false);
-
-        authUtils.GetUserId(httpContextAccessor.HttpContext).Returns(userId);
-
-        //Act
-        IActionResult actualResult = await sut.Update(updateTodoDto);
-
-        //Assert
-        actualResult.Should().BeOfType<ForbidResult>();
-
-        await todoHandler.DidNotReceiveWithAnyArgs().UpdateAsync(Arg.Any<UpdateTodoDto>());
-    }
-
-    [Test]
-    public async Task Delete_ValidData_ReturnsNoContent()
+    public async Task Delete_ValidData_ReturnsOk()
     {
         //Arrange
         const int id = 2;

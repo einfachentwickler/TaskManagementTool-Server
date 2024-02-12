@@ -5,7 +5,6 @@ using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
 using TaskManagementTool.BusinessLogic.Commands.Home.CreateTodo.Models;
-using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
 
 namespace IntegrationTests.Tests.Home;
@@ -51,15 +50,15 @@ public class DeleteTodoTests
         CreateTodoResponse? createdTodo2 = await createResponse2.Content.ReadFromJsonAsync<CreateTodoResponse>();
 
         //Act
-        HttpResponseMessage deleteResponse = await _client.DeleteAsync(UriConstants.HOME_DELETE_TODO_URI + createdTodo!.Todo.Id);
+        HttpResponseMessage deleteResponse = await _client.DeleteAsync(string.Format(UriConstants.HOME_DELETE_TODO_URI, createdTodo!.Todo.Id));
 
         //Assert
         deleteResponse.EnsureSuccessStatusCode();
 
-        HttpResponseMessage deleteResponse2 = await _client.DeleteAsync(UriConstants.HOME_DELETE_TODO_URI + createdTodo!.Todo.Id);
+        HttpResponseMessage deleteResponse2 = await _client.DeleteAsync(string.Format(UriConstants.HOME_DELETE_TODO_URI, createdTodo!.Todo.Id));
         deleteResponse2.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        HttpResponseMessage getResponse = await _client.GetAsync(UriConstants.HOME_GET_TODO_URI + createdTodo2!.Todo.Id);
+        HttpResponseMessage getResponse = await _client.GetAsync(string.Format(UriConstants.HOME_GET_TODO_URI, createdTodo2!.Todo.Id));
         getResponse.EnsureSuccessStatusCode();
     }
 
@@ -85,13 +84,14 @@ public class DeleteTodoTests
         await TestsHelper.LoginAsync(_client, "user2@email.com", "password");
 
         //Act
-        HttpResponseMessage deleteResponse = await _client.DeleteAsync(UriConstants.HOME_DELETE_TODO_URI + createdTodo!.Todo.Id);
+        HttpResponseMessage deleteResponse = await _client.DeleteAsync(string.Format(UriConstants.HOME_DELETE_TODO_URI, createdTodo!.Todo.Id));
 
         //Assert
         deleteResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         await TestsHelper.LoginAsync(_client, "user1@email.com", "password");
-        HttpResponseMessage getTodoResponse = await _client.DeleteAsync(UriConstants.HOME_GET_TODO_URI + createdTodo!.Todo.Id);
+
+        HttpResponseMessage getTodoResponse = await _client.DeleteAsync(string.Format(UriConstants.HOME_GET_TODO_URI, createdTodo!.Todo.Id));
         getTodoResponse.EnsureSuccessStatusCode();
     }
 

@@ -4,7 +4,7 @@ using IntegrationTests.Utils;
 using NUnit.Framework;
 using System.Net.Http.Json;
 using TaskManagementTool.BusinessLogic.Commands.Home.CreateTodo.Models;
-using TaskManagementTool.BusinessLogic.ViewModels;
+using TaskManagementTool.BusinessLogic.Commands.Home.GetTodoById.Models;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
 
 namespace IntegrationTests.Tests.Home;
@@ -42,16 +42,16 @@ public class CreateTodoTests
 
         CreateTodoResponse? response = await createResponse.Content.ReadFromJsonAsync<CreateTodoResponse>();
 
-        HttpResponseMessage getResponse = await _client.GetAsync(UriConstants.HOME_GET_TODO_URI + response!.Todo.Id);
+        HttpResponseMessage getResponse = await _client.GetAsync(string.Format(UriConstants.HOME_GET_TODO_URI, response!.Todo.Id));
 
         getResponse.EnsureSuccessStatusCode();
 
-        TodoDto? todoFromDb = await getResponse.Content.ReadFromJsonAsync<TodoDto>();
+        GetTodoByIdResponse? todoFromDb = await getResponse.Content.ReadFromJsonAsync<GetTodoByIdResponse>();
 
-        todoFromDb!.Content.Should().Be(createTodoDto.Content);
-        todoFromDb.Name.Should().Be(createTodoDto.Name);
-        todoFromDb.Importance.Should().Be(createTodoDto.Importance);
-        todoFromDb.Id.Should().Be(response.Todo.Id);
+        todoFromDb!.Todo.Content.Should().Be(createTodoDto.Content);
+        todoFromDb.Todo.Name.Should().Be(createTodoDto.Name);
+        todoFromDb.Todo.Importance.Should().Be(createTodoDto.Importance);
+        todoFromDb.Todo.Id.Should().Be(response.Todo.Id);
     }
 
     [TearDown]

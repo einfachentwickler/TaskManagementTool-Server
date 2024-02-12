@@ -9,13 +9,11 @@ using System.Net;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Commands.Home.CreateTodo.Models;
 using TaskManagementTool.BusinessLogic.Commands.Home.DeleteTodo.Models;
+using TaskManagementTool.BusinessLogic.Commands.Home.GetTodoById.Models;
 using TaskManagementTool.BusinessLogic.Commands.Home.GetTodos.Models;
 using TaskManagementTool.BusinessLogic.Commands.Home.UpdateTodo.Models;
-using TaskManagementTool.BusinessLogic.Commands.Utils;
-using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
-using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.Host.ActionFilters;
 
 namespace TaskManagementTool.Host.Controllers;
@@ -23,7 +21,7 @@ namespace TaskManagementTool.Host.Controllers;
 [Route("api/home")]
 [ApiController, Authorize]
 [ModelStateFilter]
-public class HomeController(ITodoHandler todoHandler, IMediator mediator, IHttpContextAccessor httpContextAccessor, IAuthUtils authUtils, ITodoRepository todoRepository) : ControllerBase
+public class HomeController(IMediator mediator, IHttpContextAccessor httpContextAccessor) : ControllerBase
 {
     [HttpGet]
     [Produces("application/json")]
@@ -48,14 +46,15 @@ public class HomeController(ITodoHandler todoHandler, IMediator mediator, IHttpC
     [SwaggerResponse((int)HttpStatusCode.Forbidden)]
     public async Task<IActionResult> GetById([FromRoute][Required] int id)
     {
-        TodoDto todo = await todoHandler.FindByIdAsync(id);
-
-        if (!await authUtils.IsAllowedAction(todoRepository, httpContextAccessor.HttpContext, id))
+        GetTodoByIdRequest request = new()
         {
-            return Forbid();
-        }
+            TodoId = id,
+            HttpContext = httpContextAccessor.HttpContext
+        };
 
-        return Ok(todo);
+        GetTodoByIdResponse response = await mediator.Send(request);
+
+        return Ok(response);
     }
 
     [HttpPost]
@@ -92,7 +91,7 @@ public class HomeController(ITodoHandler todoHandler, IMediator mediator, IHttpC
     }
 
     [HttpDelete("{id:int}")]
-    [SwaggerResponse((int)HttpStatusCode.NoContent)]
+    [SwaggerResponse((int)HttpStatusCode.OK)]
     [SwaggerResponse((int)HttpStatusCode.NotFound)]
     [SwaggerResponse((int)HttpStatusCode.Forbidden)]
     public async Task<IActionResult> Delete([FromRoute][Required] int id)

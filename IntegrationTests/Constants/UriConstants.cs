@@ -13,9 +13,9 @@ public static class UriConstants
 
     public const string HOME_UPDATE_TODO_URI = "https://localhost:44311/api/home";
 
-    public const string HOME_GET_TODO_URI = "https://localhost:44311/api/home/";
+    public const string HOME_GET_TODO_URI = "https://localhost:44311/api/home/{0}";
 
-    public const string HOME_DELETE_TODO_URI = "https://localhost:44311/api/home/";
+    public const string HOME_DELETE_TODO_URI = "https://localhost:44311/api/home/{0}";
 
     public const string ADMIN_REVERSE_STATUS_URI = "https://localhost:44311/api/admin/reverse-status/";
 
