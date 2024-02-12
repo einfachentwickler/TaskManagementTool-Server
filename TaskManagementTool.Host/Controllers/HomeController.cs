@@ -9,6 +9,7 @@ using System.Net;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Commands.Home.DeleteTodo.Models;
 using TaskManagementTool.BusinessLogic.Commands.Home.GetTodos.Models;
+using TaskManagementTool.BusinessLogic.Commands.Home.UpdateTodo.Models;
 using TaskManagementTool.BusinessLogic.Commands.Utils;
 using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.ViewModels;
@@ -69,16 +70,17 @@ public class HomeController(ITodoHandler todoHandler, IMediator mediator, IHttpC
     [SwaggerResponse((int)HttpStatusCode.NoContent)]
     [SwaggerResponse((int)HttpStatusCode.Forbidden)]
     [Consumes("application/json")]
-    public async Task<IActionResult> Update([FromBody][Required] UpdateTodoDto model)
+    public async Task<IActionResult> Update([FromBody][Required] UpdateTodoDto request)
     {
-        if (!await authUtils.IsAllowedAction(todoRepository, httpContextAccessor.HttpContext, model.Id))
+        UpdateTodoRequest req = new()
         {
-            return Forbid();
-        }
+            HttpContext = httpContextAccessor.HttpContext,
+            UpdateTodoDto = request
+        };
 
-        TodoDto updatedTodo = await todoHandler.UpdateAsync(model);
+        UpdateTodoResponse response = await mediator.Send(req);
 
-        return Ok(updatedTodo);
+        return Ok(response);
     }
 
     [HttpDelete("{id:int}")]
