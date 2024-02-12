@@ -3,6 +3,7 @@ using IntegrationTests.Constants;
 using IntegrationTests.Utils;
 using NUnit.Framework;
 using System.Net.Http.Json;
+using TaskManagementTool.BusinessLogic.Commands.Home.CreateTodo.Models;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
 
@@ -39,9 +40,9 @@ public class CreateTodoTests
 
         createResponse.EnsureSuccessStatusCode();
 
-        TodoDto? todo = await createResponse.Content.ReadFromJsonAsync<TodoDto>();
+        CreateTodoResponse? response = await createResponse.Content.ReadFromJsonAsync<CreateTodoResponse>();
 
-        HttpResponseMessage getResponse = await _client.GetAsync(UriConstants.HOME_GET_TODO_URI + todo!.Id);
+        HttpResponseMessage getResponse = await _client.GetAsync(UriConstants.HOME_GET_TODO_URI + response!.Todo.Id);
 
         getResponse.EnsureSuccessStatusCode();
 
@@ -50,7 +51,7 @@ public class CreateTodoTests
         todoFromDb!.Content.Should().Be(createTodoDto.Content);
         todoFromDb.Name.Should().Be(createTodoDto.Name);
         todoFromDb.Importance.Should().Be(createTodoDto.Importance);
-        todoFromDb.Id.Should().Be(todo.Id);
+        todoFromDb.Id.Should().Be(response.Todo.Id);
     }
 
     [TearDown]

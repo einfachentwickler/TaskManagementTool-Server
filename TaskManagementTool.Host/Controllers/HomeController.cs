@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
+using TaskManagementTool.BusinessLogic.Commands.Home.CreateTodo.Models;
 using TaskManagementTool.BusinessLogic.Commands.Home.DeleteTodo.Models;
 using TaskManagementTool.BusinessLogic.Commands.Home.GetTodos.Models;
 using TaskManagementTool.BusinessLogic.Commands.Home.UpdateTodo.Models;
@@ -62,20 +63,27 @@ public class HomeController(ITodoHandler todoHandler, IMediator mediator, IHttpC
     [SwaggerResponse((int)HttpStatusCode.Created)]
     public async Task<IActionResult> Create([FromBody][Required] CreateTodoDto model)
     {
-        model.CreatorId = authUtils.GetUserId(httpContextAccessor.HttpContext);
-        return Ok(await todoHandler.CreateAsync(model));
+        CreateTodoRequest request = new()
+        {
+            HttpContext = httpContextAccessor.HttpContext,
+            CreateTodoDto = model
+        };
+
+        CreateTodoResponse response = await mediator.Send(request);
+
+        return Ok(response);
     }
 
     [HttpPut]
     [SwaggerResponse((int)HttpStatusCode.NoContent)]
     [SwaggerResponse((int)HttpStatusCode.Forbidden)]
     [Consumes("application/json")]
-    public async Task<IActionResult> Update([FromBody][Required] UpdateTodoDto request)
+    public async Task<IActionResult> Update([FromBody][Required] UpdateTodoDto model)
     {
         UpdateTodoRequest req = new()
         {
             HttpContext = httpContextAccessor.HttpContext,
-            UpdateTodoDto = request
+            UpdateTodoDto = model
         };
 
         UpdateTodoResponse response = await mediator.Send(req);

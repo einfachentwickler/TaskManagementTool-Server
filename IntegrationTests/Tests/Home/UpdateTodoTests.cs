@@ -3,6 +3,7 @@ using IntegrationTests.Constants;
 using IntegrationTests.Utils;
 using NUnit.Framework;
 using System.Net.Http.Json;
+using TaskManagementTool.BusinessLogic.Commands.Home.CreateTodo.Models;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
 
@@ -37,14 +38,14 @@ public class UpdateTodoTests
 
         HttpResponseMessage createResponse = await _client.PostAsJsonAsync(UriConstants.HOME_CREATE_TODO_URI, createTodoDto);
 
-        TodoDto? todo = await createResponse.Content.ReadFromJsonAsync<TodoDto>();
+        CreateTodoResponse? response = await createResponse.Content.ReadFromJsonAsync<CreateTodoResponse>();
 
         UpdateTodoDto updateTodoDto = new()
         {
             Name = "Todo upd",
             Content = "Content upd",
             Importance = 10,
-            Id = todo!.Id
+            Id = response!.Todo.Id
         };
 
         //Act
@@ -53,7 +54,7 @@ public class UpdateTodoTests
         //Assert
         updateResponse.EnsureSuccessStatusCode();
 
-        HttpResponseMessage getResponse = await _client.GetAsync(UriConstants.HOME_GET_TODO_URI + todo.Id);
+        HttpResponseMessage getResponse = await _client.GetAsync(UriConstants.HOME_GET_TODO_URI + response.Todo.Id);
 
         getResponse.EnsureSuccessStatusCode();
 
@@ -62,7 +63,7 @@ public class UpdateTodoTests
         todoFromDb!.Content.Should().Be(updateTodoDto.Content);
         todoFromDb.Name.Should().Be(updateTodoDto.Name);
         todoFromDb.Importance.Should().Be(updateTodoDto.Importance);
-        todoFromDb.Id.Should().Be(todo.Id);
+        todoFromDb.Id.Should().Be(response.Todo.Id);
     }
 
     [TearDown]
