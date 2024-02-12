@@ -13,6 +13,7 @@ using TaskManagementTool.BusinessLogic.Commands.Utils;
 using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
+using TaskManagementTool.DataAccess.Contracts;
 using TaskManagementTool.Host.ActionFilters;
 
 namespace TaskManagementTool.Host.Controllers;
@@ -20,7 +21,7 @@ namespace TaskManagementTool.Host.Controllers;
 [Route("api/home")]
 [ApiController, Authorize]
 [ModelStateFilter]
-public class HomeController(ITodoHandler todoHandler, IMediator mediator, IHttpContextAccessor httpContextAccessor, IAuthUtils authUtils) : ControllerBase
+public class HomeController(ITodoHandler todoHandler, IMediator mediator, IHttpContextAccessor httpContextAccessor, IAuthUtils authUtils, ITodoRepository todoRepository) : ControllerBase
 {
     [HttpGet]
     [Produces("application/json")]
@@ -47,7 +48,7 @@ public class HomeController(ITodoHandler todoHandler, IMediator mediator, IHttpC
     {
         TodoDto todo = await todoHandler.FindByIdAsync(id);
 
-        if (!await authUtils.IsAllowedAction(httpContextAccessor.HttpContext, id))
+        if (!await authUtils.IsAllowedAction(todoRepository, httpContextAccessor.HttpContext, id))
         {
             return Forbid();
         }
@@ -70,7 +71,7 @@ public class HomeController(ITodoHandler todoHandler, IMediator mediator, IHttpC
     [Consumes("application/json")]
     public async Task<IActionResult> Update([FromBody][Required] UpdateTodoDto model)
     {
-        if (!await authUtils.IsAllowedAction(httpContextAccessor.HttpContext, model.Id))
+        if (!await authUtils.IsAllowedAction(todoRepository, httpContextAccessor.HttpContext, model.Id))
         {
             return Forbid();
         }

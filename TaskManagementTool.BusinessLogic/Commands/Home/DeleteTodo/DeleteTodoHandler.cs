@@ -26,7 +26,7 @@ public class DeleteTodoHandler(
             throw new TaskManagementToolException(ApiErrorCode.InvalidInput, string.Join(", ", validationResult.Errors));
         }
 
-        if (!await authUtils.IsAllowedAction(request.HttpContext, request.TodoId))
+        if (!await authUtils.IsAllowedAction(todoRepository, request.HttpContext, request.TodoId))
         {
             throw new TaskManagementToolException(ApiErrorCode.Forbidden, "");
         }
