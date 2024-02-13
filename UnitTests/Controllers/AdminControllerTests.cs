@@ -6,10 +6,10 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NUnit.Framework;
+using TaskManagementTool.BusinessLogic.Commands.Admin.DeleteUser.Models;
+using TaskManagementTool.BusinessLogic.Commands.Admin.GetTodos.Models;
 using TaskManagementTool.BusinessLogic.Commands.Admin.GetUsers.Models;
 using TaskManagementTool.BusinessLogic.Commands.Admin.ReverseStatus.Models;
-using TaskManagementTool.BusinessLogic.Interfaces;
-using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.Host.Controllers;
 
 namespace Host.UnitTests.Controllers;
@@ -18,8 +18,6 @@ namespace Host.UnitTests.Controllers;
 public class AdminControllerTests
 {
     private IFixture fixture;
-    private IAdminHandler adminHandler;
-    private ITodoHandler todoHandler;
     private IMediator mediator;
 
     private AdminController sut;
@@ -29,11 +27,9 @@ public class AdminControllerTests
     {
         fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
 
-        adminHandler = fixture.Freeze<IAdminHandler>();
-        todoHandler = fixture.Freeze<ITodoHandler>();
         mediator = fixture.Freeze<IMediator>();
 
-        sut = new AdminController(adminHandler, todoHandler, mediator);
+        sut = new AdminController(mediator);
     }
 
     [Test]
@@ -72,35 +68,33 @@ public class AdminControllerTests
     public async Task DeleteUser_ValidId_ReturnsNoContent()
     {
         //Arrange
-        var userId = fixture.Create<string>();
+        var request = fixture.Create<DeleteUserRequest>();
 
         //Act
-        IActionResult response = await sut.DeleteUser(userId);
+        IActionResult response = await sut.DeleteUser(request.Email);
 
         //Assert
-        await adminHandler.Received(1).DeleteAsync(userId);
-
         response.Should().BeOfType<NoContentResult>();
+
+        await mediator.Received(1).Send(ExtendedArg.Is(request));
     }
 
     [Test]
     public async Task GetTodos_ValidData_ReturnsTodos()
     {
         //Arrange
-        const int pageSize = 10;
-        const int pageNumber = 2;
+        var request = fixture.Create<GetTodosByAdminRequest>();
+        var response = fixture.Create<GetTodosByAdminResponse>();
 
-        var todos = fixture.CreateMany<TodoDto>(5);
-
-        todoHandler.GetAsync(pageSize, pageNumber).Returns(todos);
+        mediator.Send(ExtendedArg.Is(request)).Returns(response);
 
         //Act
-        var actualResult = await sut.GetTodos(pageNumber, pageSize);
+        var actualResult = await sut.GetTodos(request.PageNumber, request.PageSize);
 
         //Assert
         actualResult.Should().BeOfType<OkObjectResult>();
 
-        ((OkObjectResult)actualResult).Value.Should().Be(todos);
+        ((OkObjectResult)actualResult).Value.Should().Be(response);
     }
 
     [Test]
@@ -113,8 +107,6 @@ public class AdminControllerTests
         var actualResult = await sut.DeleteTodo(id);
 
         //Assert
-        await todoHandler.Received(1).DeleteAsync(id);
-
         actualResult.Should().BeOfType<NoContentResult>();
     }
 }

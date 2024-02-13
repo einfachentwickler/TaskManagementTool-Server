@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 using NUnit.Framework;
-using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.Host.ActionFilters;
 using TaskManagementTool.Host.Controllers;
 
@@ -40,7 +39,7 @@ public class ModelStateFilterTests
             actionContext,
             new List<IFilterMetadata>(),
             new Dictionary<string, object?>(),
-            new AdminController(fixture.Freeze<IAdminHandler>(), fixture.Freeze<ITodoHandler>(), fixture.Freeze<IMediator>())
+            new AdminController(fixture.Freeze<IMediator>())
             );
     }
 
