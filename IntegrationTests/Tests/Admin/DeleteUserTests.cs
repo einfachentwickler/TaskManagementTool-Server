@@ -4,9 +4,9 @@ using IntegrationTests.Utils;
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
+using TaskManagementTool.BusinessLogic.Commands.Admin.GetTodos.Models;
 using TaskManagementTool.BusinessLogic.Commands.Admin.GetUsers.Models;
 using TaskManagementTool.BusinessLogic.Dto.Errors;
-using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.Common.Enums;
 
 namespace IntegrationTests.Tests.Admin;
@@ -59,8 +59,8 @@ public class DeleteUserTests
 
         HttpResponseMessage getTodosResponse = await client.GetAsync(string.Format(UriConstants.ADMIN_GET_TODOS_URI, 10, 1));
 
-        IEnumerable<TodoDto>? todos = await getTodosResponse.Content.ReadFromJsonAsync<IEnumerable<TodoDto>>();
-        todos.Should().HaveCount(5)
+        GetTodosByAdminResponse? todos = await getTodosResponse.Content.ReadFromJsonAsync<GetTodosByAdminResponse>();
+        todos!.Todos.Should().HaveCount(5)
             .And.Contain(dto => dto.Name == "Todo 1")
             .And.Contain(dto => dto.Name == "Todo 2")
             .And.Contain(dto => dto.Name == "Todo 3");

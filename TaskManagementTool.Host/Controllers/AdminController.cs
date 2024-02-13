@@ -2,21 +2,21 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
+using TaskManagementTool.BusinessLogic.Commands.Admin.DeleteTodoByAdmin.Models;
+using TaskManagementTool.BusinessLogic.Commands.Admin.DeleteUser.Models;
+using TaskManagementTool.BusinessLogic.Commands.Admin.GetTodos.Models;
 using TaskManagementTool.BusinessLogic.Commands.Admin.GetUsers.Models;
 using TaskManagementTool.BusinessLogic.Commands.Admin.ReverseStatus.Models;
-using TaskManagementTool.BusinessLogic.Interfaces;
-using TaskManagementTool.BusinessLogic.ViewModels;
 
 namespace TaskManagementTool.Host.Controllers;
 
 [Route("api/admin/")]
 [ApiController]
 [Authorize(Roles = "Admin")]
-public class AdminController(IAdminHandler adminHandler, ITodoHandler todoHandler, IMediator mediator) : ControllerBase
+public class AdminController(IMediator mediator) : ControllerBase
 {
     [HttpGet("users")]
     [SwaggerResponse((int)HttpStatusCode.OK)]
@@ -44,7 +44,10 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler todoHandle
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> DeleteUser([FromRoute][Required] string email)
     {
-        await adminHandler.DeleteAsync(email);
+        DeleteUserRequest request = new() { Email = email };
+
+        await mediator.Send(request);
+
         return NoContent();
     }
 
@@ -53,8 +56,11 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler todoHandle
     [SwaggerResponse((int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetTodos([FromQuery][Required] int pageNumber, [FromQuery][Required] int pageSize)
     {
-        IEnumerable<TodoDto> todos = await todoHandler.GetAsync(pageSize, pageNumber);
-        return Ok(todos);
+        GetTodosByAdminRequest request = new() { PageNumber = pageNumber, PageSize = pageSize };
+
+        GetTodosByAdminResponse response = await mediator.Send(request);
+
+        return Ok(response);
     }
 
     [HttpDelete("todos/{id:int}")]
@@ -62,7 +68,10 @@ public class AdminController(IAdminHandler adminHandler, ITodoHandler todoHandle
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> DeleteTodo([FromRoute][Required] int id)
     {
-        await todoHandler.DeleteAsync(id);
+        DeleteTodoByAdminRequest request = new() { TodoId = id };
+
+        await mediator.Send(request);
+
         return NoContent();
     }
 }

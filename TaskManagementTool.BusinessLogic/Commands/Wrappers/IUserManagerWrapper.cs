@@ -10,4 +10,5 @@ public interface IUserManagerWrapper
     public Task<bool> CheckPasswordAsync(User user, string password);
     public Task<User> FindByEmailAsync(string email);
     public Task<IdentityResult> UpdateAsync(User user);
+    public Task<IdentityResult> DeleteAsync(User user);
 }

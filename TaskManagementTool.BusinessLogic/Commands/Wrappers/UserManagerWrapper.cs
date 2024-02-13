@@ -23,4 +23,9 @@ public class UserManagerWrapper(UserManager<User> userManager) : IUserManagerWra
     {
         return await userManager.UpdateAsync(user);
     }
+
+    public async Task<IdentityResult> DeleteAsync(User user)
+    {
+        return await userManager.DeleteAsync(user);
+    }
 }
