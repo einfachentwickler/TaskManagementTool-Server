@@ -6,7 +6,8 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NUnit.Framework;
-using TaskManagementTool.BusinessLogic.Commands.Admin.Models;
+using TaskManagementTool.BusinessLogic.Commands.Admin.GetUsers.Models;
+using TaskManagementTool.BusinessLogic.Commands.Admin.ReverseStatus.Models;
 using TaskManagementTool.BusinessLogic.Interfaces;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.Host.Controllers;
@@ -56,15 +57,15 @@ public class AdminControllerTests
     public async Task ReverseStatus_ValidId_ReturnsNoContent()
     {
         //Arrange
-        var userId = fixture.Create<string>();
+        var request = fixture.Create<ReverseStatusRequest>();
 
         //Act
-        IActionResult response = await sut.ReverseStatus(userId);
+        IActionResult actualResult = await sut.ReverseStatus(request.UserId);
 
         //Assert
-        await adminHandler.Received(1).BlockOrUnblockAsync(userId);
+        actualResult.Should().BeOfType<NoContentResult>();
 
-        response.Should().BeOfType<NoContentResult>();
+        await mediator.Received(1).Send(ExtendedArg.Is(request));
     }
 
     [Test]

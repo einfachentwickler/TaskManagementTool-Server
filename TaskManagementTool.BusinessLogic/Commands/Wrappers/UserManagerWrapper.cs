@@ -18,4 +18,9 @@ public class UserManagerWrapper(UserManager<User> userManager) : IUserManagerWra
     {
         return await userManager.CheckPasswordAsync(user, password);
     }
+
+    public async Task<IdentityResult> UpdateAsync(User user)
+    {
+        return await userManager.UpdateAsync(user);
+    }
 }

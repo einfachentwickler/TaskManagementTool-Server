@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace TaskManagementTool.BusinessLogic.Commands.Admin.Models;
+namespace TaskManagementTool.BusinessLogic.Commands.Admin.GetUsers.Models;
 
 public class GetUsersRequest : IRequest<GetUsersResponse>
 {

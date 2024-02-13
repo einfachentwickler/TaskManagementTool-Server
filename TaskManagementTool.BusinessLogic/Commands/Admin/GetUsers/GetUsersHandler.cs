@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskManagementTool.BusinessLogic.Commands.Admin.Models;
+using TaskManagementTool.BusinessLogic.Commands.Admin.GetUsers.Models;
 using TaskManagementTool.BusinessLogic.Commands.Wrappers;
 using TaskManagementTool.BusinessLogic.ViewModels;
 using TaskManagementTool.Common.Enums;
@@ -14,7 +14,7 @@ using TaskManagementTool.Common.Exceptions;
 using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.DataAccess.Extensions;
 
-namespace TaskManagementTool.BusinessLogic.Commands.Admin;
+namespace TaskManagementTool.BusinessLogic.Commands.Admin.GetUsers;
 
 public class GetUsersHandler(
     IValidator<GetUsersRequest> requestValidator,

@@ -4,7 +4,7 @@ using IntegrationTests.Utils;
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
-using TaskManagementTool.BusinessLogic.Commands.Admin.Models;
+using TaskManagementTool.BusinessLogic.Commands.Admin.GetUsers.Models;
 
 namespace IntegrationTests.Tests.Admin;
 

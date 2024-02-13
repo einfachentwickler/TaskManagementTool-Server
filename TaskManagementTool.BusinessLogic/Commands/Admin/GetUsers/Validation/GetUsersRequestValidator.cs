@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
-using TaskManagementTool.BusinessLogic.Commands.Admin.Models;
+using TaskManagementTool.BusinessLogic.Commands.Admin.GetUsers.Models;
 using TaskManagementTool.Common.Enums;
 
-namespace TaskManagementTool.BusinessLogic.Commands.Admin.Validation;
+namespace TaskManagementTool.BusinessLogic.Commands.Admin.GetUsers.Validation;
 public class GetUsersRequestValidator : AbstractValidator<GetUsersRequest>
 {
     public GetUsersRequestValidator()
