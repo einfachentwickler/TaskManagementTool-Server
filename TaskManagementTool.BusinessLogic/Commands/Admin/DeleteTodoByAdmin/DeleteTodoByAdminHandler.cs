@@ -10,7 +10,7 @@ public class DeleteTodoByAdminHandler(ITodoRepository todoRepository) : IRequest
 {
     public async Task<Unit> Handle(DeleteTodoByAdminRequest request, CancellationToken cancellationToken)
     {
-        await todoRepository.DeleteAsync(x => x.Id == request.TodoId);
+        await todoRepository.DeleteAsync(entry => entry.Id == request.TodoId);
 
         return new Unit();
     }

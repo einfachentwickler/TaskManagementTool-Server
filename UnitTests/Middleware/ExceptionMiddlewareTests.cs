@@ -16,6 +16,7 @@ public class ExceptionMiddlewareTests
     [TestCase(ApiErrorCode.TodoNotFound, StatusCodes.Status404NotFound)]
     [TestCase(ApiErrorCode.UserNotFound, StatusCodes.Status404NotFound)]
     [TestCase(ApiErrorCode.InvalidInput, StatusCodes.Status400BadRequest)]
+    [TestCase(ApiErrorCode.Forbidden, StatusCodes.Status404NotFound)]
     [TestCase((ApiErrorCode)349, StatusCodes.Status500InternalServerError)]
     public async Task Invoke_ThrowsTaskManagementToolException_ReturnsValidErrorData(ApiErrorCode apiErrorCode, int expectedStatusCode)
     {
