@@ -12,5 +12,5 @@ public class UserRegisterResponse
     public string Message { get; init; }
 
     [JsonProperty("errors")]
-    public IEnumerable<string> Errors { get; set; } = new List<string>();
+    public IEnumerable<string> Errors { get; set; } = [];
 }

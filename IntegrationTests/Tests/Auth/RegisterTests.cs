@@ -97,8 +97,6 @@ public class RegisterTests
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
-#warning TODO add error codes check
     }
 
     [Test]
@@ -120,8 +118,6 @@ public class RegisterTests
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
-#warning TODO add error codes check
     }
 
     [TearDown]

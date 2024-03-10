@@ -17,6 +17,7 @@ public class TmtWebApplicationFactory : WebApplicationFactory<Program>
         {
             services.RemoveAll(typeof(DbContextOptions<TaskManagementToolDatabase>));
 
+            //ToDo move to docker, add test db initialization script
             services.AddDbContext<TaskManagementToolDatabase>(
                 options => options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TaskManagementToolTests;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
                 builder => builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null))

@@ -16,6 +16,3 @@ WORKDIR /app
 EXPOSE 8080
 COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "TaskManagementTool.Host.dll"]
-
-
-
