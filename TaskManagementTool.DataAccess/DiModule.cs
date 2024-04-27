@@ -9,9 +9,14 @@ using TaskManagementTool.DataAccess.Repositories;
 namespace TaskManagementTool.DataAccess;
 public static class DiModule
 {
-    public static void ConfigureDataAccess(this IServiceCollection services, DatabaseConfigurationOptions options)
+    public static void ConfigureDataAccess(
+        this IServiceCollection services,
+        DatabaseConfigurationOptions options,
+        LocalEnvSettings localEnvSettings,
+        bool isDevMode
+        )
     {
-        string connectionString = BuildConnectionString(options);
+        string connectionString = BuildConnectionString(options, localEnvSettings, isDevMode);
 
         services.AddDbContext<TaskManagementToolDatabase>(builder => builder.UseSqlServer(connectionString));
 
@@ -19,8 +24,13 @@ public static class DiModule
         services.AddScoped<IDatabaseFactory, DatabaseFactory>();
     }
 
-    private static string BuildConnectionString(DatabaseConfigurationOptions options)
+    private static string BuildConnectionString(DatabaseConfigurationOptions options, LocalEnvSettings localEnvSettings, bool isDevMode)
     {
+        if (isDevMode)
+        {
+            return localEnvSettings.SqlServerDataBaseConnectionString;
+        }
+
         return $"Server={options.Server},{options.Port};Initial Catalog={options.DatabaseName};User ID={options.User};Password={options.Password};TrustServerCertificate=True";
     }
 }

@@ -21,6 +21,7 @@ public static class DiModule
 {
     public static void SetupOptions(this IServiceCollection services)
     {
+        //TODO other options?
         services
             .AddOptions<AuthSettings>()
             .BindConfiguration(nameof(AuthSettings))
@@ -72,6 +73,7 @@ public static class DiModule
 
         void AddJwtBearer(JwtBearerOptions options)
         {
+            //TODO get sensitive info from env variables
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = tokenOptions.ShouldValidateIssuer,

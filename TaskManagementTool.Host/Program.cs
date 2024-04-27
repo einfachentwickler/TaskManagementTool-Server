@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic;
@@ -15,60 +17,65 @@ using TaskManagementTool.Host.Middleware;
 namespace TaskManagementTool.Host;
 
 [ExcludeFromCodeCoverage]
-[SuppressMessage("Roslynator", "RCS1102:Make class static", Justification = "Used in integration tests")]
 public class Program
 {
-    public static async Task Main(string[] args)
-    {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+	public static async Task Main(string[] args)
+	{
+		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddControllers();
+		builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: false, reloadOnChange: true);
 
-        builder.Services.SetupOptions();
+		builder.Services.AddControllers();
 
-        builder.Services.ConfigureCors();
+		builder.Services.SetupOptions();
 
-        builder.Services.ConfigureDataAccess(new DatabaseConfigurationOptions(builder.Configuration));
+		builder.Services.ConfigureCors();
 
-        builder.Services.ConfigureIdentity(
-            new IdentityConfigurationOptions(builder.Configuration),
-            new TokenValidationOptions(builder.Configuration),
-            builder.Configuration
-            );
+		builder.Services.ConfigureDataAccess(
+			new DatabaseConfigurationOptions(builder.Configuration),
+			new LocalEnvSettings(builder.Configuration),
+			builder.Environment.IsDevelopment()
+			);
 
-        builder.Services.RegisterDependencies();
+		builder.Services.ConfigureIdentity(
+			new IdentityConfigurationOptions(builder.Configuration),
+			new TokenValidationOptions(builder.Configuration),
+			builder.Configuration
+			);
 
-        builder.Services.ConfigureBll();
+		builder.Services.RegisterDependencies();
 
-        builder.Services.AddSwaggerGen();
+		builder.Services.ConfigureBll();
 
-        WebApplication app = builder.Build();
+		builder.Services.AddSwaggerGen();
 
-        using IServiceScope scope = app.Services.CreateScope();
+		WebApplication app = builder.Build();
 
-        app.UseSwagger();
+		using IServiceScope scope = app.Services.CreateScope();
 
-        app.UseSwaggerUI(options => options.SwaggerEndpoint(SwaggerSetupConstants.URL, SwaggerSetupConstants.APPLICATION_NAME));
+		app.UseSwagger();
 
-        app.UseMiddleware<ExceptionMiddleware>();
+		app.UseSwaggerUI(options => options.SwaggerEndpoint(SwaggerSetupConstants.URL, SwaggerSetupConstants.APPLICATION_NAME));
 
-        app.UseHttpsRedirection();
-        app.UseCors(CorsPolicyNameConstants.DEFAULT_POLICY_NAME);
+		app.UseMiddleware<ExceptionMiddleware>();
 
-        app.UseAuthentication();
-        app.UseRouting();
-        app.UseAuthorization();
-        app.MapControllers();
+		app.UseHttpsRedirection();
+		app.UseCors(CorsPolicyNameConstants.DEFAULT_POLICY_NAME);
 
-        UserManager<User> userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-        RoleManager<IdentityRole> rolesManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        TaskManagementToolDatabase context = scope.ServiceProvider.GetRequiredService<TaskManagementToolDatabase>();
+		app.UseAuthentication();
+		app.UseRouting();
+		app.UseAuthorization();
+		app.MapControllers();
 
-        if (!await context.Database.EnsureCreatedAsync())
-        {
-            await EfCoreCodeFirstInitializer.InitializeAsync(context, userManager, rolesManager, builder.Configuration);
-        }
+		UserManager<User> userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+		RoleManager<IdentityRole> rolesManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+		TaskManagementToolDatabase context = scope.ServiceProvider.GetRequiredService<TaskManagementToolDatabase>();
 
-        await app.RunAsync();
-    }
+		if (!await context.Database.EnsureCreatedAsync())
+		{
+			await EfCoreCodeFirstInitializer.InitializeAsync(context, userManager, rolesManager, builder.Configuration);
+		}
+
+		await app.RunAsync();
+	}
 }
