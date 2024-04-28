@@ -19,80 +19,88 @@ namespace TaskManagementTool.Host;
 [ExcludeFromCodeCoverage]
 public static class DiModule
 {
-    public static void SetupOptions(this IServiceCollection services)
-    {
-        //TODO other options?
-        services
-            .AddOptions<AuthSettings>()
-            .BindConfiguration(nameof(AuthSettings))
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
-    }
+	public static IServiceCollection ConfigureHost(this IServiceCollection services, IConfiguration configuration)
+	{
+		services.AddScoped<IAuthUtils, AuthUtils>();
 
-    public static void RegisterDependencies(this IServiceCollection services)
-    {
-        services.AddScoped<IAuthUtils, AuthUtils>();
-    }
+		services
+			.AddOptions<AuthSettings>()
+			.BindConfiguration(nameof(AuthSettings))
+			.ValidateDataAnnotations()
+			.ValidateOnStart();
 
-    public static void ConfigureCors(this IServiceCollection service)
-    {
-        void AddPolicy(CorsPolicyBuilder builder) => builder
-            .AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
+		services.ConfigureIdentity(
+			new IdentityConfigurationOptions(configuration),
+			new TokenValidationOptions(configuration),
+			configuration
+		);
 
-        void AddCors(CorsOptions options) => options.AddPolicy(CorsPolicyNameConstants.DEFAULT_POLICY_NAME, AddPolicy);
+		services.ConfigureCors();
 
-        service.AddCors(AddCors);
-    }
+		services.AddSwaggerGen();
 
-    public static void ConfigureIdentity(
-        this IServiceCollection services,
-        IdentityConfigurationOptions passwordOptions,
-        TokenValidationOptions tokenOptions,
-        IConfiguration configuration
-        )
-    {
-        void AddIdentity(IdentityOptions identityOptions)
-        {
-            identityOptions.Password.RequireDigit = passwordOptions.IsDigitRequired;
-            identityOptions.Password.RequireLowercase = passwordOptions.IsLowercaseRequired;
-            identityOptions.Password.RequireNonAlphanumeric = passwordOptions.IsNonAlphaNumericRequired;
-            identityOptions.Password.RequireUppercase = passwordOptions.IsUppercaseRequired;
-            identityOptions.Password.RequiredLength = passwordOptions.RequiredPasswordLength;
-            identityOptions.Password.RequiredUniqueChars = passwordOptions.RequiredUniqueChart;
+		return services;
+	}
 
-            identityOptions.User.RequireUniqueEmail = true;
-        }
+	private static void ConfigureCors(this IServiceCollection service)
+	{
+		void AddPolicy(CorsPolicyBuilder builder) => builder
+			.AllowAnyOrigin()
+			.AllowAnyHeader()
+			.AllowAnyMethod();
 
-        static void AddAuthentication(AuthenticationOptions options)
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }
+		void AddCors(CorsOptions options) => options.AddPolicy(CorsPolicyNameConstants.DEFAULT_POLICY_NAME, AddPolicy);
 
-        void AddJwtBearer(JwtBearerOptions options)
-        {
-            //TODO get sensitive info from env variables
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = tokenOptions.ShouldValidateIssuer,
-                ValidateAudience = tokenOptions.ShouldValidateAudience,
-                ValidAudience = configuration["AuthSettings:Audience"],
-                ValidIssuer = configuration["AuthSettings:Issuer"],
-                RequireExpirationTime = tokenOptions.ShouldRequireExpirationTime,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["AuthSettings:Key"]!)),
-                ValidateIssuerSigningKey = tokenOptions.ShouldValidateIssuerSigninKey
-            };
-        }
+		service.AddCors(AddCors);
+	}
 
-        services
-            .AddIdentity<User, IdentityRole>(AddIdentity)
-            .AddEntityFrameworkStores<TaskManagementToolDatabase>()
-            .AddDefaultTokenProviders();
+	private static void ConfigureIdentity(
+		this IServiceCollection services,
+		IdentityConfigurationOptions passwordOptions,
+		TokenValidationOptions tokenOptions,
+		IConfiguration configuration
+		)
+	{
+		void AddIdentity(IdentityOptions identityOptions)
+		{
+			identityOptions.Password.RequireDigit = passwordOptions.IsDigitRequired;
+			identityOptions.Password.RequireLowercase = passwordOptions.IsLowercaseRequired;
+			identityOptions.Password.RequireNonAlphanumeric = passwordOptions.IsNonAlphaNumericRequired;
+			identityOptions.Password.RequireUppercase = passwordOptions.IsUppercaseRequired;
+			identityOptions.Password.RequiredLength = passwordOptions.RequiredPasswordLength;
+			identityOptions.Password.RequiredUniqueChars = passwordOptions.RequiredUniqueChart;
 
-        services
-            .AddAuthentication(AddAuthentication)
-            .AddJwtBearer(AddJwtBearer);
-    }
+			identityOptions.User.RequireUniqueEmail = true;
+		}
+
+		static void AddAuthentication(AuthenticationOptions options)
+		{
+			options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+			options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+		}
+
+		void AddJwtBearer(JwtBearerOptions options)
+		{
+			//TODO get sensitive info from env variables
+			options.TokenValidationParameters = new TokenValidationParameters
+			{
+				ValidateIssuer = tokenOptions.ShouldValidateIssuer,
+				ValidateAudience = tokenOptions.ShouldValidateAudience,
+				ValidAudience = configuration["AuthSettings:Audience"],
+				ValidIssuer = configuration["AuthSettings:Issuer"],
+				RequireExpirationTime = tokenOptions.ShouldRequireExpirationTime,
+				IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["AuthSettings:Key"]!)),
+				ValidateIssuerSigningKey = tokenOptions.ShouldValidateIssuerSigninKey
+			};
+		}
+
+		services
+			.AddIdentity<User, IdentityRole>(AddIdentity)
+			.AddEntityFrameworkStores<TaskManagementToolDatabase>()
+			.AddDefaultTokenProviders();
+
+		services
+			.AddAuthentication(AddAuthentication)
+			.AddJwtBearer(AddJwtBearer);
+	}
 }

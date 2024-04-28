@@ -9,7 +9,7 @@ using TaskManagementTool.DataAccess.Repositories;
 namespace TaskManagementTool.DataAccess;
 public static class DiModule
 {
-    public static void ConfigureDataAccess(
+    public static IServiceCollection ConfigureDataAccess(
         this IServiceCollection services,
         DatabaseConfigurationOptions options,
         LocalEnvSettings localEnvSettings,
@@ -22,6 +22,8 @@ public static class DiModule
 
         services.AddScoped<ITodoRepository, TodoRepository>();
         services.AddScoped<IDatabaseFactory, DatabaseFactory>();
+
+        return services;
     }
 
     private static string BuildConnectionString(DatabaseConfigurationOptions options, LocalEnvSettings localEnvSettings, bool isDevMode)

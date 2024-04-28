@@ -10,7 +10,7 @@ namespace TaskManagementTool.BusinessLogic;
 
 public static class DiModule
 {
-    public static void ConfigureBll(this IServiceCollection services)
+    public static IServiceCollection ConfigureBll(this IServiceCollection services)
     {
         services.AddValidatorsFromAssemblyContaining<UserRegisterRequestValidator>();
 
@@ -20,5 +20,7 @@ public static class DiModule
 
         services.AddScoped<IUserManagerWrapper, UserManagerWrapper>();
         services.AddScoped<IJwtSecurityTokenBuilder, JwtSecurityTokenBuilder>();
+
+        return services;
     }
 }

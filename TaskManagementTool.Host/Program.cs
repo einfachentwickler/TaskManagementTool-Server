@@ -27,27 +27,13 @@ public class Program
 
 		builder.Services.AddControllers();
 
-		builder.Services.SetupOptions();
-
-		builder.Services.ConfigureCors();
-
 		builder.Services.ConfigureDataAccess(
 			new DatabaseConfigurationOptions(builder.Configuration),
 			new LocalEnvSettings(builder.Configuration),
 			builder.Environment.IsDevelopment()
-			);
-
-		builder.Services.ConfigureIdentity(
-			new IdentityConfigurationOptions(builder.Configuration),
-			new TokenValidationOptions(builder.Configuration),
-			builder.Configuration
-			);
-
-		builder.Services.RegisterDependencies();
-
-		builder.Services.ConfigureBll();
-
-		builder.Services.AddSwaggerGen();
+			)
+			.ConfigureBll()
+			.ConfigureHost(builder.Configuration);
 
 		WebApplication app = builder.Build();
 
