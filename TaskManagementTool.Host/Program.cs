@@ -6,7 +6,6 @@ using Microsoft.Extensions.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic;
-using TaskManagementTool.Common.Configuration.Startup;
 using TaskManagementTool.DataAccess;
 using TaskManagementTool.DataAccess.DatabaseContext;
 using TaskManagementTool.DataAccess.Entities;
@@ -19,49 +18,46 @@ namespace TaskManagementTool.Host;
 [ExcludeFromCodeCoverage]
 public class Program
 {
-	public static async Task Main(string[] args)
-	{
-		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+    public static async Task Main(string[] args)
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-		builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: false, reloadOnChange: true);
+        builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: false, reloadOnChange: true);
 
-		builder.Services.AddControllers();
+        builder.Services.AddControllers();
 
-		builder.Services.ConfigureDataAccess(
-			new DatabaseConfigurationOptions(builder.Configuration),
-			new LocalEnvSettings(builder.Configuration),
-			builder.Environment.IsDevelopment()
-			)
-			.ConfigureBll()
-			.ConfigureHost(builder.Configuration);
+        builder.Services
+            .ConfigureDataAccess(builder.Configuration, builder.Environment.IsDevelopment())
+            .ConfigureBll()
+            .ConfigureHost(builder.Configuration);
 
-		WebApplication app = builder.Build();
+        WebApplication app = builder.Build();
 
-		using IServiceScope scope = app.Services.CreateScope();
+        using IServiceScope scope = app.Services.CreateScope();
 
-		app.UseSwagger();
+        app.UseSwagger();
 
-		app.UseSwaggerUI(options => options.SwaggerEndpoint(SwaggerSetupConstants.URL, SwaggerSetupConstants.APPLICATION_NAME));
+        app.UseSwaggerUI(options => options.SwaggerEndpoint(SwaggerSetupConstants.URL, SwaggerSetupConstants.APPLICATION_NAME));
 
-		app.UseMiddleware<ExceptionMiddleware>();
+        app.UseMiddleware<ExceptionMiddleware>();
 
-		app.UseHttpsRedirection();
-		app.UseCors(CorsPolicyNameConstants.DEFAULT_POLICY_NAME);
+        app.UseHttpsRedirection();
+        app.UseCors(CorsPolicyNameConstants.DEFAULT_POLICY_NAME);
 
-		app.UseAuthentication();
-		app.UseRouting();
-		app.UseAuthorization();
-		app.MapControllers();
+        app.UseAuthentication();
+        app.UseRouting();
+        app.UseAuthorization();
+        app.MapControllers();
 
-		UserManager<User> userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-		RoleManager<IdentityRole> rolesManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-		TaskManagementToolDatabase context = scope.ServiceProvider.GetRequiredService<TaskManagementToolDatabase>();
+        UserManager<User> userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        RoleManager<IdentityRole> rolesManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        TaskManagementToolDatabase context = scope.ServiceProvider.GetRequiredService<TaskManagementToolDatabase>();
 
-		if (!await context.Database.EnsureCreatedAsync())
-		{
-			await EfCoreCodeFirstInitializer.InitializeAsync(context, userManager, rolesManager, builder.Configuration);
-		}
+        if (!await context.Database.EnsureCreatedAsync())
+        {
+            await EfCoreCodeFirstInitializer.InitializeAsync(context, userManager, rolesManager, builder.Configuration);
+        }
 
-		await app.RunAsync();
-	}
+        await app.RunAsync();
+    }
 }

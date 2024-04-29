@@ -103,7 +103,7 @@ public class DeleteTodoTests
         await TestsHelper.LoginAsync(_client, "user1@email.com", "password");
 
         //Act
-        HttpResponseMessage deleteResponse = await _client.DeleteAsync(UriConstants.HOME_DELETE_TODO_URI + 200);
+        HttpResponseMessage deleteResponse = await _client.DeleteAsync(string.Format(UriConstants.HOME_DELETE_TODO_URI, 200));
 
         //Assert
         deleteResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
