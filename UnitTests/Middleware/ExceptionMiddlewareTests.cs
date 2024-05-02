@@ -1,6 +1,10 @@
-﻿using FluentAssertions;
+﻿using AutoFixture;
+using AutoFixture.AutoNSubstitute;
+using FluentAssertions;
+using LoggerService;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using NSubstitute;
 using NUnit.Framework;
 using TaskManagementTool.BusinessLogic.Dto.Errors;
 using TaskManagementTool.Common.Enums;
@@ -12,6 +16,16 @@ namespace Host.UnitTests.Middleware;
 [TestFixture]
 public class ExceptionMiddlewareTests
 {
+    private IFixture fixture;
+    private ILoggerManager loggerManager;
+
+    [SetUp]
+    public void Setup()
+    {
+        fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
+        loggerManager = fixture.Freeze<ILoggerManager>();
+    }
+
     [TestCase(ApiErrorCode.Unautorized, StatusCodes.Status401Unauthorized)]
     [TestCase(ApiErrorCode.TodoNotFound, StatusCodes.Status404NotFound)]
     [TestCase(ApiErrorCode.UserNotFound, StatusCodes.Status404NotFound)]
@@ -23,13 +37,15 @@ public class ExceptionMiddlewareTests
         //Arrange
         string expectedContent = JsonConvert.SerializeObject(new ErrorDto(apiErrorCode, "message"));
 
-        ExceptionMiddleware sut = new(next: (_) => throw new TaskManagementToolException(apiErrorCode, "message"));
+        TaskManagementToolException expectedException = new(apiErrorCode, "message");
+
+        ExceptionMiddleware sut = new(next: (_) => throw expectedException);
 
         DefaultHttpContext context = new();
         context.Response.Body = new MemoryStream();
 
         //Act
-        await sut.InvokeAsync(context);
+        await sut.InvokeAsync(context, loggerManager);
 
         context.Response.Body.Seek(0, SeekOrigin.Begin);
 
@@ -39,19 +55,23 @@ public class ExceptionMiddlewareTests
         string serializedResponse = await new StreamReader(context.Response.Body).ReadToEndAsync();
 
         serializedResponse.Should().Be(expectedContent);
+
+        loggerManager.Received(1).LogError(expectedException);
     }
 
     [Test]
     public async Task Invoke_ThrowsUnknownException_ReturnsGeneric500()
     {
         //Arrange
-        ExceptionMiddleware sut = new(next: (_) => throw new NotImplementedException());
+        NotImplementedException expectedException = new();
+
+        ExceptionMiddleware sut = new(next: (_) => throw expectedException);
 
         DefaultHttpContext context = new();
         context.Response.Body = new MemoryStream();
 
         //Act
-        await sut.InvokeAsync(context);
+        await sut.InvokeAsync(context, loggerManager);
 
         context.Response.Body.Seek(0, SeekOrigin.Begin);
 
@@ -61,6 +81,8 @@ public class ExceptionMiddlewareTests
         string serializedResponse = await new StreamReader(context.Response.Body).ReadToEndAsync();
 
         serializedResponse.Should().Be("Internal server error");
+
+        loggerManager.Received(1).LogError(expectedException);
     }
 
     [Test]
@@ -73,7 +95,7 @@ public class ExceptionMiddlewareTests
         context.Response.Body = new MemoryStream();
 
         //Act
-        await sut.InvokeAsync(context);
+        await sut.InvokeAsync(context, loggerManager);
 
         context.Response.Body.Seek(0, SeekOrigin.Begin);
 
@@ -83,5 +105,7 @@ public class ExceptionMiddlewareTests
         string serializedResponse = await new StreamReader(context.Response.Body).ReadToEndAsync();
 
         serializedResponse.Should().Be(string.Empty);
+
+        loggerManager.DidNotReceiveWithAnyArgs().LogError(Arg.Any<Exception>());
     }
 }

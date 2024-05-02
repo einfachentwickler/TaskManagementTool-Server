@@ -1,8 +1,11 @@
+using LoggerService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using NLog.Web;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic;
@@ -30,6 +33,8 @@ public class Program
             .ConfigureDataAccess(builder.Configuration, builder.Environment.IsDevelopment())
             .ConfigureBll()
             .ConfigureHost(builder.Configuration);
+
+        builder.ConfigureLogging(builder.Configuration);
 
         WebApplication app = builder.Build();
 

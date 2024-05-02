@@ -52,7 +52,6 @@ public static class DiModule
     private static void ConfigureIdentity(this IServiceCollection services, IConfiguration configuration)
     {
         //todo add emails
-        //todo add logger
         //adjust swagger, produceresponsetype
         //add login as
         //TODO refresh token
