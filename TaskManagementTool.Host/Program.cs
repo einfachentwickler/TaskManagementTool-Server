@@ -54,7 +54,7 @@ public class Program
         app.UseAuthorization();
         app.MapControllers();
 
-        UserManager<User> userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        UserManager<UserEntry> userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntry>>();
         RoleManager<IdentityRole> rolesManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         TaskManagementToolDatabase context = scope.ServiceProvider.GetRequiredService<TaskManagementToolDatabase>();
 

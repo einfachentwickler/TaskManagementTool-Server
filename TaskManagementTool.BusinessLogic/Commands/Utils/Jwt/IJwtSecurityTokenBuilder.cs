@@ -6,5 +6,5 @@ namespace TaskManagementTool.BusinessLogic.Commands.Utils.Jwt;
 
 public interface IJwtSecurityTokenBuilder
 {
-    (string, JwtSecurityToken) Build(User user, UserLoginRequest model);
+    (string, JwtSecurityToken) Build(UserEntry user, UserLoginRequest model);
 }

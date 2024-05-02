@@ -32,7 +32,7 @@ public class UserLoginHandler(
             };
         }
 
-        User user = await userManager.FindByEmailAsync(request.Email);
+        UserEntry user = await userManager.FindByEmailAsync(request.Email);
 
         if (user is null)
         {

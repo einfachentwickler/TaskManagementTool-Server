@@ -15,7 +15,7 @@ public class DeleteUserHandler(IUserManagerWrapper userManager, ITodoRepository 
 {
     public async Task<Unit> Handle(DeleteUserRequest request, CancellationToken cancellationToken)
     {
-        User user = await userManager.FindByEmailAsync(request.Email)
+        UserEntry user = await userManager.FindByEmailAsync(request.Email)
             ?? throw new TaskManagementToolException(ApiErrorCode.UserNotFound, $"User with email {request.Email} was not found");
 
         await todoRepository.DeleteAsync(todo => todo.Creator.Email == request.Email);

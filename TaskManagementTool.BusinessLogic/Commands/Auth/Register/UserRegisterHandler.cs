@@ -14,7 +14,7 @@ namespace TaskManagementTool.BusinessLogic.Commands.Auth.Register;
 
 public class UserRegisterHandler(
     IValidator<UserRegisterRequest> validator,
-    UserManager<User> userManager
+    UserManager<UserEntry> userManager
     ) : IRequestHandler<UserRegisterRequest, UserRegisterResponse>
 {
     public async Task<UserRegisterResponse> Handle(UserRegisterRequest request, CancellationToken cancellationToken)
@@ -31,7 +31,7 @@ public class UserRegisterHandler(
             };
         }
 
-        User identityUser = new()
+        UserEntry identityUser = new()
         {
             Email = request.Email,
             UserName = request.Email,

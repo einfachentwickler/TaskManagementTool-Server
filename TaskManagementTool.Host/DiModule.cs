@@ -95,7 +95,7 @@ public static class DiModule
         }
 
         services
-            .AddIdentity<User, IdentityRole>(AddIdentity)
+            .AddIdentity<UserEntry, IdentityRole>(AddIdentity)
             .AddEntityFrameworkStores<TaskManagementToolDatabase>()
             .AddDefaultTokenProviders();
 

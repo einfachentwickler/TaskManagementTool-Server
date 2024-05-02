@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TaskManagementTool.DataAccess.Entities;
 
-public class User : IdentityUser
+public class UserEntry : IdentityUser
 {
     [Key]
     public override string Id { get; set; }

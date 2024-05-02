@@ -14,11 +14,11 @@ public class ReverseStatusHandler(IUserManagerWrapper userManager) : IRequestHan
 {
     public async Task<Unit> Handle(ReverseStatusRequest request, CancellationToken cancellationToken)
     {
-        User user = await userManager.Users.FirstOrDefaultAsync(user => user.Id == request.UserId, cancellationToken);
+        UserEntry user = await userManager.Users.FirstOrDefaultAsync(user => user.Id == request.UserId, cancellationToken);
 
         user.IsBlocked = !user.IsBlocked;
 
-        User entityToUpdate = await CopyAsync(user);
+        UserEntry entityToUpdate = await CopyAsync(user);
 
         IdentityResult identityResult = await userManager.UpdateAsync(entityToUpdate);
 
@@ -32,9 +32,9 @@ public class ReverseStatusHandler(IUserManagerWrapper userManager) : IRequestHan
         return new Unit();
     }
 
-    private async Task<User> CopyAsync(User user)
+    private async Task<UserEntry> CopyAsync(UserEntry user)
     {
-        User userTemp = await userManager.FindByEmailAsync(user.Email);
+        UserEntry userTemp = await userManager.FindByEmailAsync(user.Email);
 
         userTemp.Id = user.Id;
         userTemp.Age = user.Age;

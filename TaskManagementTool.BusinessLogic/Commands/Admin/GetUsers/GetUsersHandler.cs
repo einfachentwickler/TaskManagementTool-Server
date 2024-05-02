@@ -16,7 +16,7 @@ public class GetUsersHandler(IUserManagerWrapper userManager, IMapper mapper) : 
 {
     public async Task<GetUsersResponse> Handle(GetUsersRequest request, CancellationToken cancellationToken)
     {
-        IEnumerable<User> users = await userManager.Users.Page(request.PageSize, request.PageNumber).ToListAsync(cancellationToken);
+        IEnumerable<UserEntry> users = await userManager.Users.Page(request.PageSize, request.PageNumber).ToListAsync(cancellationToken);
 
         return new GetUsersResponse { Users = mapper.Map<IEnumerable<UserDto>>(users) };
     }

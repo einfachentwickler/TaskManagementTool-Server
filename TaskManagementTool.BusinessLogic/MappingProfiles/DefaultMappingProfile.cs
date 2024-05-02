@@ -9,7 +9,7 @@ public class DefaultMappingProfile : Profile
 {
     public DefaultMappingProfile()
     {
-        CreateMap<User, UserDto>().ReverseMap();
+        CreateMap<UserEntry, UserDto>().ReverseMap();
 
         CreateMap<TodoEntry, TodoDto>().ReverseMap();
 
@@ -17,6 +17,6 @@ public class DefaultMappingProfile : Profile
         CreateMap<UpdateTodoDto, TodoEntry>();
 
         CreateMap<IEnumerable<TodoEntry>, List<TodoDto>>();
-        CreateMap<IEnumerable<User>, List<UserDto>>();
+        CreateMap<IEnumerable<UserEntry>, List<UserDto>>();
     }
 }

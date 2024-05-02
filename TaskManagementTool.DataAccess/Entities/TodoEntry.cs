@@ -16,7 +16,7 @@ public class TodoEntry
 
     public int Importance { get; set; }
 
-    public User Creator { get; set; }
+    public UserEntry Creator { get; set; }
 
     [ForeignKey("User")]
     public string CreatorId { get; set; }

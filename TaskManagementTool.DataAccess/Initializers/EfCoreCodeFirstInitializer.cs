@@ -11,12 +11,12 @@ public static class EfCoreCodeFirstInitializer
 {
     public static async Task InitializeAsync(
         ITaskManagementToolDatabase context,
-        UserManager<User> userManager,
+        UserManager<UserEntry> userManager,
         RoleManager<IdentityRole> roleManager,
         IConfiguration configuration
         )
     {
-        User admin = new()
+        UserEntry admin = new()
         {
             Age = int.Parse(configuration.GetSection("AdminCredentials:Age").Value),
             Email = configuration.GetSection("AdminCredentials:Email").Value,

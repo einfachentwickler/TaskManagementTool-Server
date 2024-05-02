@@ -6,9 +6,9 @@ using TaskManagementTool.DataAccess.Entities;
 namespace TaskManagementTool.BusinessLogic.Commands.Wrappers;
 public interface IUserManagerWrapper
 {
-    public IQueryable<User> Users { get; }
-    public Task<bool> CheckPasswordAsync(User user, string password);
-    public Task<User> FindByEmailAsync(string email);
-    public Task<IdentityResult> UpdateAsync(User user);
-    public Task<IdentityResult> DeleteAsync(User user);
+    public IQueryable<UserEntry> Users { get; }
+    public Task<bool> CheckPasswordAsync(UserEntry user, string password);
+    public Task<UserEntry> FindByEmailAsync(string email);
+    public Task<IdentityResult> UpdateAsync(UserEntry user);
+    public Task<IdentityResult> DeleteAsync(UserEntry user);
 }

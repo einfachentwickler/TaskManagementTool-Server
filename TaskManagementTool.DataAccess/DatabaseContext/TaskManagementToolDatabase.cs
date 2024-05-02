@@ -5,7 +5,7 @@ using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.DataAccess.DatabaseContext;
 
-public class TaskManagementToolDatabase : IdentityDbContext<User>, ITaskManagementToolDatabase
+public class TaskManagementToolDatabase : IdentityDbContext<UserEntry>, ITaskManagementToolDatabase
 {
     public TaskManagementToolDatabase(DbContextOptions<TaskManagementToolDatabase> options) : base(options)
     {

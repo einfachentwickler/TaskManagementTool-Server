@@ -12,7 +12,7 @@ namespace TaskManagementTool.BusinessLogic.Commands.Utils.Jwt;
 
 public class JwtSecurityTokenBuilder(IOptions<AuthSettings> config) : IJwtSecurityTokenBuilder
 {
-    public (string, JwtSecurityToken) Build(User user, UserLoginRequest model)
+    public (string, JwtSecurityToken) Build(UserEntry user, UserLoginRequest model)
     {
         Claim[] claims = [
             new("email", model.Email),

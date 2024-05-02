@@ -13,7 +13,7 @@ namespace TaskManagementTool.BusinessLogic.Commands.Auth.ResetPassword;
 
 public class ResetPasswordHandler(
     IValidator<ResetPasswordRequest> validator,
-    UserManager<User> userManager
+    UserManager<UserEntry> userManager
     ) : IRequestHandler<ResetPasswordRequest, ResetPasswordResponse>
 {
     public async Task<ResetPasswordResponse> Handle(ResetPasswordRequest request, CancellationToken cancellationToken)
@@ -30,7 +30,7 @@ public class ResetPasswordHandler(
             };
         }
 
-        User user = await userManager.Users.FirstOrDefaultAsync(user => user.Email == request.Email, cancellationToken);
+        UserEntry user = await userManager.Users.FirstOrDefaultAsync(user => user.Email == request.Email, cancellationToken);
 
         if (user is null)
         {
