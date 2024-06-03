@@ -1,31 +1,49 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using LoggerService;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
+using TaskManagementTool.BusinessLogic.Dto.Errors;
+using TaskManagementTool.Common.Enums;
+using TaskManagementTool.Common.Exceptions;
 
-namespace TaskManagementTool.Host.Middleware
+namespace TaskManagementTool.Host.Middleware;
+
+public class ExceptionMiddleware(RequestDelegate next)
 {
-    public class ExceptionMiddleware
+    public async Task InvokeAsync(HttpContext context, ILoggerManager loggerManager)
     {
-        private readonly RequestDelegate _next;
-
-        public ExceptionMiddleware(RequestDelegate next) => _next = next;
-
-        public async Task Invoke(HttpContext context)
+        try
         {
-            try
+            await next(context);
+        }
+        catch (Exception exception)
+        {
+            if (exception is TaskManagementToolException customException)
             {
-                await _next(context);
-            }
-            catch (Exception exception)
-            {
-                context.Response.StatusCode = exception.GetType().Name switch
+                context.Response.StatusCode = customException.ErrorCode switch
                 {
-                    nameof(NotImplementedException) => 501,
-                    _ => 500
+                    ApiErrorCode.UserNotFound => StatusCodes.Status404NotFound,
+                    ApiErrorCode.TodoNotFound => StatusCodes.Status404NotFound,
+                    ApiErrorCode.Unautorized => StatusCodes.Status401Unauthorized,
+                    ApiErrorCode.InvalidInput => StatusCodes.Status400BadRequest,
+                    ApiErrorCode.Forbidden => StatusCodes.Status404NotFound,
+                    _ => StatusCodes.Status500InternalServerError
                 };
-
-                await context.Response.WriteAsync("Internal server error");
             }
+            else
+            {
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            }
+
+            loggerManager.LogError(exception);
+
+            await context.Response.WriteAsync(exception switch
+            {
+                TaskManagementToolException ex => JsonConvert.SerializeObject(new ErrorDto(ex.ErrorCode, ex.ErrorMessage)),
+
+                _ => "Internal server error"
+            });
         }
     }
 }

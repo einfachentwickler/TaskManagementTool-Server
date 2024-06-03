@@ -1,73 +1,77 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Threading.Tasks;
-using TaskManagementTool.BusinessLogic.Contracts;
-using TaskManagementTool.BusinessLogic.ViewModels;
-using TaskManagementTool.Common.Enums;
+using TaskManagementTool.BusinessLogic.Commands.Admin.DeleteTodoByAdmin.Models;
+using TaskManagementTool.BusinessLogic.Commands.Admin.DeleteUser.Models;
+using TaskManagementTool.BusinessLogic.Commands.Admin.GetTodos.Models;
+using TaskManagementTool.BusinessLogic.Commands.Admin.GetUsers.Models;
+using TaskManagementTool.BusinessLogic.Commands.Admin.ReverseStatus.Models;
 
-namespace TaskManagementTool.Host.Controllers
+namespace TaskManagementTool.Host.Controllers;
+
+[Route("api/admin/")]
+[ApiController]
+[Authorize(Roles = "Admin")]
+public class AdminController(IMediator mediator) : ControllerBase
 {
-    [Route("api/admin/")]
-    [ApiController]
-    [Authorize(Roles = "Admin")]
-    public class AdminController : ControllerBase
+    [HttpGet("users")]
+    [SwaggerResponse((int)HttpStatusCode.OK)]
+    [Consumes("application/json")]
+    public async Task<IActionResult> GetUsers([FromQuery][Required] int pageNumber, [FromQuery][Required] int pageSize)
     {
-        private readonly IAdminService _adminService;
+        GetUsersRequest request = new() { PageNumber = pageNumber, PageSize = pageSize };
 
-        private readonly ITodoService _todoService;
+        GetUsersResponse response = await mediator.Send(request);
 
-        public AdminController(IAdminService service, ITodoService todoService)
-            => (_adminService, _todoService) = (service, todoService);
+        return Ok(response);
+    }
 
-        [HttpGet("users")]
-        public async Task<IActionResult> GetUsers()
-        {
-            IEnumerable<UserDto> users = await _adminService.GetUsersAsync();
-            return Ok(users);
-        }
+    [HttpPost("reverse-status/{userId}")]
+    [SwaggerResponse((int)HttpStatusCode.NoContent)]
+    [SwaggerResponse((int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> ReverseStatus([FromRoute][Required] string userId)
+    {
+        await mediator.Send(new ReverseStatusRequest { UserId = userId });
+        return NoContent();
+    }
 
-        [HttpPost("reverse-status/{id}")]
-        public async Task<IActionResult> ReverseStatus(string id)
-        {
-            UserDto user = await _adminService.GetUserAsync(id);
+    [HttpDelete("users/{email}")]
+    [SwaggerResponse((int)HttpStatusCode.NoContent)]
+    [SwaggerResponse((int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> DeleteUser([FromRoute][Required] string email)
+    {
+        DeleteUserRequest request = new() { Email = email };
 
-            if (user is null)
-            {
-                return NotFound(id);
-            }
+        await mediator.Send(request);
 
-            await _adminService.BlockOrUnblockUserAsync(id);
-            return Ok(user);
-        }
+        return NoContent();
+    }
 
-        [HttpDelete("users/{id}")]
-        public async Task<IActionResult> DeleteUser(string id)
-        {
-            if (await _adminService.GetUserAsync(id) is null)
-            {
-                return NotFound(id);
-            }
-            await _adminService.DeleteUserAsync(id);
-            return Ok();
-        }
+    [HttpGet("todos")]
+    [Produces("application/json")]
+    [SwaggerResponse((int)HttpStatusCode.OK)]
+    public async Task<IActionResult> GetTodos([FromQuery][Required] int pageNumber, [FromQuery][Required] int pageSize)
+    {
+        GetTodosByAdminRequest request = new() { PageNumber = pageNumber, PageSize = pageSize };
 
-        [HttpGet("todos")]
-        public async Task<IActionResult> GetTodos()
-        {
-            IEnumerable<TodoDto> todos = await _todoService.GetAsync(SearchCriteriaEnum.GetAll);
-            return Ok(todos);
-        }
+        GetTodosByAdminResponse response = await mediator.Send(request);
 
-        [HttpDelete("todos/{id:int}")]
-        public async Task<IActionResult> DeleteUser(int id)
-        {
-            if (await _todoService.FindByIdAsync(id) is null)
-            {
-                return NotFound(id);
-            }
-            await _todoService.DeleteAsync(id);
-            return Ok(id);
-        }
+        return Ok(response);
+    }
+
+    [HttpDelete("todos/{id:int}")]
+    [SwaggerResponse((int)HttpStatusCode.NoContent)]
+    [SwaggerResponse((int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> DeleteTodo([FromRoute][Required] int id)
+    {
+        DeleteTodoByAdminRequest request = new() { TodoId = id };
+
+        await mediator.Send(request);
+
+        return NoContent();
     }
 }

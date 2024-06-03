@@ -1,16 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TaskManagementTool.DataAccess.DatabaseContext;
 
-namespace TaskManagementTool.DataAccess.Factories
+namespace TaskManagementTool.DataAccess.Factories;
+
+public class DatabaseFactory(DbContextOptions<TaskManagementToolDatabase> options) : IDatabaseFactory
 {
-    public class DatabaseFactory : IDatabaseFactory
+    public ITaskManagementToolDatabase Create()
     {
-        private readonly DbContextOptions<TaskManagementToolDatabase> _options;
-
-        public DatabaseFactory(DbContextOptions<TaskManagementToolDatabase> options) => _options = options;
-
-        public ITaskManagementToolDatabase Create()
-        {
-            return new TaskManagementToolDatabase(_options);
-        }
+        return new TaskManagementToolDatabase(options);
     }
 }

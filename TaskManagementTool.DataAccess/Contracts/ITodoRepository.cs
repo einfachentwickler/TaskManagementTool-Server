@@ -1,20 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using TaskManagementTool.Common.Enums;
 using TaskManagementTool.DataAccess.Entities;
 
-namespace TaskManagementTool.DataAccess.Contracts
+namespace TaskManagementTool.DataAccess.Contracts;
+
+public interface ITodoRepository
 {
-    public interface ITodoRepository
-    {
-        public Task<IEnumerable<TodoEntry>> GetAsync(SearchCriteriaEnum searchCriteria, string userId = null);
+    public Task<IEnumerable<TodoEntry>> GetAsync(int pageSize, int pageNumber);
 
-        public Task<TodoEntry> FirstAsync(int id);
+    public Task<IEnumerable<TodoEntry>> GetAsync(string userId, int pageSize, int pageNumber);
 
-        public Task AddAsync(TodoEntry item);
+    public Task<TodoEntry> FirstOrDefaultAsync(int id);
 
-        public Task UpdateAsync(TodoEntry item);
+    public Task<TodoEntry> CreateAsync(TodoEntry item);
 
-        public Task DeleteAsync(int id);
-    }
+    public Task<TodoEntry> UpdateAsync(TodoEntry item);
+
+    public Task DeleteAsync(Expression<Func<TodoEntry, bool>> predicate);
 }

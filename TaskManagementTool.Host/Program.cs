@@ -1,52 +1,68 @@
-using Microsoft.AspNetCore.Hosting;
+using LoggerService;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NLog.Web;
-using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
+using TaskManagementTool.BusinessLogic;
 using TaskManagementTool.DataAccess;
+using TaskManagementTool.DataAccess.DatabaseContext;
 using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.DataAccess.Initializers;
+using TaskManagementTool.Host.Constants;
+using TaskManagementTool.Host.Middleware;
 
-namespace TaskManagementTool.Host
+namespace TaskManagementTool.Host;
+
+[ExcludeFromCodeCoverage]
+public class Program
 {
-    public class Program
+    public static async Task Main(string[] args)
     {
-        public static async Task Main(string[] args)
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+        builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: false, reloadOnChange: true);
+
+        builder.Services.AddControllers();
+
+        builder.Services
+            .ConfigureDataAccess(builder.Configuration, builder.Environment.IsDevelopment())
+            .ConfigureBll()
+            .ConfigureHost(builder.Configuration);
+
+        builder.ConfigureLogging(builder.Configuration);
+
+        WebApplication app = builder.Build();
+
+        using IServiceScope scope = app.Services.CreateScope();
+
+        app.UseSwagger();
+
+        app.UseSwaggerUI(options => options.SwaggerEndpoint(SwaggerSetupConstants.URL, SwaggerSetupConstants.APPLICATION_NAME));
+
+        app.UseMiddleware<ExceptionMiddleware>();
+
+        app.UseHttpsRedirection();
+        app.UseCors(CorsPolicyNameConstants.DEFAULT_POLICY_NAME);
+
+        app.UseAuthentication();
+        app.UseRouting();
+        app.UseAuthorization();
+        app.MapControllers();
+
+        UserManager<UserEntry> userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntry>>();
+        RoleManager<IdentityRole> rolesManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        TaskManagementToolDatabase context = scope.ServiceProvider.GetRequiredService<TaskManagementToolDatabase>();
+
+        if (!await context.Database.EnsureCreatedAsync())
         {
-            IHost host = CreateHostBuilder(args).Build();
-
-            using (IServiceScope scope = host.Services.CreateScope())
-            {
-                IServiceProvider services = scope.ServiceProvider;
-                IConfiguration configuration = services.GetRequiredService<IConfiguration>();
-
-                UserManager<User> userManager = services.GetRequiredService<UserManager<User>>();
-                RoleManager<IdentityRole> rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                TaskManagementToolDatabase context = services.GetRequiredService<TaskManagementToolDatabase>();
-
-                if (!await context.Database.GetService<IRelationalDatabaseCreator>().ExistsAsync())
-                {
-                    await context.Database.EnsureCreatedAsync();
-                    await EfCoreCodeFirstInitializer.InitializeAsync(context, userManager, rolesManager, configuration);
-                }
-            }
-
-            await host.RunAsync();
+            await EfCoreCodeFirstInitializer.InitializeAsync(context, userManager, rolesManager, builder.Configuration);
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Microsoft.Extensions.Hosting.Host
-                .CreateDefaultBuilder(args)
-                .UseNLog()
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder
-                        .UseStartup<Startup>();
-                });
+        await app.RunAsync();
     }
 }

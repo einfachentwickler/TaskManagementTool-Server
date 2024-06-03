@@ -2,91 +2,80 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using TaskManagementTool.Common.Enums;
 using TaskManagementTool.DataAccess.Contracts;
+using TaskManagementTool.DataAccess.DatabaseContext;
 using TaskManagementTool.DataAccess.Entities;
+using TaskManagementTool.DataAccess.Extensions;
 using TaskManagementTool.DataAccess.Factories;
 
-namespace TaskManagementTool.DataAccess.Repositories
+namespace TaskManagementTool.DataAccess.Repositories;
+
+public class TodoRepository(IDatabaseFactory factory) : ITodoRepository
 {
-    public class TodoRepository : ITodoRepository
+    public async Task<IEnumerable<TodoEntry>> GetAsync(int pageSize, int pageNumber)
     {
-        private readonly IDatabaseFactory _factory;
+        await using ITaskManagementToolDatabase db = factory.Create();
 
-        public TodoRepository(IDatabaseFactory factory)
-        {
-            _factory = factory;
-        }
+        await db.Database.EnsureCreatedAsync();
 
-        public async Task<IEnumerable<TodoEntry>> GetAsync(SearchCriteriaEnum searchCriteria, string userId = null)
-        {
-            await using ITaskManagementToolDatabase db = _factory.Create();
+        return await db.Todos
+            .OrderByDescending(todo => todo.Importance)
+            .Page(pageSize, pageNumber)
+            .Include(todo => todo.Creator)
+            .ToListAsync();
+    }
 
-            await db.Database.EnsureCreatedAsync();
+    public async Task<IEnumerable<TodoEntry>> GetAsync(string userId, int pageSize, int pageNumber)
+    {
+        await using ITaskManagementToolDatabase db = factory.Create();
 
-            IEnumerable<TodoEntry> todos;
+        await db.Database.EnsureCreatedAsync();
 
-            if (searchCriteria == SearchCriteriaEnum.GetById)
-            {
-                if (userId is null)
-                {
-                    throw new NullReferenceException("User id is null");
-                }
+        return await db.Todos
+            .Where(todo => todo.CreatorId == userId)
+            .OrderByDescending(todo => todo.Importance)
+            .Page(pageSize, pageNumber)
+            .Include(todo => todo.Creator)
+            .ToListAsync();
+    }
 
-                todos = await db.Todos
-                    .Include(todo => todo.Creator)
-                    .Where(todo => todo.CreatorId == userId)
-                    .OrderByDescending(todo => todo.Importance)
-                    .ToListAsync();
+    public async Task<TodoEntry> FirstOrDefaultAsync(int id)
+    {
+        await using ITaskManagementToolDatabase db = factory.Create();
 
-                return todos;
-            }
+        return await db.Todos
+            .Include(todo => todo.Creator)
+            .FirstOrDefaultAsync(todo => todo.Id == id);
+    }
 
-            todos = await db.Todos
-                .Include(todo => todo.Creator)
-                .OrderByDescending(todo => todo.Importance)
-                .ToListAsync();
+    public async Task<TodoEntry> CreateAsync(TodoEntry item)
+    {
+        await using ITaskManagementToolDatabase db = factory.Create();
 
-            return todos;
-        }
+        TodoEntry createdTodo = (await db.Todos.AddAsync(item)).Entity;
+        await db.SaveChangesAsync();
 
-        public async Task<TodoEntry> FirstAsync(int id)
-        {
-            await using ITaskManagementToolDatabase db = _factory.Create();
+        return createdTodo;
+    }
 
-            TodoEntry item = await db.Todos
-                .Include(todo => todo.Creator)
-                .FirstAsync(todo => todo.Id == id);
+    public async Task<TodoEntry> UpdateAsync(TodoEntry item)
+    {
+        await using ITaskManagementToolDatabase db = factory.Create();
 
-            return item;
-        }
+        TodoEntry updatedTodo = db.Todos.Update(item).Entity;
+        await db.SaveChangesAsync();
 
-        public async Task AddAsync(TodoEntry item)
-        {
-            await using ITaskManagementToolDatabase db = _factory.Create();
+        return updatedTodo;
+    }
 
-            await db.Todos.AddAsync(item);
-            await db.SaveChangesAsync();
-        }
+    public async Task DeleteAsync(Expression<Func<TodoEntry, bool>> predicate)
+    {
+        await using ITaskManagementToolDatabase db = factory.Create();
 
-        public async Task UpdateAsync(TodoEntry item)
-        {
-            await using ITaskManagementToolDatabase db = _factory.Create();
+        await db.Todos.Where(predicate).ExecuteDeleteAsync();
 
-            db.Todos.Update(item);
-            await db.SaveChangesAsync();
-        }
-
-        public async Task DeleteAsync(int id)
-        {
-            await using ITaskManagementToolDatabase db = _factory.Create();
-
-            TodoEntry todoEntry = await db.Todos
-                .FirstAsync(todo => todo.Id == id);
-
-            db.Todos.Remove(todoEntry);
-            await db.SaveChangesAsync();
-        }
+        await db.SaveChangesAsync();
     }
 }
