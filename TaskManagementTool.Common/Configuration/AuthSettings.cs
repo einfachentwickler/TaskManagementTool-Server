@@ -2,14 +2,15 @@
 
 namespace TaskManagementTool.Common.Configuration;
 
-public class AuthSettings()
+public record AuthSettings()
 {
+    //todo check options pattern. Attributes vs required
     [Required]
-    public string Audience { get; init; }
+    public required string Audience { get; init; }
 
     [Required]
-    public string Issuer { get; init; }
+    public required string Issuer { get; init; }
 
     [Required]
-    public string Key { get; init; }
+    public required string Key { get; init; }
 }

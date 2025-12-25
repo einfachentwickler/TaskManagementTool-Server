@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Infrastructure.Data.Entities;
+using Infrastructure.Entities;
 using System.Collections.Generic;
 using TaskManagementTool.BusinessLogic.Dto;
 using TaskManagementTool.BusinessLogic.Dto.ToDoModels;

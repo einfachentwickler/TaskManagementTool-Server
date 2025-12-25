@@ -1,10 +1,10 @@
-using Infrastructure;
-using Infrastructure.Data.Context;
-using Infrastructure.Data.Entities;
-using Infrastructure.Initializers;
+using Infrastructure.Context;
+using Infrastructure.DI;
+using Infrastructure.Seeding;
 using LoggerService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -36,8 +36,6 @@ public class Program
 
         WebApplication app = builder.Build();
 
-        using IServiceScope scope = app.Services.CreateScope();
-
         app.UseSwagger();
 
         app.UseSwaggerUI(options => options.SwaggerEndpoint(SwaggerSetupConstants.URL, SwaggerSetupConstants.APPLICATION_NAME));
@@ -52,13 +50,14 @@ public class Program
         app.UseAuthorization();
         app.MapControllers();
 
-        UserManager<UserEntity> userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
-        RoleManager<IdentityRole> rolesManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        ITaskManagementToolDbContext context = scope.ServiceProvider.GetRequiredService<TaskManagementToolDbContext>();
-
-        if (!await context.Database.EnsureCreatedAsync())
+        using (var scope = app.Services.CreateScope())
         {
-            await EfCoreCodeFirstInitializer.InitializeAsync(context, userManager, rolesManager, builder.Configuration);
+            var services = scope.ServiceProvider;
+            var context = services.GetRequiredService<TaskManagementToolDbContext>();
+
+            await context.Database.MigrateAsync();
+
+            await DbInitializer.SeedAsync(services);
         }
 
         await app.RunAsync();

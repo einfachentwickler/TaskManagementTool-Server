@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
-using Infrastructure.Data.Context;
+using Infrastructure.Context;
 using Infrastructure.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

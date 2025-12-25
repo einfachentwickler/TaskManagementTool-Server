@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Infrastructure.Data.Context;
+using Infrastructure.Context;
 using Infrastructure.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

@@ -1,4 +1,4 @@
-﻿using Infrastructure.Data.Entities;
+﻿using Infrastructure.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
 

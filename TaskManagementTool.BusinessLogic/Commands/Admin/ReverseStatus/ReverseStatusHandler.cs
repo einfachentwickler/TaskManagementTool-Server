@@ -1,4 +1,4 @@
-﻿using Infrastructure.Data.Entities;
+﻿using Infrastructure.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

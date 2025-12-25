@@ -1,5 +1,5 @@
-﻿using Infrastructure.Data.Context;
-using Infrastructure.Data.Entities;
+﻿using Infrastructure.Context;
+using Infrastructure.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Cors.Infrastructure;

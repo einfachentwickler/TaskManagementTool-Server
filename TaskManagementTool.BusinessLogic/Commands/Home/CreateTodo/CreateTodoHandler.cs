@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using FluentValidation;
-using Infrastructure.Data.Context;
-using Infrastructure.Data.Entities;
+using Infrastructure.Context;
+using Infrastructure.Entities;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;

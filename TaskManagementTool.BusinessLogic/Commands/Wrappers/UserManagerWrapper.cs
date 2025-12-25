@@ -1,4 +1,4 @@
-﻿using Infrastructure.Data.Entities;
+﻿using Infrastructure.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading.Tasks;

@@ -3,7 +3,7 @@ using AutoFixture.AutoNSubstitute;
 using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
-using Infrastructure.Data.Entities;
+using Infrastructure.Entities;
 using NSubstitute;
 using NUnit.Framework;
 using System.IdentityModel.Tokens.Jwt;

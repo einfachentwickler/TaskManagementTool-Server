@@ -1,4 +1,4 @@
-﻿using Infrastructure.Data.Context;
+﻿using Infrastructure.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;

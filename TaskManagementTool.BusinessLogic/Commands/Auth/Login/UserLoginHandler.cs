@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
-using Infrastructure.Data.Entities;
+using Infrastructure.Entities;
 using MediatR;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading;
