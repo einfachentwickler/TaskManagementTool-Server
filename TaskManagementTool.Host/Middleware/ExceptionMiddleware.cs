@@ -1,6 +1,6 @@
-﻿using Application.Dto.Errors;
-using LoggerService;
+﻿using LoggerService;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
@@ -40,7 +40,7 @@ public class ExceptionMiddleware(RequestDelegate next)
 
             await context.Response.WriteAsync(exception switch
             {
-                TaskManagementToolException ex => JsonConvert.SerializeObject(new ErrorDto(ex.ErrorCode, ex.ErrorMessage)),
+                TaskManagementToolException ex => JsonConvert.SerializeObject(new ProblemDetails { Title = ex.ErrorCode.ToString(), Detail = ex.Message }),
 
                 _ => "Internal server error"
             });

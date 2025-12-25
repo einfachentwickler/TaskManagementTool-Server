@@ -1,9 +1,9 @@
-﻿using Application.Dto.Errors;
-using AutoFixture;
+﻿using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using FluentAssertions;
 using LoggerService;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
@@ -35,7 +35,7 @@ public class ExceptionMiddlewareTests
     public async Task Invoke_ThrowsTaskManagementToolException_ReturnsValidErrorData(ApiErrorCode apiErrorCode, int expectedStatusCode)
     {
         //Arrange
-        string expectedContent = JsonConvert.SerializeObject(new ErrorDto(apiErrorCode, "message"));
+        string expectedContent = JsonConvert.SerializeObject(new ProblemDetails { Title = apiErrorCode.ToString(), Detail = "message" });
 
         TaskManagementToolException expectedException = new(apiErrorCode, "message");
 
