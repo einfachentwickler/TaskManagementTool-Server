@@ -1,22 +1,22 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Infrastructure.Data.Context;
+using Infrastructure.Data.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using TaskManagementTool.Common.Constants;
-using TaskManagementTool.DataAccess.DatabaseContext;
-using TaskManagementTool.DataAccess.Entities;
 
-namespace TaskManagementTool.DataAccess.Initializers;
+namespace Infrastructure.Initializers;
 
 public static class EfCoreCodeFirstInitializer
 {
     public static async Task InitializeAsync(
         ITaskManagementToolDatabase context,
-        UserManager<UserEntry> userManager,
+        UserManager<UserEntity> userManager,
         RoleManager<IdentityRole> roleManager,
         IConfiguration configuration
         )
     {
-        UserEntry admin = new()
+        UserEntity admin = new()
         {
             Age = int.Parse(configuration.GetSection("AdminCredentials:Age").Value),
             Email = configuration.GetSection("AdminCredentials:Email").Value,
@@ -50,7 +50,7 @@ public static class EfCoreCodeFirstInitializer
                 await userManager.AddToRoleAsync(admin, UserRoles.ADMIN_ROLE);
             }
 
-            TodoEntry[] todos =
+            ToDoEntity[] todos =
             [
                 new()
                 {
@@ -70,7 +70,7 @@ public static class EfCoreCodeFirstInitializer
                 }
             ];
 
-            foreach (TodoEntry todo in todos)
+            foreach (ToDoEntity todo in todos)
             {
                 await context.Todos.AddAsync(todo);
             }

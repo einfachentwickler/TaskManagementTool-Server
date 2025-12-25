@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
+using Infrastructure.Data.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -7,13 +8,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Commands.Auth.ResetPassword.Models;
 using TaskManagementTool.BusinessLogic.Constants;
-using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.BusinessLogic.Commands.Auth.ResetPassword;
 
 public class ResetPasswordHandler(
     IValidator<ResetPasswordRequest> validator,
-    UserManager<UserEntry> userManager
+    UserManager<UserEntity> userManager
     ) : IRequestHandler<ResetPasswordRequest, ResetPasswordResponse>
 {
     public async Task<ResetPasswordResponse> Handle(ResetPasswordRequest request, CancellationToken cancellationToken)
@@ -30,7 +30,7 @@ public class ResetPasswordHandler(
             };
         }
 
-        UserEntry user = await userManager.Users.FirstOrDefaultAsync(user => user.Email == request.Email, cancellationToken);
+        UserEntity user = await userManager.Users.FirstOrDefaultAsync(user => user.Email == request.Email, cancellationToken);
 
         if (user is null)
         {

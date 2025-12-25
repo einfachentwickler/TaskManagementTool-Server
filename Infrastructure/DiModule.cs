@@ -1,19 +1,20 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.Contracts;
+using Infrastructure.Data.Context;
+using Infrastructure.Factories;
+using Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using TaskManagementTool.DataAccess.Contracts;
-using TaskManagementTool.DataAccess.DatabaseContext;
-using TaskManagementTool.DataAccess.Factories;
-using TaskManagementTool.DataAccess.Repositories;
 
-namespace TaskManagementTool.DataAccess;
+namespace Infrastructure;
+
 public static class DiModule
 {
     public static IServiceCollection ConfigureDataAccess(this IServiceCollection services, IConfiguration configuration, bool isDevMode)
     {
         string connectionString = BuildConnectionString(configuration, isDevMode);
 
-        services.AddDbContext<TaskManagementToolDatabase>(builder => builder.UseSqlServer(connectionString));
+        services.AddDbContext<TaskManagementToolDbContext>(builder => builder.UseSqlServer(connectionString));
 
         services.AddScoped<ITodoRepository, TodoRepository>();
         services.AddScoped<IDatabaseFactory, DatabaseFactory>();

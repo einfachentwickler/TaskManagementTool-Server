@@ -1,22 +1,23 @@
 ﻿using AutoMapper;
+using Infrastructure.Data.Entities;
 using System.Collections.Generic;
-using TaskManagementTool.BusinessLogic.ViewModels;
-using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
-using TaskManagementTool.DataAccess.Entities;
+using TaskManagementTool.BusinessLogic.Dto;
+using TaskManagementTool.BusinessLogic.Dto.ToDoModels;
 
 namespace TaskManagementTool.BusinessLogic.MappingProfiles;
+
 public class DefaultMappingProfile : Profile
 {
     public DefaultMappingProfile()
     {
-        CreateMap<UserEntry, UserDto>().ReverseMap();
+        CreateMap<UserEntity, UserDto>().ReverseMap();
 
-        CreateMap<TodoEntry, TodoDto>().ReverseMap();
+        CreateMap<ToDoEntity, TodoDto>().ReverseMap();
 
-        CreateMap<CreateTodoDto, TodoEntry>();
-        CreateMap<UpdateTodoDto, TodoEntry>();
+        CreateMap<CreateTodoDto, ToDoEntity>();
+        CreateMap<UpdateTodoDto, ToDoEntity>();
 
-        CreateMap<IEnumerable<TodoEntry>, List<TodoDto>>();
-        CreateMap<IEnumerable<UserEntry>, List<UserDto>>();
+        CreateMap<IEnumerable<ToDoEntity>, List<TodoDto>>();
+        CreateMap<IEnumerable<UserEntity>, List<UserDto>>();
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using TaskManagementTool.BusinessLogic.ViewModels;
+using TaskManagementTool.BusinessLogic.Dto;
 
 namespace TaskManagementTool.BusinessLogic.Commands.Home.GetTodos.Models;
 

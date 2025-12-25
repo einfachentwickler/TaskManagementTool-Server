@@ -1,16 +1,16 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using FluentValidation.Results;
+using Infrastructure.Contracts;
+using Infrastructure.Data.Entities;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Commands.Home.UpdateTodo.Models;
 using TaskManagementTool.BusinessLogic.Commands.Utils;
-using TaskManagementTool.BusinessLogic.ViewModels;
+using TaskManagementTool.BusinessLogic.Dto;
 using TaskManagementTool.Common.Enums;
 using TaskManagementTool.Common.Exceptions;
-using TaskManagementTool.DataAccess.Contracts;
-using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.BusinessLogic.Commands.Home.UpdateTodo;
 
@@ -35,14 +35,14 @@ public class UpdateTodoHandler(
             throw new TaskManagementToolException(ApiErrorCode.Forbidden, "");
         }
 
-        TodoEntry item = await todoRepository.FirstOrDefaultAsync(request.UpdateTodoDto.Id);
+        var item = await todoRepository.FirstOrDefaultAsync(request.UpdateTodoDto.Id);
 
         item.Name = request.UpdateTodoDto.Name;
         item.IsCompleted = request.UpdateTodoDto.IsCompleted;
         item.Content = request.UpdateTodoDto.Content;
         item.Importance = request.UpdateTodoDto.Importance;
 
-        TodoEntry updateResult = await todoRepository.UpdateAsync(item);
+        ToDoEntity updateResult = await todoRepository.UpdateAsync(item);
 
         return new UpdateTodoResponse
         {

@@ -1,17 +1,17 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using FluentValidation.Results;
+using Infrastructure.Contracts;
+using Infrastructure.Data.Entities;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Commands.Home.CreateTodo.Models;
 using TaskManagementTool.BusinessLogic.Commands.Utils;
-using TaskManagementTool.BusinessLogic.ViewModels;
-using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
+using TaskManagementTool.BusinessLogic.Dto;
+using TaskManagementTool.BusinessLogic.Dto.ToDoModels;
 using TaskManagementTool.Common.Enums;
 using TaskManagementTool.Common.Exceptions;
-using TaskManagementTool.DataAccess.Contracts;
-using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.BusinessLogic.Commands.Home.CreateTodo;
 
@@ -33,8 +33,8 @@ public class CreateTodoHandler(
 
         request.CreateTodoDto.CreatorId = authUtils.GetUserId(request.HttpContext);
 
-        TodoEntry todoEntry = mapper.Map<CreateTodoDto, TodoEntry>(request.CreateTodoDto);
+        ToDoEntity todoEntry = mapper.Map<CreateTodoDto, ToDoEntity>(request.CreateTodoDto);
 
-        return new CreateTodoResponse { Todo = mapper.Map<TodoEntry, TodoDto>(await todoRepository.CreateAsync(todoEntry)) };
+        return new CreateTodoResponse { Todo = mapper.Map<ToDoEntity, TodoDto>(await todoRepository.CreateAsync(todoEntry)) };
     }
 }

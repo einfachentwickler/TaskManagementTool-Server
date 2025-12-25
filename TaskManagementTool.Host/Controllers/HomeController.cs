@@ -12,8 +12,8 @@ using TaskManagementTool.BusinessLogic.Commands.Home.DeleteTodo.Models;
 using TaskManagementTool.BusinessLogic.Commands.Home.GetTodoById.Models;
 using TaskManagementTool.BusinessLogic.Commands.Home.GetTodos.Models;
 using TaskManagementTool.BusinessLogic.Commands.Home.UpdateTodo.Models;
-using TaskManagementTool.BusinessLogic.ViewModels;
-using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
+using TaskManagementTool.BusinessLogic.Dto;
+using TaskManagementTool.BusinessLogic.Dto.ToDoModels;
 using TaskManagementTool.Host.ActionFilters;
 
 namespace TaskManagementTool.Host.Controllers;

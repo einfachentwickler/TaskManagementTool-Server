@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 using System.Threading.Tasks;
-using TaskManagementTool.DataAccess.Entities;
 
-namespace TaskManagementTool.DataAccess.DatabaseContext;
+namespace Infrastructure.Data.Context;
 
 public interface ITaskManagementToolDatabase : IAsyncDisposable
 {
@@ -12,7 +12,7 @@ public interface ITaskManagementToolDatabase : IAsyncDisposable
 
     public DatabaseFacade Database { get; }
 
-    public DbSet<TodoEntry> Todos { get; set; }
+    public DbSet<ToDoEntity> Todos { get; set; }
 
     public Task SaveChangesAsync();
 }

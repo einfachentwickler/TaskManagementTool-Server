@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using System.Net.Http.Json;
 using TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
 using TaskManagementTool.BusinessLogic.Commands.Auth.Register.Models;
-using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
+using TaskManagementTool.BusinessLogic.Dto.ToDoModels;
 
 namespace IntegrationTests.Utils;
 public static class TestsHelper

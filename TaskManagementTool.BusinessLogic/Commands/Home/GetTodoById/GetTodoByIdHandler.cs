@@ -1,18 +1,19 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using FluentValidation.Results;
+using Infrastructure.Contracts;
+using Infrastructure.Data.Entities;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Commands.Home.GetTodoById.Models;
 using TaskManagementTool.BusinessLogic.Commands.Utils;
-using TaskManagementTool.BusinessLogic.ViewModels;
+using TaskManagementTool.BusinessLogic.Dto;
 using TaskManagementTool.Common.Enums;
 using TaskManagementTool.Common.Exceptions;
-using TaskManagementTool.DataAccess.Contracts;
-using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.BusinessLogic.Commands.Home.GetTodoById;
+
 public class GetTodoByIdHandler(
     IAuthUtils authUtils,
     ITodoRepository todoRepository,
@@ -34,11 +35,11 @@ public class GetTodoByIdHandler(
             throw new TaskManagementToolException(ApiErrorCode.Forbidden, "");
         }
 
-        TodoEntry todoEntry = await todoRepository.FirstOrDefaultAsync(request.TodoId);
+        var todoEntry = await todoRepository.FirstOrDefaultAsync(request.TodoId);
 
         TodoDto result = todoEntry is null
             ? throw new TaskManagementToolException(ApiErrorCode.TodoNotFound, $"Todo with id {request.TodoId} was not found")
-            : mapper.Map<TodoEntry, TodoDto>(todoEntry);
+            : mapper.Map<ToDoEntity, TodoDto>(todoEntry);
 
         return new GetTodoByIdResponse { Todo = result };
     }

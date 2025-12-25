@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
-using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
+using TaskManagementTool.BusinessLogic.Dto.ToDoModels;
 
 namespace TaskManagementTool.BusinessLogic.Commands.Home.UpdateTodo.Models;
 

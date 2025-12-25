@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TaskManagementTool.DataAccess.Entities;
+namespace Infrastructure.Data.Entities;
 
-public class TodoEntry
+public class ToDoEntity
 {
     [Key]
     public int Id { get; set; }
@@ -16,7 +16,7 @@ public class TodoEntry
 
     public int Importance { get; set; }
 
-    public UserEntry Creator { get; set; }
+    public UserEntity Creator { get; set; }
 
     [ForeignKey("User")]
     public string CreatorId { get; set; }

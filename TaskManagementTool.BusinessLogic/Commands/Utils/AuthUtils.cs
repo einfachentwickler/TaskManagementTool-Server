@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Infrastructure.Contracts;
+using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TaskManagementTool.Common.Enums;
 using TaskManagementTool.Common.Exceptions;
-using TaskManagementTool.DataAccess.Contracts;
-using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.BusinessLogic.Commands.Utils;
 
@@ -19,7 +18,7 @@ public class AuthUtils : IAuthUtils
     {
         string userId = GetUserId(context);
 
-        TodoEntry todo = await todoRepository.FirstOrDefaultAsync(todoId);
+        var todo = await todoRepository.FirstOrDefaultAsync(todoId);
 
         return todo is not null && todo.Creator.Id == userId;
     }

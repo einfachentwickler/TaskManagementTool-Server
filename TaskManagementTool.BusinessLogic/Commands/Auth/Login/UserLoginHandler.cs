@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
+using Infrastructure.Data.Entities;
 using MediatR;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading;
@@ -8,7 +9,6 @@ using TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
 using TaskManagementTool.BusinessLogic.Commands.Utils.Jwt;
 using TaskManagementTool.BusinessLogic.Commands.Wrappers;
 using TaskManagementTool.BusinessLogic.Constants;
-using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.BusinessLogic.Commands.Auth.Login;
 
@@ -32,7 +32,7 @@ public class UserLoginHandler(
             };
         }
 
-        UserEntry user = await userManager.FindByEmailAsync(request.Email);
+        UserEntity user = await userManager.FindByEmailAsync(request.Email);
 
         if (user is null)
         {

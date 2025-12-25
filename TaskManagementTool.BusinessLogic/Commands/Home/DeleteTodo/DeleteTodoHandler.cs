@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
+using Infrastructure.Contracts;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,7 +8,6 @@ using TaskManagementTool.BusinessLogic.Commands.Home.DeleteTodo.Models;
 using TaskManagementTool.BusinessLogic.Commands.Utils;
 using TaskManagementTool.Common.Enums;
 using TaskManagementTool.Common.Exceptions;
-using TaskManagementTool.DataAccess.Contracts;
 
 namespace TaskManagementTool.BusinessLogic.Commands.Home.DeleteTodo;
 
@@ -20,8 +20,8 @@ public class DeleteTodoHandler(
     public async Task<DeleteTodoResponse> Handle(DeleteTodoRequest request, CancellationToken cancellationToken)
     {
         ValidationResult validationResult = await requestValidator.ValidateAsync(request, cancellationToken);
-        
-        if(!validationResult.IsValid)
+
+        if (!validationResult.IsValid)
         {
             throw new TaskManagementToolException(ApiErrorCode.InvalidInput, string.Join(", ", validationResult.Errors));
         }

@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
+using Infrastructure.Data.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
@@ -8,13 +9,12 @@ using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Commands.Auth.Register.Models;
 using TaskManagementTool.BusinessLogic.Constants;
 using TaskManagementTool.Common.Constants;
-using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.BusinessLogic.Commands.Auth.Register;
 
 public class UserRegisterHandler(
     IValidator<UserRegisterRequest> validator,
-    UserManager<UserEntry> userManager
+    UserManager<UserEntity> userManager
     ) : IRequestHandler<UserRegisterRequest, UserRegisterResponse>
 {
     public async Task<UserRegisterResponse> Handle(UserRegisterRequest request, CancellationToken cancellationToken)
@@ -31,7 +31,7 @@ public class UserRegisterHandler(
             };
         }
 
-        UserEntry identityUser = new()
+        UserEntity identityUser = new()
         {
             Email = request.Email,
             UserName = request.Email,

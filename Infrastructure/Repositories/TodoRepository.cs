@@ -1,20 +1,20 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.Contracts;
+using Infrastructure.Data.Context;
+using Infrastructure.Data.Entities;
+using Infrastructure.Extensions;
+using Infrastructure.Factories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using TaskManagementTool.DataAccess.Contracts;
-using TaskManagementTool.DataAccess.DatabaseContext;
-using TaskManagementTool.DataAccess.Entities;
-using TaskManagementTool.DataAccess.Extensions;
-using TaskManagementTool.DataAccess.Factories;
 
-namespace TaskManagementTool.DataAccess.Repositories;
+namespace Infrastructure.Repositories;
 
 public class TodoRepository(IDatabaseFactory factory) : ITodoRepository
 {
-    public async Task<IEnumerable<TodoEntry>> GetAsync(int pageSize, int pageNumber)
+    public async Task<IEnumerable<ToDoEntity>> GetAsync(int pageSize, int pageNumber)
     {
         await using ITaskManagementToolDatabase db = factory.Create();
 
@@ -27,7 +27,7 @@ public class TodoRepository(IDatabaseFactory factory) : ITodoRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<TodoEntry>> GetAsync(string userId, int pageSize, int pageNumber)
+    public async Task<IEnumerable<ToDoEntity>> GetAsync(string userId, int pageSize, int pageNumber)
     {
         await using ITaskManagementToolDatabase db = factory.Create();
 
@@ -41,7 +41,7 @@ public class TodoRepository(IDatabaseFactory factory) : ITodoRepository
             .ToListAsync();
     }
 
-    public async Task<TodoEntry> FirstOrDefaultAsync(int id)
+    public async Task<ToDoEntity> FirstOrDefaultAsync(int id)
     {
         await using ITaskManagementToolDatabase db = factory.Create();
 
@@ -50,27 +50,27 @@ public class TodoRepository(IDatabaseFactory factory) : ITodoRepository
             .FirstOrDefaultAsync(todo => todo.Id == id);
     }
 
-    public async Task<TodoEntry> CreateAsync(TodoEntry item)
+    public async Task<ToDoEntity> CreateAsync(ToDoEntity item)
     {
         await using ITaskManagementToolDatabase db = factory.Create();
 
-        TodoEntry createdTodo = (await db.Todos.AddAsync(item)).Entity;
+        ToDoEntity createdTodo = (await db.Todos.AddAsync(item)).Entity;
         await db.SaveChangesAsync();
 
         return createdTodo;
     }
 
-    public async Task<TodoEntry> UpdateAsync(TodoEntry item)
+    public async Task<ToDoEntity> UpdateAsync(ToDoEntity item)
     {
         await using ITaskManagementToolDatabase db = factory.Create();
 
-        TodoEntry updatedTodo = db.Todos.Update(item).Entity;
+        ToDoEntity updatedTodo = db.Todos.Update(item).Entity;
         await db.SaveChangesAsync();
 
         return updatedTodo;
     }
 
-    public async Task DeleteAsync(Expression<Func<TodoEntry, bool>> predicate)
+    public async Task DeleteAsync(Expression<Func<ToDoEntity, bool>> predicate)
     {
         await using ITaskManagementToolDatabase db = factory.Create();
 

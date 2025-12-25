@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using Infrastructure.Data.Context;
+using Infrastructure.Data.Entities;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
@@ -9,8 +11,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using TaskManagementTool.BusinessLogic.Commands.Utils;
 using TaskManagementTool.Common.Configuration;
-using TaskManagementTool.DataAccess.DatabaseContext;
-using TaskManagementTool.DataAccess.Entities;
 using TaskManagementTool.Host.Constants;
 
 namespace TaskManagementTool.Host;
@@ -95,8 +95,8 @@ public static class DiModule
         }
 
         services
-            .AddIdentity<UserEntry, IdentityRole>(AddIdentity)
-            .AddEntityFrameworkStores<TaskManagementToolDatabase>()
+            .AddIdentity<UserEntity, IdentityRole>(AddIdentity)
+            .AddEntityFrameworkStores<TaskManagementToolDbContext>()
             .AddDefaultTokenProviders();
 
         services

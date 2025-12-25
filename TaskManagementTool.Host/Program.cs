@@ -1,18 +1,16 @@
+using Infrastructure;
+using Infrastructure.Data.Context;
+using Infrastructure.Data.Entities;
+using Infrastructure.Initializers;
 using LoggerService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using NLog.Web;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic;
-using TaskManagementTool.DataAccess;
-using TaskManagementTool.DataAccess.DatabaseContext;
-using TaskManagementTool.DataAccess.Entities;
-using TaskManagementTool.DataAccess.Initializers;
 using TaskManagementTool.Host.Constants;
 using TaskManagementTool.Host.Middleware;
 
@@ -54,9 +52,9 @@ public class Program
         app.UseAuthorization();
         app.MapControllers();
 
-        UserManager<UserEntry> userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntry>>();
+        UserManager<UserEntity> userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
         RoleManager<IdentityRole> rolesManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        TaskManagementToolDatabase context = scope.ServiceProvider.GetRequiredService<TaskManagementToolDatabase>();
+        ITaskManagementToolDatabase context = scope.ServiceProvider.GetRequiredService<TaskManagementToolDbContext>();
 
         if (!await context.Database.EnsureCreatedAsync())
         {

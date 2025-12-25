@@ -13,9 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\LoggerService\LoggerService.csproj" />
     <ProjectReference Include="..\TaskManagementTool.Common\TaskManagementTool.Common.csproj" />
-    <ProjectReference Include="..\TaskManagementTool.DataAccess\TaskManagementTool.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>

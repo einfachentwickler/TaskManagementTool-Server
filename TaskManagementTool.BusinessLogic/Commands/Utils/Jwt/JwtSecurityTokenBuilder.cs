@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Infrastructure.Data.Entities;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -6,13 +7,12 @@ using System.Security.Claims;
 using System.Text;
 using TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
 using TaskManagementTool.Common.Configuration;
-using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.BusinessLogic.Commands.Utils.Jwt;
 
 public class JwtSecurityTokenBuilder(IOptions<AuthSettings> config) : IJwtSecurityTokenBuilder
 {
-    public (string, JwtSecurityToken) Build(UserEntry user, UserLoginRequest model)
+    public (string, JwtSecurityToken) Build(UserEntity user, UserLoginRequest model)
     {
         Claim[] claims = [
             new("email", model.Email),

@@ -1,4 +1,4 @@
-﻿namespace TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
+﻿namespace TaskManagementTool.BusinessLogic.Dto.ToDoModels;
 
 public class UpdateTodoDto
 {

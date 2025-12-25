@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Infrastructure.Data.Context;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using TaskManagementTool.DataAccess.DatabaseContext;
 using TaskManagementTool.Host;
 
 namespace IntegrationTests;
@@ -15,24 +15,24 @@ public class TmtWebApplicationFactory : WebApplicationFactory<Program>
     {
         builder.ConfigureTestServices(services =>
         {
-            services.RemoveAll(typeof(DbContextOptions<TaskManagementToolDatabase>));
+            services.RemoveAll(typeof(DbContextOptions<TaskManagementToolDbContext>));
 
             //ToDo move to docker, add test db initialization script
-            services.AddDbContext<TaskManagementToolDatabase>(
+            services.AddDbContext<TaskManagementToolDbContext>(
                 options => options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TaskManagementToolTests;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
                 builder => builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null))
                 );
 
-            TaskManagementToolDatabase db = CreateDbContext(services);
+            TaskManagementToolDbContext db = CreateDbContext(services);
 
             db.Database.EnsureDeleted();
         });
     }
 
-    private static TaskManagementToolDatabase CreateDbContext(IServiceCollection services)
+    private static TaskManagementToolDbContext CreateDbContext(IServiceCollection services)
     {
         ServiceProvider provider = services.BuildServiceProvider();
         IServiceScope scope = provider.CreateScope();
-        return scope.ServiceProvider.GetRequiredService<TaskManagementToolDatabase>();
+        return scope.ServiceProvider.GetRequiredService<TaskManagementToolDbContext>();
     }
 }

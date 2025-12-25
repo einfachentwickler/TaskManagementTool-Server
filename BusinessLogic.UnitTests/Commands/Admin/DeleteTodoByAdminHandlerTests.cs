@@ -2,14 +2,14 @@
 using AutoFixture.AutoNSubstitute;
 using BusinessLogic.UnitTests.Utils;
 using FluentAssertions;
+using Infrastructure.Contracts;
+using Infrastructure.Data.Entities;
 using MediatR;
 using NSubstitute;
 using NUnit.Framework;
 using System.Linq.Expressions;
 using TaskManagementTool.BusinessLogic.Commands.Admin.DeleteTodoByAdmin;
 using TaskManagementTool.BusinessLogic.Commands.Admin.DeleteTodoByAdmin.Models;
-using TaskManagementTool.DataAccess.Contracts;
-using TaskManagementTool.DataAccess.Entities;
 
 namespace BusinessLogic.UnitTests.Commands.Admin;
 
@@ -39,7 +39,7 @@ public class DeleteTodoByAdminHandlerTests
         var request = fixture.Create<DeleteTodoByAdminRequest>();
         var token = fixture.Create<CancellationToken>();
 
-        Expression<Func<TodoEntry, bool>> predicate = entry => entry.Id == request.TodoId;
+        Expression<Func<ToDoEntity, bool>> predicate = entry => entry.Id == request.TodoId;
 
         //Act
         Unit actualResult = await sut.Handle(request, token);

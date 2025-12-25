@@ -7,7 +7,7 @@ using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
 using TaskManagementTool.BusinessLogic.Commands.Home.GetTodos.Models;
-using TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
+using TaskManagementTool.BusinessLogic.Dto.ToDoModels;
 
 namespace IntegrationTests.Tests.Home;
 

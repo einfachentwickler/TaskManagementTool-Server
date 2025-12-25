@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
-namespace TaskManagementTool.DataAccess.Entities;
+namespace Infrastructure.Data.Entities;
 
-public class UserEntry : IdentityUser
+public class UserEntity : IdentityUser
 {
     [Key]
     public override string Id { get; set; }

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace TaskManagementTool.BusinessLogic.ViewModels.ToDoModels;
+namespace TaskManagementTool.BusinessLogic.Dto.ToDoModels;
 
 public class CreateTodoDto
 {

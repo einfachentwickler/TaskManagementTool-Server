@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Infrastructure.Data.Entities;
+using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading.Tasks;
-using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.BusinessLogic.Commands.Wrappers;
+
 public interface IUserManagerWrapper
 {
-    public IQueryable<UserEntry> Users { get; }
-    public Task<bool> CheckPasswordAsync(UserEntry user, string password);
-    public Task<UserEntry> FindByEmailAsync(string email);
-    public Task<IdentityResult> UpdateAsync(UserEntry user);
-    public Task<IdentityResult> DeleteAsync(UserEntry user);
+    public IQueryable<UserEntity> Users { get; }
+    public Task<bool> CheckPasswordAsync(UserEntity user, string password);
+    public Task<UserEntity> FindByEmailAsync(string email);
+    public Task<IdentityResult> UpdateAsync(UserEntity user);
+    public Task<IdentityResult> DeleteAsync(UserEntity user);
 }

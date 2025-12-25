@@ -1,4 +1,4 @@
-﻿namespace TaskManagementTool.BusinessLogic.ViewModels;
+﻿namespace TaskManagementTool.BusinessLogic.Dto;
 
 public class UserDto
 {

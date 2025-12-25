@@ -1,8 +1,8 @@
-﻿using MediatR;
+﻿using Infrastructure.Contracts;
+using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Commands.Admin.DeleteTodoByAdmin.Models;
-using TaskManagementTool.DataAccess.Contracts;
 
 namespace TaskManagementTool.BusinessLogic.Commands.Admin.DeleteTodoByAdmin;
 

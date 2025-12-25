@@ -1,4 +1,4 @@
-﻿using TaskManagementTool.BusinessLogic.ViewModels;
+﻿using TaskManagementTool.BusinessLogic.Dto;
 
 namespace TaskManagementTool.BusinessLogic.Commands.Home.CreateTodo.Models;
 

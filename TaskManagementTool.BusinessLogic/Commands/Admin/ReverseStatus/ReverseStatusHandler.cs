@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Infrastructure.Data.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
@@ -6,7 +7,6 @@ using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Commands.Admin.ReverseStatus.Models;
 using TaskManagementTool.BusinessLogic.Commands.Wrappers;
 using TaskManagementTool.Common.Exceptions;
-using TaskManagementTool.DataAccess.Entities;
 
 namespace TaskManagementTool.BusinessLogic.Commands.Admin.ReverseStatus;
 
@@ -14,11 +14,11 @@ public class ReverseStatusHandler(IUserManagerWrapper userManager) : IRequestHan
 {
     public async Task<Unit> Handle(ReverseStatusRequest request, CancellationToken cancellationToken)
     {
-        UserEntry user = await userManager.Users.FirstOrDefaultAsync(user => user.Id == request.UserId, cancellationToken);
+        UserEntity user = await userManager.Users.FirstOrDefaultAsync(user => user.Id == request.UserId, cancellationToken);
 
         user.IsBlocked = !user.IsBlocked;
 
-        UserEntry entityToUpdate = await CopyAsync(user);
+        UserEntity entityToUpdate = await CopyAsync(user);
 
         IdentityResult identityResult = await userManager.UpdateAsync(entityToUpdate);
 
@@ -32,9 +32,9 @@ public class ReverseStatusHandler(IUserManagerWrapper userManager) : IRequestHan
         return new Unit();
     }
 
-    private async Task<UserEntry> CopyAsync(UserEntry user)
+    private async Task<UserEntity> CopyAsync(UserEntity user)
     {
-        UserEntry userTemp = await userManager.FindByEmailAsync(user.Email);
+        UserEntity userTemp = await userManager.FindByEmailAsync(user.Email);
 
         userTemp.Id = user.Id;
         userTemp.Age = user.Age;
