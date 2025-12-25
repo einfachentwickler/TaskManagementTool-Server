@@ -82,7 +82,7 @@ public class RegisterTests
     public async Task RegisterUserAsync_WeakPassword_Returns400()
     {
         //Arrange
-        UserRegisterRequest registerDto = new()
+        UserRegisterCommand registerDto = new()
         {
             Age = 34,
             Password = "123",
@@ -103,7 +103,7 @@ public class RegisterTests
     public async Task RegisterUserAsync_InvalidEmail_Returns400()
     {
         //Arrange
-        UserRegisterRequest registerDto = new()
+        UserRegisterCommand registerDto = new()
         {
             Age = 34,
             Password = "password",

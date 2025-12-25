@@ -1,6 +1,6 @@
 ﻿namespace Application.Commands.Home.DeleteTodo.Models;
 
-public class DeleteTodoResponse
+public record DeleteTodoResponse
 {
-    public bool IsSuccess { get; set; }
+    public bool IsSuccess { get; init; }
 }

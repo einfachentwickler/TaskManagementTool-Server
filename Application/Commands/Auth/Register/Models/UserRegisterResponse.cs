@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace Application.Commands.Auth.Register.Models;
 
-public class UserRegisterResponse
+public record UserRegisterResponse
 {
     [JsonProperty("isSuccess")]
     public bool IsSuccess { get; init; }
 
     [JsonProperty("message")]
-    public string Message { get; init; }
+    public required string Message { get; init; }
 
     [JsonProperty("errors")]
-    public IEnumerable<string> Errors { get; set; } = [];
+    public required IEnumerable<string> Errors { get; init; }
 }

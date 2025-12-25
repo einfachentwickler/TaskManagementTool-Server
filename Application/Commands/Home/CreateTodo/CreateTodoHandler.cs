@@ -18,21 +18,21 @@ public class CreateTodoHandler(
     IAuthUtils authUtils,
     ITaskManagementToolDbContext dbContext,
     IMapper mapper,
-    IValidator<CreateTodoRequest> requestValidator
-    ) : IRequestHandler<CreateTodoRequest, CreateTodoResponse>
+    IValidator<CreateTodoCommand> requestValidator
+    ) : IRequestHandler<CreateTodoCommand, CreateTodoResponse>
 {
     private readonly IAuthUtils _authUtils = authUtils;
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
     private readonly IMapper _mapper = mapper;
-    private readonly IValidator<CreateTodoRequest> _requestValidator = requestValidator;
+    private readonly IValidator<CreateTodoCommand> _requestValidator = requestValidator;
 
-    public async Task<CreateTodoResponse> Handle(CreateTodoRequest request, CancellationToken cancellationToken)
+    public async Task<CreateTodoResponse> Handle(CreateTodoCommand request, CancellationToken cancellationToken)
     {
         var validationResult = await _requestValidator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
-            throw new TaskManagementToolException(ApiErrorCode.InvalidInput, string.Join(", ", validationResult.Errors));
+            throw new CustomException(ApiErrorCode.InvalidInput, string.Join(", ", validationResult.Errors));
         }
 
         request.CreateTodoDto.CreatorId = _authUtils.GetUserId(request.HttpContext);

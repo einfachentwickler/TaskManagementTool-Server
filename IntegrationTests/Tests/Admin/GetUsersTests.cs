@@ -1,4 +1,4 @@
-﻿using Application.Commands.Admin.GetUsers.Models;
+﻿using Application.Queries.Admin.GetUsers.Models;
 using FluentAssertions;
 using IntegrationTests.Constants;
 using IntegrationTests.Utils;

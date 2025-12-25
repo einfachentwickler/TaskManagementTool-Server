@@ -1,6 +1,6 @@
-﻿using Application.Commands.Admin.GetUsers.Models;
-using Application.Commands.Auth.Login.Models;
+﻿using Application.Commands.Auth.Login.Models;
 using Application.Constants;
+using Application.Queries.Admin.GetUsers.Models;
 using FluentAssertions;
 using IntegrationTests.Constants;
 using IntegrationTests.Utils;
@@ -29,7 +29,7 @@ public class LoginTests
         //Arrange
         await TestsHelper.RegisterUserAsync(client, "user1@email.com", "password", "password");
 
-        UserLoginRequest loginDto = new()
+        UserLoginCommand loginDto = new()
         {
             Email = "user1@email.com",
             Password = "password"
@@ -57,7 +57,7 @@ public class LoginTests
     public async Task LoginUser_UserDoesNotExist_Returns401()
     {
         //Arrange
-        UserLoginRequest loginDto = new()
+        UserLoginCommand loginDto = new()
         {
             Email = "user1@email.com",
             Password = "password"
@@ -92,7 +92,7 @@ public class LoginTests
         //Assert
         reverseStatusResponse.EnsureSuccessStatusCode();
 
-        UserLoginRequest loginDto = new()
+        UserLoginCommand loginDto = new()
         {
             Email = "user1@email.com",
             Password = "password"
@@ -114,7 +114,7 @@ public class LoginTests
         //Arrange
         await TestsHelper.RegisterUserAsync(client, "user1@email.com", "password", "password");
 
-        UserLoginRequest loginDto = new()
+        UserLoginCommand loginDto = new()
         {
             Email = "user1@email.com",
             Password = "password12"
@@ -138,7 +138,7 @@ public class LoginTests
         //Arrange
         await TestsHelper.RegisterUserAsync(client, "user1@email.com", "password", "password");
 
-        UserLoginRequest? loginDto = null;
+        UserLoginCommand? loginDto = null;
 
         //Act
         var response = await client.PostAsJsonAsync(UriConstants.AUTH_LOGIN_URI, loginDto);

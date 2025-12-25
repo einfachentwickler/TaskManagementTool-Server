@@ -12,7 +12,7 @@ namespace Application.Commands.Utils.Jwt;
 
 public class JwtSecurityTokenBuilder(IOptions<AuthSettings> config) : IJwtSecurityTokenBuilder
 {
-    public (string, JwtSecurityToken) Build(UserEntity user, UserLoginRequest model)
+    public (string, JwtSecurityToken) Build(UserEntity user, UserLoginCommand model)
     {
         Claim[] claims = [
             new("email", model.Email),

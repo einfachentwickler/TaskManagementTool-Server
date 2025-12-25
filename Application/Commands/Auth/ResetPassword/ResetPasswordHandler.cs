@@ -12,11 +12,11 @@ using System.Threading.Tasks;
 namespace Application.Commands.Auth.ResetPassword;
 
 public class ResetPasswordHandler(
-    IValidator<ResetPasswordRequest> validator,
+    IValidator<ResetPasswordCommand> validator,
     UserManager<UserEntity> userManager
-    ) : IRequestHandler<ResetPasswordRequest, ResetPasswordResponse>
+    ) : IRequestHandler<ResetPasswordCommand, ResetPasswordResponse>
 {
-    public async Task<ResetPasswordResponse> Handle(ResetPasswordRequest request, CancellationToken cancellationToken)
+    public async Task<ResetPasswordResponse> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
     {
         ValidationResult validationResult = await validator.ValidateAsync(request, cancellationToken);
 

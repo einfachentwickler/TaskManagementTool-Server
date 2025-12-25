@@ -1,0 +1,18 @@
+﻿using MediatR;
+
+namespace Application.Commands.Auth.Register.Models;
+
+public record UserRegisterCommand : IRequest<UserRegisterResponse>
+{
+    public required string Email { get; init; }
+
+    public required string Password { get; init; }
+
+    public required string ConfirmPassword { get; init; }
+
+    public required string FirstName { get; init; }
+
+    public required string LastName { get; init; }
+
+    public int Age { get; init; }
+}

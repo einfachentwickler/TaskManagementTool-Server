@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace Application.Commands.Admin.DeleteTodoByAdmin;
 
-public class DeleteTodoByAdminHandler(ITaskManagementToolDbContext dbContext) : IRequestHandler<DeleteTodoByAdminRequest, Unit>
+public class DeleteTodoByAdminHandler(ITaskManagementToolDbContext dbContext) : IRequestHandler<DeleteTodoByAdminCommand, Unit>
 {
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
 
-    public async Task<Unit> Handle(DeleteTodoByAdminRequest request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(DeleteTodoByAdminCommand request, CancellationToken cancellationToken)
     {
         await _dbContext.Todos.Where(entity => entity.Id == request.TodoId).ExecuteDeleteAsync(cancellationToken);
 

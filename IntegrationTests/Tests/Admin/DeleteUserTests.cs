@@ -1,5 +1,5 @@
-﻿using Application.Commands.Admin.GetTodos.Models;
-using Application.Commands.Admin.GetUsers.Models;
+﻿using Application.Queries.Admin.GetTodos.Models;
+using Application.Queries.Admin.GetUsers.Models;
 using FluentAssertions;
 using IntegrationTests.Constants;
 using IntegrationTests.Utils;

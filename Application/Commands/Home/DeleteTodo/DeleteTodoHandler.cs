@@ -16,25 +16,25 @@ namespace Application.Commands.Home.DeleteTodo;
 public class DeleteTodoHandler(
     IAuthUtils authUtils,
     ITaskManagementToolDbContext dbContext,
-    IValidator<DeleteTodoRequest> requestValidator
-    ) : IRequestHandler<DeleteTodoRequest, DeleteTodoResponse>
+    IValidator<DeleteTodoCommand> requestValidator
+    ) : IRequestHandler<DeleteTodoCommand, DeleteTodoResponse>
 {
     private readonly IAuthUtils _authUtils = authUtils;
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
-    private readonly IValidator<DeleteTodoRequest> _requestValidator = requestValidator;
+    private readonly IValidator<DeleteTodoCommand> _requestValidator = requestValidator;
 
-    public async Task<DeleteTodoResponse> Handle(DeleteTodoRequest request, CancellationToken cancellationToken)
+    public async Task<DeleteTodoResponse> Handle(DeleteTodoCommand request, CancellationToken cancellationToken)
     {
         ValidationResult validationResult = await _requestValidator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
-            throw new TaskManagementToolException(ApiErrorCode.InvalidInput, string.Join(", ", validationResult.Errors));
+            throw new CustomException(ApiErrorCode.InvalidInput, string.Join(", ", validationResult.Errors));
         }
 
         if (!await _authUtils.IsAllowedActionAsync(request.HttpContext, request.TodoId, cancellationToken))
         {
-            throw new TaskManagementToolException(ApiErrorCode.Forbidden, string.Empty);
+            throw new CustomException(ApiErrorCode.Forbidden, string.Empty);
         }
 
         await _dbContext.Todos.Where(todo => todo.Id == request.TodoId).ExecuteDeleteAsync(cancellationToken);

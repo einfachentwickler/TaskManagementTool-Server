@@ -1,5 +1,6 @@
 ﻿using Application.Commands.Admin.DeleteUser.Models;
 using Application.Commands.Wrappers;
+using FluentValidation;
 using Infrastructure.Context;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -7,20 +8,28 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskManagementTool.Common.Enums;
 using TaskManagementTool.Common.Exceptions;
 
 namespace Application.Commands.Admin.DeleteUser;
 
-public class DeleteUserHandler(IUserManagerWrapper userManager, ITaskManagementToolDbContext dbContext) : IRequestHandler<DeleteUserRequest, Unit>
+public class DeleteUserHandler(IUserManagerWrapper userManager, ITaskManagementToolDbContext dbContext, IValidator<DeleteUserCommand> validator) : IRequestHandler<DeleteUserCommand, Unit>
 {
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
     private readonly IUserManagerWrapper _userManager = userManager;
+    private readonly IValidator<DeleteUserCommand> _validator = validator;
 
-    public async Task<Unit> Handle(DeleteUserRequest request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+        {
+            var firstError = validationResult.Errors.First();
+            throw new CustomException<DeleteUserErrorCode>(DeleteUserErrorCode.InvalidEmail, firstError.ErrorMessage);
+        }
+
         var user = await _userManager.FindByEmailAsync(request.Email)
-            ?? throw new TaskManagementToolException(ApiErrorCode.UserNotFound, $"User with email {request.Email} was not found");
+            ?? throw new CustomException<DeleteUserErrorCode>(DeleteUserErrorCode.UserNotFound, $"User with email {request.Email} was not found");
 
         await _dbContext.Todos.Where(todo => todo.Creator.Email == request.Email).ExecuteDeleteAsync(cancellationToken);
 
@@ -29,9 +38,8 @@ public class DeleteUserHandler(IUserManagerWrapper userManager, ITaskManagementT
         var identityResult = await _userManager.DeleteAsync(user);
         if (!identityResult.Succeeded)
         {
-            string errors = string.Join("\n", identityResult.Errors);
-
-            throw new TaskManagementToolException($"Update failed: {errors}");
+            throw new CustomException<DeleteUserErrorCode>(DeleteUserErrorCode.InternalServerError, "Unexpected error occured");
+            //todo log errors
         }
 
         return new Unit();

@@ -16,7 +16,7 @@ public class UserLoginRequestValidatorTests
     private const string VALID_EMAIL = "user1@email.com";
     private const string VALID_PASSWORD = "Qwerty123$";
 
-    private IValidator<UserLoginRequest> sut;
+    private IValidator<UserLoginCommand> sut;
 
     private IFixture fixture;
 
@@ -25,14 +25,14 @@ public class UserLoginRequestValidatorTests
     {
         fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
 
-        sut = fixture.Create<UserLoginRequestValidator>();
+        sut = fixture.Create<UserLoginCommandValidator>();
     }
 
     [Test]
     public async Task ValidateAsync_ValidRequest_HasNoValidationErrors()
     {
         //Arrange
-        UserLoginRequest request = new()
+        UserLoginCommand request = new()
         {
             Email = VALID_EMAIL,
             Password = VALID_PASSWORD
@@ -50,7 +50,7 @@ public class UserLoginRequestValidatorTests
     public async Task ValidateAsync_InvalidRequest_HasValidationErrorForEmptyEmail(ValidationErrorCodes expectedResult, string email)
     {
         //Arrange
-        UserLoginRequest request = new()
+        UserLoginCommand request = new()
         {
             Email = email,
             Password = VALID_PASSWORD
@@ -67,7 +67,7 @@ public class UserLoginRequestValidatorTests
     public async Task ValidateAsync_InvalidRequest_HasValidationErrorForTooBigEmail()
     {
         //Arrange
-        UserLoginRequest request = new()
+        UserLoginCommand request = new()
         {
             Email = new string('a', ValidationConstants.DEFAULT_TEXT_INPUT_SIZE + 1) + "@email.com",
             Password = VALID_PASSWORD
@@ -84,7 +84,7 @@ public class UserLoginRequestValidatorTests
     public async Task ValidateAsync_InvalidRequest_HasValidationErrorForEmptyPassword()
     {
         //Arrange
-        UserLoginRequest request = new()
+        UserLoginCommand request = new()
         {
             Email = VALID_EMAIL,
             Password = string.Empty

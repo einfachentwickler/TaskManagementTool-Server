@@ -2,7 +2,7 @@
 
 namespace Application.Commands.Home.CreateTodo.Models;
 
-public class CreateTodoResponse
+public record CreateTodoResponse
 {
-    public TodoDto Todo { get; set; }
+    public TodoDto Todo { get; init; }
 }

@@ -10,9 +10,9 @@ using TaskManagementTool.Common.Exceptions;
 
 namespace Application.Commands.Admin.ReverseStatus;
 
-public class ReverseStatusHandler(IUserManagerWrapper userManager) : IRequestHandler<ReverseStatusRequest, Unit>
+public class ReverseStatusHandler(IUserManagerWrapper userManager) : IRequestHandler<ReverseStatusCommand, Unit>
 {
-    public async Task<Unit> Handle(ReverseStatusRequest request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(ReverseStatusCommand request, CancellationToken cancellationToken)
     {
         UserEntity user = await userManager.Users.FirstOrDefaultAsync(user => user.Id == request.UserId, cancellationToken);
 
@@ -26,7 +26,7 @@ public class ReverseStatusHandler(IUserManagerWrapper userManager) : IRequestHan
         {
             string errors = string.Join("\n", identityResult.Errors);
 
-            throw new TaskManagementToolException($"Update failed: {errors}");
+            throw new CustomException($"Update failed: {errors}");
         }
 
         return new Unit();

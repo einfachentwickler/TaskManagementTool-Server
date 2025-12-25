@@ -14,11 +14,11 @@ namespace Application.Commands.Auth.Login;
 
 public class UserLoginHandler(
     IUserManagerWrapper userManager,
-    IValidator<UserLoginRequest> requestValidator,
+    IValidator<UserLoginCommand> requestValidator,
     IJwtSecurityTokenBuilder jwtSecurityTokenBuilder
-    ) : IRequestHandler<UserLoginRequest, UserLoginResponse>
+    ) : IRequestHandler<UserLoginCommand, UserLoginResponse>
 {
-    public async Task<UserLoginResponse> Handle(UserLoginRequest request, CancellationToken cancellationToken)
+    public async Task<UserLoginResponse> Handle(UserLoginCommand request, CancellationToken cancellationToken)
     {
         ValidationResult validationResult = await requestValidator.ValidateAsync(request, cancellationToken);
 

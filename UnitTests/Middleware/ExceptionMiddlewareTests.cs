@@ -37,7 +37,7 @@ public class ExceptionMiddlewareTests
         //Arrange
         string expectedContent = JsonConvert.SerializeObject(new ProblemDetails { Title = apiErrorCode.ToString(), Detail = "message" });
 
-        TaskManagementToolException expectedException = new(apiErrorCode, "message");
+        CustomException expectedException = new(apiErrorCode, "message");
 
         ExceptionMiddleware sut = new(next: (_) => throw expectedException);
 

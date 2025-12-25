@@ -2,9 +2,9 @@
 
 namespace Application.Commands.Auth.ResetPassword.Models;
 
-public class ResetPasswordResponse
+public record ResetPasswordResponse
 {
-    public string Message { get; set; } = "";
-    public bool IsSuccess { get; set; }
-    public IEnumerable<string> Errors { get; set; } = new List<string>();
+    public required string Message { get; init; }
+    public bool IsSuccess { get; init; }
+    public required IEnumerable<string> Errors { get; init; }
 }

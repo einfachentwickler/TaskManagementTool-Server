@@ -16,27 +16,27 @@ namespace Application.Commands.Home.UpdateTodo;
 public class UpdateTodoHandler(
     ITaskManagementToolDbContext dbContext,
     IAuthUtils authUtils,
-    IValidator<UpdateTodoRequest> requestValidator,
+    IValidator<UpdateTodoCommand> requestValidator,
     IMapper mapper
-    ) : IRequestHandler<UpdateTodoRequest, UpdateTodoResponse>
+    ) : IRequestHandler<UpdateTodoCommand, UpdateTodoResponse>
 {
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
     private readonly IAuthUtils _authUtils = authUtils;
-    private readonly IValidator<UpdateTodoRequest> _requestValidator = requestValidator;
+    private readonly IValidator<UpdateTodoCommand> _requestValidator = requestValidator;
     private readonly IMapper _mapper = mapper;
 
-    public async Task<UpdateTodoResponse> Handle(UpdateTodoRequest request, CancellationToken cancellationToken)
+    public async Task<UpdateTodoResponse> Handle(UpdateTodoCommand request, CancellationToken cancellationToken)
     {
         var validationResult = await _requestValidator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
-            throw new TaskManagementToolException(ApiErrorCode.InvalidInput, string.Join(", ", validationResult.Errors));
+            throw new CustomException(ApiErrorCode.InvalidInput, string.Join(", ", validationResult.Errors));
         }
 
         if (!await _authUtils.IsAllowedActionAsync(request.HttpContext, request.UpdateTodoDto.Id, cancellationToken))
         {
-            throw new TaskManagementToolException(ApiErrorCode.Forbidden, "");
+            throw new CustomException(ApiErrorCode.Forbidden, "");
         }
 
         var toDo = await _dbContext.Todos

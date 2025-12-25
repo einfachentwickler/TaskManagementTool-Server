@@ -1,7 +1,7 @@
 ﻿using Application.Commands.Admin.DeleteUser.Models;
-using Application.Commands.Admin.GetTodos.Models;
-using Application.Commands.Admin.GetUsers.Models;
 using Application.Commands.Admin.ReverseStatus.Models;
+using Application.Queries.Admin.GetTodos.Models;
+using Application.Queries.Admin.GetUsers.Models;
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using FluentAssertions;
@@ -36,7 +36,7 @@ public class AdminControllerTests
     public async Task GetUsers_Paging_ReturnsOk()
     {
         //Arrange
-        var request = fixture.Create<GetUsersRequest>();
+        var request = fixture.Create<GetUsersQuery>();
         var response = fixture.Create<GetUsersResponse>();
 
         mediator.Send(ExtendedArg.Is(request)).Returns(response);
@@ -53,7 +53,7 @@ public class AdminControllerTests
     public async Task ReverseStatus_ValidId_ReturnsNoContent()
     {
         //Arrange
-        var request = fixture.Create<ReverseStatusRequest>();
+        var request = fixture.Create<ReverseStatusCommand>();
 
         //Act
         IActionResult actualResult = await sut.ReverseStatus(request.UserId);
@@ -68,7 +68,7 @@ public class AdminControllerTests
     public async Task DeleteUser_ValidId_ReturnsNoContent()
     {
         //Arrange
-        var request = fixture.Create<DeleteUserRequest>();
+        var request = fixture.Create<DeleteUserCommand>();
 
         //Act
         IActionResult response = await sut.DeleteUser(request.Email);
@@ -83,7 +83,7 @@ public class AdminControllerTests
     public async Task GetTodos_ValidData_ReturnsTodos()
     {
         //Arrange
-        var request = fixture.Create<GetTodosByAdminRequest>();
+        var request = fixture.Create<GetTodosByAdminQuery>();
         var response = fixture.Create<GetTodosByAdminResponse>();
 
         mediator.Send(ExtendedArg.Is(request)).Returns(response);

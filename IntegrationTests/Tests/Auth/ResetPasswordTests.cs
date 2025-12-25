@@ -33,7 +33,7 @@ public class ResetPasswordTests
 
         const string newPassword = "Qwerty123$";
 
-        ResetPasswordRequest request = new()
+        ResetPasswordCommand request = new()
         {
             Email = EMAIL,
             CurrentPassword = PASSWORD,
@@ -51,7 +51,7 @@ public class ResetPasswordTests
 
         actualResult.Should().BeEquivalentTo(new ResetPasswordResponse { IsSuccess = true });
 
-        UserLoginRequest loginDto = new()
+        UserLoginCommand loginDto = new()
         {
             Email = EMAIL,
             Password = PASSWORD
@@ -74,7 +74,7 @@ public class ResetPasswordTests
 
         const string newPassword = "Qwerty123$";
 
-        ResetPasswordRequest request = new()
+        ResetPasswordCommand request = new()
         {
             Email = EMAIL,
             CurrentPassword = PASSWORD + "qwerty",
@@ -97,7 +97,7 @@ public class ResetPasswordTests
 
         const string newPassword = "Qwerty123$";
 
-        ResetPasswordRequest request = new()
+        ResetPasswordCommand request = new()
         {
             Email = EMAIL,
             CurrentPassword = PASSWORD,

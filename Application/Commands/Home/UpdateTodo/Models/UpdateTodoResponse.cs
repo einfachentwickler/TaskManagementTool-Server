@@ -2,7 +2,7 @@
 
 namespace Application.Commands.Home.UpdateTodo.Models;
 
-public class UpdateTodoResponse
+public record UpdateTodoResponse
 {
-    public TodoDto Todo { get; set; }
+    public required TodoDto Todo { get; init; }
 }

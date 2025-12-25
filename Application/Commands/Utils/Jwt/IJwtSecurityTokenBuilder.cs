@@ -6,5 +6,5 @@ namespace Application.Commands.Utils.Jwt;
 
 public interface IJwtSecurityTokenBuilder
 {
-    (string, JwtSecurityToken) Build(UserEntity user, UserLoginRequest model);
+    (string, JwtSecurityToken) Build(UserEntity user, UserLoginCommand model);
 }

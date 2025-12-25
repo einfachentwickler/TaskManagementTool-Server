@@ -1,8 +1,8 @@
 ﻿using Application.Commands.Home.CreateTodo.Models;
 using Application.Commands.Home.DeleteTodo.Models;
-using Application.Commands.Home.GetTodoById.Models;
-using Application.Commands.Home.GetTodos.Models;
 using Application.Commands.Home.UpdateTodo.Models;
+using Application.Queries.Home.GetTodoById.Models;
+using Application.Queries.Home.GetTodos.Models;
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using FluentAssertions;
@@ -42,7 +42,7 @@ public class HomeControllerTests
     {
         //Arrange
         var request = fixture
-            .Build<GetTodosRequest>()
+            .Build<GetTodosQuery>()
             .With(request => request.HttpContext, httpContextAccessor.HttpContext)
             .Create();
 
@@ -64,7 +64,7 @@ public class HomeControllerTests
     {
         //Arrange
         var request = fixture
-          .Build<GetTodoByIdRequest>()
+          .Build<GetTodoByIdQuery>()
           .With(request => request.HttpContext, httpContextAccessor.HttpContext)
           .Create();
 
@@ -86,7 +86,7 @@ public class HomeControllerTests
     {
         //Arrange
         var request = fixture
-            .Build<CreateTodoRequest>()
+            .Build<CreateTodoCommand>()
             .With(request => request.HttpContext, httpContextAccessor.HttpContext)
             .Create();
 
@@ -107,7 +107,7 @@ public class HomeControllerTests
     public async Task Update_ValidData_ReturnsUpdatedTodo()
     {
         var request = fixture
-          .Build<UpdateTodoRequest>()
+          .Build<UpdateTodoCommand>()
           .With(request => request.HttpContext, httpContextAccessor.HttpContext)
           .Create();
 
@@ -130,7 +130,7 @@ public class HomeControllerTests
         //Arrange
         const int id = 2;
 
-        DeleteTodoRequest request = new() { HttpContext = httpContextAccessor.HttpContext, TodoId = id };
+        DeleteTodoCommand request = new() { HttpContext = httpContextAccessor.HttpContext, TodoId = id };
 
         DeleteTodoResponse response = new() { IsSuccess = true };
 

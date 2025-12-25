@@ -15,7 +15,7 @@ public class AuthUtils(ITaskManagementToolDbContext dbContext) : IAuthUtils
 
     public string GetUserId(HttpContext context)
     {
-        return context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new TaskManagementToolException(ApiErrorCode.Unautorized, "User id was not found in claims");
+        return context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new CustomException(ApiErrorCode.Unautorized, "User id was not found in claims");
     }
 
     public async Task<bool> IsAllowedActionAsync(HttpContext context, int todoId, CancellationToken cancellationToken)

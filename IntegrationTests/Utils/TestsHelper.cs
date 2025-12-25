@@ -10,7 +10,7 @@ public static class TestsHelper
 {
     public static async Task<HttpResponseMessage> RegisterUserAsync(HttpClient client, string email, string password, string confirmPassword)
     {
-        UserRegisterRequest registerDto = new()
+        UserRegisterCommand registerDto = new()
         {
             Age = 34,
             Password = password,
@@ -25,7 +25,7 @@ public static class TestsHelper
 
     public static async Task LoginAsync(HttpClient client, string email, string password)
     {
-        UserLoginRequest loginDto = new()
+        UserLoginCommand loginDto = new()
         {
             Email = email,
             Password = password

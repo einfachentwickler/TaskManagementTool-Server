@@ -36,7 +36,7 @@ public class AuthControllerTests
     public async Task Register_ValidData_Returns200()
     {
         //Arrange
-        var registerDto = fixture.Create<UserRegisterRequest>();
+        var registerDto = fixture.Create<UserRegisterCommand>();
 
         UserRegisterResponse expectedResult = new()
         {
@@ -59,7 +59,7 @@ public class AuthControllerTests
     public async Task Register_InvalidData_Returns400()
     {
         //Arrange
-        var registerDto = fixture.Create<UserRegisterRequest>();
+        var registerDto = fixture.Create<UserRegisterCommand>();
 
         UserRegisterResponse expectedResult = new()
         {
@@ -83,7 +83,7 @@ public class AuthControllerTests
     public async Task Login_ValidData_Returns200()
     {
         //Arrange
-        var loginDto = fixture.Create<UserLoginRequest>();
+        var loginDto = fixture.Create<UserLoginCommand>();
 
         UserLoginResponse expectedResult = new() { IsSuccess = true, Token = "token" };
 
@@ -103,7 +103,7 @@ public class AuthControllerTests
     public async Task Login_InvalidData_Returns400()
     {
         //Arrange
-        var loginDto = fixture.Create<UserLoginRequest>();
+        var loginDto = fixture.Create<UserLoginCommand>();
 
         UserLoginResponse expectedResult = new() { IsSuccess = false, Message = UserManagerResponseMessages.INVALID_CREDENTIALS };
 
@@ -123,7 +123,7 @@ public class AuthControllerTests
     public async Task ResetPasswordAsync_ValidData_Returns200()
     {
         //Arrange
-        var request = fixture.Create<ResetPasswordRequest>();
+        var request = fixture.Create<ResetPasswordCommand>();
 
         ResetPasswordResponse expectedResult = new() { IsSuccess = true };
 
@@ -144,7 +144,7 @@ public class AuthControllerTests
     public async Task ResetPasswordAsync_ValidData_Returns400()
     {
         //Arrange
-        var request = fixture.Create<ResetPasswordRequest>();
+        var request = fixture.Create<ResetPasswordCommand>();
 
         ResetPasswordResponse expectedResult = new() { IsSuccess = false, Message = UserManagerResponseMessages.INVALID_CREDENTIALS };
 

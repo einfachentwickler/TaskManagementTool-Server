@@ -12,7 +12,7 @@ public static class DiModule
 {
     public static IServiceCollection ConfigureBll(this IServiceCollection services)
     {
-        services.AddValidatorsFromAssemblyContaining<UserRegisterRequestValidator>();
+        services.AddValidatorsFromAssemblyContaining<UserRegisterCommandValidator>();
 
         services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblyContaining<UserRegisterHandler>());
 

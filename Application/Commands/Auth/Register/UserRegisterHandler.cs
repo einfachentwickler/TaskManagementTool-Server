@@ -13,11 +13,11 @@ using TaskManagementTool.Common.Constants;
 namespace Application.Commands.Auth.Register;
 
 public class UserRegisterHandler(
-    IValidator<UserRegisterRequest> validator,
+    IValidator<UserRegisterCommand> validator,
     UserManager<UserEntity> userManager
-    ) : IRequestHandler<UserRegisterRequest, UserRegisterResponse>
+    ) : IRequestHandler<UserRegisterCommand, UserRegisterResponse>
 {
-    public async Task<UserRegisterResponse> Handle(UserRegisterRequest request, CancellationToken cancellationToken)
+    public async Task<UserRegisterResponse> Handle(UserRegisterCommand request, CancellationToken cancellationToken)
     {
         ValidationResult validationResult = await validator.ValidateAsync(request, cancellationToken);
 

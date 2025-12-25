@@ -21,7 +21,7 @@ public class AuthController(IMediator mediator) : ControllerBase
     [HttpPost("register")]
     [SwaggerResponse((int)HttpStatusCode.OK)]
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> Register([FromBody][Required] UserRegisterRequest request)
+    public async Task<IActionResult> Register([FromBody][Required] UserRegisterCommand request)
     {
         UserRegisterResponse result = await mediator.Send(request);
 
@@ -31,7 +31,7 @@ public class AuthController(IMediator mediator) : ControllerBase
     [HttpPost("login")]
     [SwaggerResponse((int)HttpStatusCode.OK)]
     [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
-    public async Task<IActionResult> Login([FromBody][Required] UserLoginRequest request)
+    public async Task<IActionResult> Login([FromBody][Required] UserLoginCommand request)
     {
         UserLoginResponse result = await mediator.Send(request);
 
@@ -41,7 +41,7 @@ public class AuthController(IMediator mediator) : ControllerBase
     [HttpPost("reset-password")]
     [SwaggerResponse((int)HttpStatusCode.OK)]
     [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
-    public async Task<IActionResult> ResetPassword([FromBody][Required] ResetPasswordRequest request)
+    public async Task<IActionResult> ResetPassword([FromBody][Required] ResetPasswordCommand request)
     {
         ResetPasswordResponse result = await mediator.Send(request);
 

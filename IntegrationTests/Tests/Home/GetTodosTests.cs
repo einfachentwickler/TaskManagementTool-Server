@@ -1,5 +1,5 @@
-﻿using Application.Commands.Home.GetTodos.Models;
-using Application.Dto.ToDoModels;
+﻿using Application.Dto.ToDoModels;
+using Application.Queries.Home.GetTodos.Models;
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using FluentAssertions;

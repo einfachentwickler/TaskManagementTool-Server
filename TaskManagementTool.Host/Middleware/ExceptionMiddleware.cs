@@ -19,7 +19,7 @@ public class ExceptionMiddleware(RequestDelegate next)
         }
         catch (Exception exception)
         {
-            if (exception is TaskManagementToolException customException)
+            if (exception is CustomException customException)
             {
                 context.Response.StatusCode = customException.ErrorCode switch
                 {
@@ -40,7 +40,7 @@ public class ExceptionMiddleware(RequestDelegate next)
 
             await context.Response.WriteAsync(exception switch
             {
-                TaskManagementToolException ex => JsonConvert.SerializeObject(new ProblemDetails { Title = ex.ErrorCode.ToString(), Detail = ex.Message }),
+                CustomException ex => JsonConvert.SerializeObject(new ProblemDetails { Title = ex.ErrorCode.ToString(), Detail = ex.Message }),
 
                 _ => "Internal server error"
             });

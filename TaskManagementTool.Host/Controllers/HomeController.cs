@@ -1,10 +1,10 @@
 ﻿using Application.Commands.Home.CreateTodo.Models;
 using Application.Commands.Home.DeleteTodo.Models;
-using Application.Commands.Home.GetTodoById.Models;
-using Application.Commands.Home.GetTodos.Models;
 using Application.Commands.Home.UpdateTodo.Models;
 using Application.Dto;
 using Application.Dto.ToDoModels;
+using Application.Queries.Home.GetTodoById.Models;
+using Application.Queries.Home.GetTodos.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -28,7 +28,7 @@ public class HomeController(IMediator mediator, IHttpContextAccessor httpContext
     [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(IEnumerable<TodoDto>))]
     public async Task<IActionResult> GetTodos([FromQuery][Required] int pageNumber, [FromQuery][Required] int pageSize)
     {
-        GetTodosRequest request = new()
+        GetTodosQuery request = new()
         {
             PageNumber = pageNumber,
             PageSize = pageSize,
@@ -46,7 +46,7 @@ public class HomeController(IMediator mediator, IHttpContextAccessor httpContext
     [SwaggerResponse((int)HttpStatusCode.Forbidden)]
     public async Task<IActionResult> GetById([FromRoute][Required] int id)
     {
-        GetTodoByIdRequest request = new()
+        GetTodoByIdQuery request = new()
         {
             TodoId = id,
             HttpContext = httpContextAccessor.HttpContext
@@ -62,7 +62,7 @@ public class HomeController(IMediator mediator, IHttpContextAccessor httpContext
     [SwaggerResponse((int)HttpStatusCode.Created)]
     public async Task<IActionResult> Create([FromBody][Required] CreateTodoDto model)
     {
-        CreateTodoRequest request = new()
+        CreateTodoCommand request = new()
         {
             HttpContext = httpContextAccessor.HttpContext,
             CreateTodoDto = model
@@ -79,7 +79,7 @@ public class HomeController(IMediator mediator, IHttpContextAccessor httpContext
     [Consumes("application/json")]
     public async Task<IActionResult> Update([FromBody][Required] UpdateTodoDto model)
     {
-        UpdateTodoRequest req = new()
+        UpdateTodoCommand req = new()
         {
             HttpContext = httpContextAccessor.HttpContext,
             UpdateTodoDto = model
@@ -96,7 +96,7 @@ public class HomeController(IMediator mediator, IHttpContextAccessor httpContext
     [SwaggerResponse((int)HttpStatusCode.Forbidden)]
     public async Task<IActionResult> Delete([FromRoute][Required] int id)
     {
-        DeleteTodoRequest request = new()
+        DeleteTodoCommand request = new()
         {
             TodoId = id,
             HttpContext = httpContextAccessor.HttpContext

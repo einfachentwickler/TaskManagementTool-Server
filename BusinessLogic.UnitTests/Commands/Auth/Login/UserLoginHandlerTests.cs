@@ -20,7 +20,7 @@ namespace BusinessLogic.UnitTests.Commands.Auth.Login;
 public class UserLoginHandlerTests
 {
     private IUserManagerWrapper userManager;
-    private IValidator<UserLoginRequest> requestValidator;
+    private IValidator<UserLoginCommand> requestValidator;
     private IJwtSecurityTokenBuilder jwtSecurityTokenBuilder;
 
     private IFixture fixture;
@@ -33,7 +33,7 @@ public class UserLoginHandlerTests
         fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
 
         userManager = fixture.Freeze<IUserManagerWrapper>();
-        requestValidator = fixture.Freeze<IValidator<UserLoginRequest>>();
+        requestValidator = fixture.Freeze<IValidator<UserLoginCommand>>();
         jwtSecurityTokenBuilder = fixture.Freeze<IJwtSecurityTokenBuilder>();
 
         sut = fixture.Create<UserLoginHandler>();
@@ -44,7 +44,7 @@ public class UserLoginHandlerTests
     {
         //Arrange
         const string expectedTokenAsString = "token";
-        UserLoginRequest request = new();
+        UserLoginCommand request = new();
         var token = fixture.Create<CancellationToken>();
         var identityUser = fixture.Build<UserEntity>().With(user => user.IsBlocked, false).Create();
         var expectedToken = new JwtSecurityToken();
@@ -70,7 +70,7 @@ public class UserLoginHandlerTests
     public async Task Handle_InvalidRequest_ReturnsValidationErrors()
     {
         //Arrange
-        UserLoginRequest request = new();
+        UserLoginCommand request = new();
         var token = fixture.Create<CancellationToken>();
         var validationFailures = fixture.CreateMany<ValidationFailure>(2).ToList();
         ValidationResult validationResult = new() { Errors = validationFailures };
@@ -90,14 +90,14 @@ public class UserLoginHandlerTests
 
         await userManager.DidNotReceiveWithAnyArgs().FindByEmailAsync(Arg.Any<string>());
         await userManager.DidNotReceiveWithAnyArgs().CheckPasswordAsync(Arg.Any<UserEntity>(), Arg.Any<string>());
-        jwtSecurityTokenBuilder.DidNotReceiveWithAnyArgs().Build(Arg.Any<UserEntity>(), Arg.Any<UserLoginRequest>());
+        jwtSecurityTokenBuilder.DidNotReceiveWithAnyArgs().Build(Arg.Any<UserEntity>(), Arg.Any<UserLoginCommand>());
     }
 
     [Test]
     public async Task Handle_UserNotFound_ReturnsError()
     {
         //Arrange
-        UserLoginRequest request = new();
+        UserLoginCommand request = new();
         var token = fixture.Create<CancellationToken>();
         UserEntity? identityUser = null;
 
@@ -115,14 +115,14 @@ public class UserLoginHandlerTests
         });
 
         await userManager.DidNotReceiveWithAnyArgs().CheckPasswordAsync(Arg.Any<UserEntity>(), Arg.Any<string>());
-        jwtSecurityTokenBuilder.DidNotReceiveWithAnyArgs().Build(Arg.Any<UserEntity>(), Arg.Any<UserLoginRequest>());
+        jwtSecurityTokenBuilder.DidNotReceiveWithAnyArgs().Build(Arg.Any<UserEntity>(), Arg.Any<UserLoginCommand>());
     }
 
     [Test]
     public async Task Handle_UserIsBlocked_ReturnsError()
     {
         //Arrange
-        UserLoginRequest request = new();
+        UserLoginCommand request = new();
         var token = fixture.Create<CancellationToken>();
         var identityUser = fixture.Build<UserEntity>().With(user => user.IsBlocked, true).Create();
 
@@ -140,14 +140,14 @@ public class UserLoginHandlerTests
         });
 
         await userManager.DidNotReceiveWithAnyArgs().CheckPasswordAsync(Arg.Any<UserEntity>(), Arg.Any<string>());
-        jwtSecurityTokenBuilder.DidNotReceiveWithAnyArgs().Build(Arg.Any<UserEntity>(), Arg.Any<UserLoginRequest>());
+        jwtSecurityTokenBuilder.DidNotReceiveWithAnyArgs().Build(Arg.Any<UserEntity>(), Arg.Any<UserLoginCommand>());
     }
 
     [Test]
     public async Task Handle_InalidCredentials_ReturnsError()
     {
         //Arrange
-        UserLoginRequest request = new();
+        UserLoginCommand request = new();
         var token = fixture.Create<CancellationToken>();
         var identityUser = fixture.Build<UserEntity>().With(user => user.IsBlocked, false).Create();
 
@@ -165,6 +165,6 @@ public class UserLoginHandlerTests
             IsSuccess = false
         });
 
-        jwtSecurityTokenBuilder.DidNotReceiveWithAnyArgs().Build(Arg.Any<UserEntity>(), Arg.Any<UserLoginRequest>());
+        jwtSecurityTokenBuilder.DidNotReceiveWithAnyArgs().Build(Arg.Any<UserEntity>(), Arg.Any<UserLoginCommand>());
     }
 }

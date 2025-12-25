@@ -1,8 +1,8 @@
 ﻿using Application.Commands.Admin.DeleteTodoByAdmin.Models;
 using Application.Commands.Admin.DeleteUser.Models;
-using Application.Commands.Admin.GetTodos.Models;
-using Application.Commands.Admin.GetUsers.Models;
 using Application.Commands.Admin.ReverseStatus.Models;
+using Application.Queries.Admin.GetTodos.Models;
+using Application.Queries.Admin.GetUsers.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +23,7 @@ public class AdminController(IMediator mediator) : ControllerBase
     [Consumes("application/json")]
     public async Task<IActionResult> GetUsers([FromQuery][Required] int pageNumber, [FromQuery][Required] int pageSize)
     {
-        GetUsersRequest request = new() { PageNumber = pageNumber, PageSize = pageSize };
+        GetUsersQuery request = new() { PageNumber = pageNumber, PageSize = pageSize };
 
         GetUsersResponse response = await mediator.Send(request);
 
@@ -35,7 +35,7 @@ public class AdminController(IMediator mediator) : ControllerBase
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> ReverseStatus([FromRoute][Required] string userId)
     {
-        await mediator.Send(new ReverseStatusRequest { UserId = userId });
+        await mediator.Send(new ReverseStatusCommand { UserId = userId });
         return NoContent();
     }
 
@@ -44,7 +44,7 @@ public class AdminController(IMediator mediator) : ControllerBase
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> DeleteUser([FromRoute][Required] string email)
     {
-        DeleteUserRequest request = new() { Email = email };
+        DeleteUserCommand request = new() { Email = email };
 
         await mediator.Send(request);
 
@@ -56,7 +56,7 @@ public class AdminController(IMediator mediator) : ControllerBase
     [SwaggerResponse((int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetTodos([FromQuery][Required] int pageNumber, [FromQuery][Required] int pageSize)
     {
-        GetTodosByAdminRequest request = new() { PageNumber = pageNumber, PageSize = pageSize };
+        GetTodosByAdminQuery request = new() { PageNumber = pageNumber, PageSize = pageSize };
 
         GetTodosByAdminResponse response = await mediator.Send(request);
 
@@ -68,7 +68,7 @@ public class AdminController(IMediator mediator) : ControllerBase
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> DeleteTodo([FromRoute][Required] int id)
     {
-        DeleteTodoByAdminRequest request = new() { TodoId = id };
+        DeleteTodoByAdminCommand request = new() { TodoId = id };
 
         await mediator.Send(request);
 
