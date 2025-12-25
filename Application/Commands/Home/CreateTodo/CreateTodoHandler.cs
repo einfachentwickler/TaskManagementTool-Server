@@ -7,9 +7,9 @@ using FluentValidation;
 using Infrastructure.Context;
 using Infrastructure.Entities;
 using MediatR;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskManagementTool.Common.Enums;
 using TaskManagementTool.Common.Exceptions;
 
 namespace Application.Commands.Home.CreateTodo;
@@ -32,7 +32,8 @@ public class CreateTodoHandler(
 
         if (!validationResult.IsValid)
         {
-            throw new CustomException(ApiErrorCode.InvalidInput, string.Join(", ", validationResult.Errors));
+            var firstError = validationResult.Errors[0];
+            throw new CustomException<CreateTodoErrorCode>(Enum.Parse<CreateTodoErrorCode>(firstError.ErrorCode), firstError.ErrorMessage);
         }
 
         request.CreateTodoDto.CreatorId = _authUtils.GetUserId(request.HttpContext);

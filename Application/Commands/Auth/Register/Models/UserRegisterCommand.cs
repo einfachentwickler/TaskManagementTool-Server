@@ -2,7 +2,7 @@
 
 namespace Application.Commands.Auth.Register.Models;
 
-public record UserRegisterCommand : IRequest<UserRegisterResponse>
+public record UserRegisterCommand : IRequest<Unit>
 {
     public required string Email { get; init; }
 

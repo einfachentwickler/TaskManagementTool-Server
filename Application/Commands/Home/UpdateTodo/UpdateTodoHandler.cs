@@ -6,9 +6,9 @@ using FluentValidation;
 using Infrastructure.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskManagementTool.Common.Enums;
 using TaskManagementTool.Common.Exceptions;
 
 namespace Application.Commands.Home.UpdateTodo;
@@ -31,15 +31,17 @@ public class UpdateTodoHandler(
 
         if (!validationResult.IsValid)
         {
-            throw new CustomException(ApiErrorCode.InvalidInput, string.Join(", ", validationResult.Errors));
+            var firstError = validationResult.Errors[0];
+            throw new CustomException<UpdateTodoErrorCode>(Enum.Parse<UpdateTodoErrorCode>(firstError.ErrorCode), firstError.ErrorMessage);
         }
 
         if (!await _authUtils.IsAllowedActionAsync(request.HttpContext, request.UpdateTodoDto.Id, cancellationToken))
         {
-            throw new CustomException(ApiErrorCode.Forbidden, "");
+            throw new CustomException<UpdateTodoErrorCode>(UpdateTodoErrorCode.Forbidden, UpdateTodoErrorMessages.Forbidden);
         }
 
         var toDo = await _dbContext.Todos
+            //todo do i need creator here?
             .Include(todo => todo.Creator)
             .FirstOrDefaultAsync(todo => todo.Id == request.UpdateTodoDto.Id, cancellationToken);
 

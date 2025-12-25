@@ -1,34 +1,29 @@
 ﻿using Application.Commands.Auth.Register.Models;
-using Application.Constants;
 using FluentValidation;
-using FluentValidation.Results;
 using Infrastructure.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using System.Linq;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using TaskManagementTool.Common.Constants;
+using TaskManagementTool.Common.Exceptions;
 
 namespace Application.Commands.Auth.Register;
 
 public class UserRegisterHandler(
     IValidator<UserRegisterCommand> validator,
     UserManager<UserEntity> userManager
-    ) : IRequestHandler<UserRegisterCommand, UserRegisterResponse>
+    ) : IRequestHandler<UserRegisterCommand, Unit>
 {
-    public async Task<UserRegisterResponse> Handle(UserRegisterCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(UserRegisterCommand request, CancellationToken cancellationToken)
     {
-        ValidationResult validationResult = await validator.ValidateAsync(request, cancellationToken);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
-            return new UserRegisterResponse
-            {
-                Message = UserManagerResponseMessages.USER_WAS_NOT_CREATED,
-                IsSuccess = false,
-                Errors = validationResult.Errors.ConvertAll(identityError => identityError.ErrorCode)
-            };
+            var firstError = validationResult.Errors[0];
+            throw new CustomException<UserRegisterErrorCode>(Enum.Parse<UserRegisterErrorCode>(firstError.ErrorCode), firstError.ErrorMessage);
         }
 
         UserEntity identityUser = new()
@@ -41,22 +36,13 @@ public class UserRegisterHandler(
             Role = UserRoles.USER_ROLE
         };
 
-        IdentityResult result = await userManager.CreateAsync(identityUser, request.Password);
+        var result = await userManager.CreateAsync(identityUser, request.Password);
 
         if (result.Succeeded)
         {
-            return new UserRegisterResponse
-            {
-                Message = UserManagerResponseMessages.USER_CREATED,
-                IsSuccess = true
-            };
+            return Unit.Value;
         }
 
-        return new UserRegisterResponse
-        {
-            Message = UserManagerResponseMessages.USER_WAS_NOT_CREATED,
-            IsSuccess = false,
-            Errors = result.Errors.Select(identityError => identityError.Description).ToList()
-        };
+        throw new CustomException<UserRegisterErrorCode>(UserRegisterErrorCode.InternalServerError, UserRegisterErrorMessages.InternalServerError);
     }
 }

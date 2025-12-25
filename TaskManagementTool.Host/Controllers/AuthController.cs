@@ -2,10 +2,11 @@
 using Application.Commands.Auth.Register.Models;
 using Application.Commands.Auth.ResetPassword.Models;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
-using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using TaskManagementTool.Host.ActionFilters;
 
@@ -18,33 +19,38 @@ namespace TaskManagementTool.Host.Controllers;
 [Produces("application/json")]
 public class AuthController(IMediator mediator) : ControllerBase
 {
-    [HttpPost("register")]
-    [SwaggerResponse((int)HttpStatusCode.OK)]
-    [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> Register([FromBody][Required] UserRegisterCommand request)
-    {
-        UserRegisterResponse result = await mediator.Send(request);
+    private readonly IMediator _mediator = mediator;
 
-        return result.IsSuccess ? Ok(result) : BadRequest(result);
+    [HttpPost("register")]
+    [SwaggerResponse(StatusCodes.Status204NoContent)]
+    [SwaggerResponse(StatusCodes.Status400BadRequest)]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Register([FromBody][Required] UserRegisterCommand request, CancellationToken cancellationToken)
+    {
+        await _mediator.Send(request, cancellationToken);
+
+        return NoContent();
     }
 
     [HttpPost("login")]
-    [SwaggerResponse((int)HttpStatusCode.OK)]
-    [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
-    public async Task<IActionResult> Login([FromBody][Required] UserLoginCommand request)
+    [SwaggerResponse(StatusCodes.Status200OK)]
+    [SwaggerResponse(StatusCodes.Status400BadRequest)]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Login([FromBody][Required] UserLoginCommand request, CancellationToken cancellationToken)
     {
-        UserLoginResponse result = await mediator.Send(request);
+        var response = await _mediator.Send(request, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : Unauthorized(result);
+        return Ok(response);
     }
 
     [HttpPost("reset-password")]
-    [SwaggerResponse((int)HttpStatusCode.OK)]
-    [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
-    public async Task<IActionResult> ResetPassword([FromBody][Required] ResetPasswordCommand request)
+    [SwaggerResponse(StatusCodes.Status204NoContent)]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized)]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ResetPassword([FromBody][Required] ResetPasswordCommand request, CancellationToken cancellationToken)
     {
-        ResetPasswordResponse result = await mediator.Send(request);
+        await _mediator.Send(request, cancellationToken);
 
-        return result.IsSuccess ? Ok(result) : BadRequest(result);
+        return NoContent();
     }
 }

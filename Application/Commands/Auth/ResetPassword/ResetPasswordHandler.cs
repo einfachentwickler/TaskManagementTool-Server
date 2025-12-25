@@ -1,44 +1,36 @@
 ﻿using Application.Commands.Auth.ResetPassword.Models;
-using Application.Constants;
 using FluentValidation;
-using FluentValidation.Results;
 using Infrastructure.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using TaskManagementTool.Common.Exceptions;
 
 namespace Application.Commands.Auth.ResetPassword;
 
 public class ResetPasswordHandler(
     IValidator<ResetPasswordCommand> validator,
     UserManager<UserEntity> userManager
-    ) : IRequestHandler<ResetPasswordCommand, ResetPasswordResponse>
+    ) : IRequestHandler<ResetPasswordCommand, Unit>
 {
-    public async Task<ResetPasswordResponse> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
     {
-        ValidationResult validationResult = await validator.ValidateAsync(request, cancellationToken);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
-            return new ResetPasswordResponse
-            {
-                Message = UserManagerResponseMessages.USER_WAS_NOT_CREATED,
-                IsSuccess = false,
-                Errors = validationResult.Errors.ConvertAll(identityError => identityError.ErrorCode)
-            };
+            var firstError = validationResult.Errors[0];
+            throw new CustomException<ResetPasswordErrorCode>(Enum.Parse<ResetPasswordErrorCode>(firstError.ErrorCode), firstError.ErrorMessage);
         }
 
-        UserEntity user = await userManager.Users.FirstOrDefaultAsync(user => user.Email == request.Email, cancellationToken);
+        var user = await userManager.Users.FirstOrDefaultAsync(user => user.Email == request.Email, cancellationToken);
 
         if (user is null)
         {
-            return new ResetPasswordResponse
-            {
-                IsSuccess = false,
-                Message = UserManagerResponseMessages.USER_DOES_NOT_EXIST
-            };
+            throw new CustomException<ResetPasswordErrorCode>(ResetPasswordErrorCode.UserNotFound, ResetPasswordErrorMessages.UserNotFound);
         }
 
         bool isCurrentPasswordValid = await userManager.CheckPasswordAsync(user, request.CurrentPassword);
@@ -49,9 +41,9 @@ public class ResetPasswordHandler(
 
             IdentityResult passwordChangeResult = await userManager.ResetPasswordAsync(user, resetToken, request.NewPassword);
 
-            return new ResetPasswordResponse { IsSuccess = true };
+            return Unit.Value;
         }
 
-        return new ResetPasswordResponse { IsSuccess = false, Message = UserManagerResponseMessages.INVALID_CREDENTIALS };
+        throw new CustomException<ResetPasswordErrorCode>(ResetPasswordErrorCode.InvalidCurrentPassword, ResetPasswordErrorMessages.InvalidCurrentPassword);
     }
 }

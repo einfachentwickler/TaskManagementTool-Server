@@ -14,7 +14,17 @@ public class ReverseStatusHandler(IUserManagerWrapper userManager) : IRequestHan
 {
     public async Task<Unit> Handle(ReverseStatusCommand request, CancellationToken cancellationToken)
     {
-        UserEntity user = await userManager.Users.FirstOrDefaultAsync(user => user.Id == request.UserId, cancellationToken);
+        if (string.IsNullOrEmpty(request.UserId))
+        {
+            throw new CustomException<ReverseStatusErrorCode>(ReverseStatusErrorCode.UserIdIsNullOrEmpty, ReverseStatusErrorMessages.UserIdIsNullOrEmpty);
+        }
+
+        var user = await userManager.Users.FirstOrDefaultAsync(user => user.Id == request.UserId, cancellationToken);
+
+        if (user is null)
+        {
+            throw new CustomException<ReverseStatusErrorCode>(ReverseStatusErrorCode.UserNotFound, ReverseStatusErrorMessages.UserNotFound);
+        }
 
         user.IsBlocked = !user.IsBlocked;
 
@@ -24,9 +34,8 @@ public class ReverseStatusHandler(IUserManagerWrapper userManager) : IRequestHan
 
         if (!identityResult.Succeeded)
         {
-            string errors = string.Join("\n", identityResult.Errors);
-
-            throw new CustomException($"Update failed: {errors}");
+            throw new CustomException<ReverseStatusErrorCode>(ReverseStatusErrorCode.InternalServerError, ReverseStatusErrorMessages.InternalServerError);
+            //todo log errors
         }
 
         return new Unit();
@@ -34,6 +43,7 @@ public class ReverseStatusHandler(IUserManagerWrapper userManager) : IRequestHan
 
     private async Task<UserEntity> CopyAsync(UserEntity user)
     {
+        //todo resolve this mess
         UserEntity userTemp = await userManager.FindByEmailAsync(user.Email);
 
         userTemp.Id = user.Id;

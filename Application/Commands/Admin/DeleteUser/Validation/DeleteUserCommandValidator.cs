@@ -8,7 +8,7 @@ public class DeleteUserCommandValidator : AbstractValidator<DeleteUserCommand>
     public DeleteUserCommandValidator()
     {
         RuleFor(x => x.Email)
-            .NotEmpty().WithErrorCode(nameof(DeleteUserErrorCode.InvalidEmail)).WithMessage("Email is required.")
-            .EmailAddress().WithErrorCode(nameof(DeleteUserErrorCode.InvalidEmail)).WithMessage("A valid email is required.");
+            .NotEmpty().WithErrorCode(nameof(DeleteUserErrorCode.InvalidEmail)).WithMessage(DeleteUserErrorMessages.InvalidEmail)
+            .EmailAddress().WithErrorCode(nameof(DeleteUserErrorCode.InvalidEmail)).WithMessage(DeleteUserErrorMessages.InvalidEmail);
     }
 }

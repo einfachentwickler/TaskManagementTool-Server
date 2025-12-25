@@ -4,8 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskManagementTool.Common.Enums;
-using TaskManagementTool.Common.Exceptions;
 
 namespace Application.Commands.Utils;
 
@@ -15,7 +13,7 @@ public class AuthUtils(ITaskManagementToolDbContext dbContext) : IAuthUtils
 
     public string GetUserId(HttpContext context)
     {
-        return context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new CustomException(ApiErrorCode.Unautorized, "User id was not found in claims");
+        return context.User.FindFirst(ClaimTypes.NameIdentifier).Value;
     }
 
     public async Task<bool> IsAllowedActionAsync(HttpContext context, int todoId, CancellationToken cancellationToken)

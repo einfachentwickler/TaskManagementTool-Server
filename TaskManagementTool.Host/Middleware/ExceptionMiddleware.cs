@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
-using TaskManagementTool.Common.Enums;
 using TaskManagementTool.Common.Exceptions;
 
 namespace TaskManagementTool.Host.Middleware;
@@ -19,16 +18,14 @@ public class ExceptionMiddleware(RequestDelegate next)
         }
         catch (Exception exception)
         {
-            if (exception is CustomException customException)
+            if (exception is CustomExceptionBase customException)
             {
-                context.Response.StatusCode = customException.ErrorCode switch
+                context.Response.StatusCode = customException.ErrorCode.ToString() switch
                 {
-                    ApiErrorCode.UserNotFound => StatusCodes.Status404NotFound,
-                    ApiErrorCode.TodoNotFound => StatusCodes.Status404NotFound,
-                    ApiErrorCode.Unautorized => StatusCodes.Status401Unauthorized,
-                    ApiErrorCode.InvalidInput => StatusCodes.Status400BadRequest,
-                    ApiErrorCode.Forbidden => StatusCodes.Status404NotFound,
-                    _ => StatusCodes.Status500InternalServerError
+                    var code when code.Contains("NotFound", StringComparison.OrdinalIgnoreCase) => StatusCodes.Status404NotFound,
+                    var code when code.Contains("Forbidden", StringComparison.OrdinalIgnoreCase) => StatusCodes.Status404NotFound,
+                    var code when code.Contains("Unauthorized", StringComparison.OrdinalIgnoreCase) => StatusCodes.Status401Unauthorized,
+                    _ => StatusCodes.Status400BadRequest
                 };
             }
             else
@@ -40,7 +37,7 @@ public class ExceptionMiddleware(RequestDelegate next)
 
             await context.Response.WriteAsync(exception switch
             {
-                CustomException ex => JsonConvert.SerializeObject(new ProblemDetails { Title = ex.ErrorCode.ToString(), Detail = ex.Message }),
+                CustomExceptionBase ex => JsonConvert.SerializeObject(new ProblemDetails { Title = ex.ErrorCode.ToString(), Detail = ex.Message }),
 
                 _ => "Internal server error"
             });

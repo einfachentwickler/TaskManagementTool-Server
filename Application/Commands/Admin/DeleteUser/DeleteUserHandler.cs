@@ -29,7 +29,7 @@ public class DeleteUserHandler(IUserManagerWrapper userManager, ITaskManagementT
         }
 
         var user = await _userManager.FindByEmailAsync(request.Email)
-            ?? throw new CustomException<DeleteUserErrorCode>(DeleteUserErrorCode.UserNotFound, $"User with email {request.Email} was not found");
+            ?? throw new CustomException<DeleteUserErrorCode>(DeleteUserErrorCode.UserNotFound, DeleteUserErrorMessages.UserNotFound);
 
         await _dbContext.Todos.Where(todo => todo.Creator.Email == request.Email).ExecuteDeleteAsync(cancellationToken);
 
@@ -38,7 +38,7 @@ public class DeleteUserHandler(IUserManagerWrapper userManager, ITaskManagementT
         var identityResult = await _userManager.DeleteAsync(user);
         if (!identityResult.Succeeded)
         {
-            throw new CustomException<DeleteUserErrorCode>(DeleteUserErrorCode.InternalServerError, "Unexpected error occured");
+            throw new CustomException<DeleteUserErrorCode>(DeleteUserErrorCode.InternalServerError, DeleteUserErrorMessages.InternalServerError);
             //todo log errors
         }
 

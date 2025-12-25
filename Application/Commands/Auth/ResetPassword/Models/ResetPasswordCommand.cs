@@ -2,7 +2,7 @@
 
 namespace Application.Commands.Auth.ResetPassword.Models;
 
-public record ResetPasswordCommand : IRequest<ResetPasswordResponse>
+public record ResetPasswordCommand : IRequest<Unit>
 {
     public required string Email { get; init; }
 
