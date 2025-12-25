@@ -16,7 +16,7 @@ public static class DiModule
 
         services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblyContaining<UserRegisterHandler>());
 
-        services.AddAutoMapper(typeof(DefaultMappingProfile));
+        services.AddAutoMapper(x => { }, typeof(DefaultMappingProfile));
 
         services.AddScoped<IUserManagerWrapper, UserManagerWrapper>();
         services.AddScoped<IJwtSecurityTokenBuilder, JwtSecurityTokenBuilder>();
