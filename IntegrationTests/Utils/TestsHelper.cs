@@ -1,9 +1,9 @@
-﻿using IntegrationTests.Constants;
+﻿using Application.Commands.Auth.Login.Models;
+using Application.Commands.Auth.Register.Models;
+using Application.Dto.ToDoModels;
+using IntegrationTests.Constants;
 using Microsoft.AspNetCore.Http;
 using System.Net.Http.Json;
-using TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
-using TaskManagementTool.BusinessLogic.Commands.Auth.Register.Models;
-using TaskManagementTool.BusinessLogic.Dto.ToDoModels;
 
 namespace IntegrationTests.Utils;
 public static class TestsHelper

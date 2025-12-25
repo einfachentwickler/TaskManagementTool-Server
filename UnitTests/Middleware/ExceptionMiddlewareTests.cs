@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using Application.Dto.Errors;
+using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using FluentAssertions;
 using LoggerService;
@@ -6,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
-using TaskManagementTool.BusinessLogic.Dto.Errors;
 using TaskManagementTool.Common.Enums;
 using TaskManagementTool.Common.Exceptions;
 using TaskManagementTool.Host.Middleware;

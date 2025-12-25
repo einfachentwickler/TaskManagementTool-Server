@@ -1,4 +1,9 @@
-﻿using AutoFixture;
+﻿using Application.Commands.Home.CreateTodo.Models;
+using Application.Commands.Home.DeleteTodo.Models;
+using Application.Commands.Home.GetTodoById.Models;
+using Application.Commands.Home.GetTodos.Models;
+using Application.Commands.Home.UpdateTodo.Models;
+using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using FluentAssertions;
 using Host.UnitTests.Utils;
@@ -7,11 +12,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NUnit.Framework;
-using TaskManagementTool.BusinessLogic.Commands.Home.CreateTodo.Models;
-using TaskManagementTool.BusinessLogic.Commands.Home.DeleteTodo.Models;
-using TaskManagementTool.BusinessLogic.Commands.Home.GetTodoById.Models;
-using TaskManagementTool.BusinessLogic.Commands.Home.GetTodos.Models;
-using TaskManagementTool.BusinessLogic.Commands.Home.UpdateTodo.Models;
 using TaskManagementTool.Host.Controllers;
 
 namespace Host.UnitTests.Controllers;

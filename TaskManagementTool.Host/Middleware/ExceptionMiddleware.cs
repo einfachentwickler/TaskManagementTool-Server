@@ -1,9 +1,9 @@
-﻿using LoggerService;
+﻿using Application.Dto.Errors;
+using LoggerService;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
-using TaskManagementTool.BusinessLogic.Dto.Errors;
 using TaskManagementTool.Common.Enums;
 using TaskManagementTool.Common.Exceptions;
 

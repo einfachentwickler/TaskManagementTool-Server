@@ -1,4 +1,8 @@
-﻿using AutoFixture;
+﻿using Application.Commands.Auth.Login.Models;
+using Application.Commands.Auth.Register.Models;
+using Application.Commands.Auth.ResetPassword.Models;
+using Application.Constants;
+using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using FluentAssertions;
 using MediatR;
@@ -6,10 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NUnit.Framework;
 using System.Net;
-using TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
-using TaskManagementTool.BusinessLogic.Commands.Auth.Register.Models;
-using TaskManagementTool.BusinessLogic.Commands.Auth.ResetPassword.Models;
-using TaskManagementTool.BusinessLogic.Constants;
 using TaskManagementTool.Host.Controllers;
 
 namespace Host.UnitTests.Controllers;

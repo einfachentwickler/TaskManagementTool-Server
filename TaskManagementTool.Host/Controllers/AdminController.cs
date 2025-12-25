@@ -1,15 +1,15 @@
-﻿using MediatR;
+﻿using Application.Commands.Admin.DeleteTodoByAdmin.Models;
+using Application.Commands.Admin.DeleteUser.Models;
+using Application.Commands.Admin.GetTodos.Models;
+using Application.Commands.Admin.GetUsers.Models;
+using Application.Commands.Admin.ReverseStatus.Models;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
-using TaskManagementTool.BusinessLogic.Commands.Admin.DeleteTodoByAdmin.Models;
-using TaskManagementTool.BusinessLogic.Commands.Admin.DeleteUser.Models;
-using TaskManagementTool.BusinessLogic.Commands.Admin.GetTodos.Models;
-using TaskManagementTool.BusinessLogic.Commands.Admin.GetUsers.Models;
-using TaskManagementTool.BusinessLogic.Commands.Admin.ReverseStatus.Models;
 
 namespace TaskManagementTool.Host.Controllers;
 

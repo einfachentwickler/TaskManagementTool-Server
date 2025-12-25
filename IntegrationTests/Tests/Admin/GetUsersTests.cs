@@ -1,10 +1,10 @@
-﻿using FluentAssertions;
+﻿using Application.Commands.Admin.GetUsers.Models;
+using FluentAssertions;
 using IntegrationTests.Constants;
 using IntegrationTests.Utils;
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
-using TaskManagementTool.BusinessLogic.Commands.Admin.GetUsers.Models;
 
 namespace IntegrationTests.Tests.Admin;
 

@@ -1,4 +1,11 @@
-﻿using MediatR;
+﻿using Application.Commands.Home.CreateTodo.Models;
+using Application.Commands.Home.DeleteTodo.Models;
+using Application.Commands.Home.GetTodoById.Models;
+using Application.Commands.Home.GetTodos.Models;
+using Application.Commands.Home.UpdateTodo.Models;
+using Application.Dto;
+using Application.Dto.ToDoModels;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,13 +14,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
-using TaskManagementTool.BusinessLogic.Commands.Home.CreateTodo.Models;
-using TaskManagementTool.BusinessLogic.Commands.Home.DeleteTodo.Models;
-using TaskManagementTool.BusinessLogic.Commands.Home.GetTodoById.Models;
-using TaskManagementTool.BusinessLogic.Commands.Home.GetTodos.Models;
-using TaskManagementTool.BusinessLogic.Commands.Home.UpdateTodo.Models;
-using TaskManagementTool.BusinessLogic.Dto;
-using TaskManagementTool.BusinessLogic.Dto.ToDoModels;
 using TaskManagementTool.Host.ActionFilters;
 
 namespace TaskManagementTool.Host.Controllers;

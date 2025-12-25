@@ -1,11 +1,11 @@
-﻿using FluentAssertions;
+﻿using Application.Commands.Home.CreateTodo.Models;
+using Application.Dto.ToDoModels;
+using FluentAssertions;
 using IntegrationTests.Constants;
 using IntegrationTests.Utils;
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
-using TaskManagementTool.BusinessLogic.Commands.Home.CreateTodo.Models;
-using TaskManagementTool.BusinessLogic.Dto.ToDoModels;
 
 namespace IntegrationTests.Tests.Home;
 

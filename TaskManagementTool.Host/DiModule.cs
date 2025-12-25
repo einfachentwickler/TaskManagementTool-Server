@@ -1,4 +1,5 @@
-﻿using Infrastructure.Context;
+﻿using Application.Commands.Utils;
+using Infrastructure.Context;
 using Infrastructure.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -9,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using TaskManagementTool.BusinessLogic.Commands.Utils;
 using TaskManagementTool.Common.Configuration;
 using TaskManagementTool.Host.Constants;
 

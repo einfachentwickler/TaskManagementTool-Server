@@ -1,3 +1,4 @@
+using Application;
 using Infrastructure.Context;
 using Infrastructure.DI;
 using Infrastructure.Seeding;
@@ -10,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using TaskManagementTool.BusinessLogic;
 using TaskManagementTool.Host.Constants;
 using TaskManagementTool.Host.Middleware;
 

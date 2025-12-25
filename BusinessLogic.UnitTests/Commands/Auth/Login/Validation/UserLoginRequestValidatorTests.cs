@@ -1,10 +1,10 @@
-﻿using AutoFixture;
+﻿using Application.Commands.Auth.Login.Models;
+using Application.Commands.Auth.Login.Validation;
+using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using FluentValidation;
 using FluentValidation.TestHelper;
 using NUnit.Framework;
-using TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
-using TaskManagementTool.BusinessLogic.Commands.Auth.Login.Validation;
 using TaskManagementTool.Common.Constants;
 using TaskManagementTool.Common.Enums;
 

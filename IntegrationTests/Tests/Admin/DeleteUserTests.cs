@@ -1,12 +1,12 @@
-﻿using FluentAssertions;
+﻿using Application.Commands.Admin.GetTodos.Models;
+using Application.Commands.Admin.GetUsers.Models;
+using Application.Dto.Errors;
+using FluentAssertions;
 using IntegrationTests.Constants;
 using IntegrationTests.Utils;
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
-using TaskManagementTool.BusinessLogic.Commands.Admin.GetTodos.Models;
-using TaskManagementTool.BusinessLogic.Commands.Admin.GetUsers.Models;
-using TaskManagementTool.BusinessLogic.Dto.Errors;
 using TaskManagementTool.Common.Enums;
 
 namespace IntegrationTests.Tests.Admin;

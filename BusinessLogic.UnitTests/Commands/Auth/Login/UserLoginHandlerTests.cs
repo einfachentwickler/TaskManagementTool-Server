@@ -1,4 +1,9 @@
-﻿using AutoFixture;
+﻿using Application.Commands.Auth.Login;
+using Application.Commands.Auth.Login.Models;
+using Application.Commands.Utils.Jwt;
+using Application.Commands.Wrappers;
+using Application.Constants;
+using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using FluentAssertions;
 using FluentValidation;
@@ -7,11 +12,6 @@ using Infrastructure.Entities;
 using NSubstitute;
 using NUnit.Framework;
 using System.IdentityModel.Tokens.Jwt;
-using TaskManagementTool.BusinessLogic.Commands.Auth.Login;
-using TaskManagementTool.BusinessLogic.Commands.Auth.Login.Models;
-using TaskManagementTool.BusinessLogic.Commands.Utils.Jwt;
-using TaskManagementTool.BusinessLogic.Commands.Wrappers;
-using TaskManagementTool.BusinessLogic.Constants;
 using ValidationResult = FluentValidation.Results.ValidationResult;
 
 namespace BusinessLogic.UnitTests.Commands.Auth.Login;

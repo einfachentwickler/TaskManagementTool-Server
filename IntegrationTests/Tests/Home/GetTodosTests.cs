@@ -1,4 +1,6 @@
-﻿using AutoFixture;
+﻿using Application.Commands.Home.GetTodos.Models;
+using Application.Dto.ToDoModels;
+using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using FluentAssertions;
 using IntegrationTests.Constants;
@@ -6,8 +8,6 @@ using IntegrationTests.Utils;
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
-using TaskManagementTool.BusinessLogic.Commands.Home.GetTodos.Models;
-using TaskManagementTool.BusinessLogic.Dto.ToDoModels;
 
 namespace IntegrationTests.Tests.Home;
 

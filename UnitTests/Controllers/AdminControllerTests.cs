@@ -1,4 +1,8 @@
-﻿using AutoFixture;
+﻿using Application.Commands.Admin.DeleteUser.Models;
+using Application.Commands.Admin.GetTodos.Models;
+using Application.Commands.Admin.GetUsers.Models;
+using Application.Commands.Admin.ReverseStatus.Models;
+using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using FluentAssertions;
 using Host.UnitTests.Utils;
@@ -6,10 +10,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NUnit.Framework;
-using TaskManagementTool.BusinessLogic.Commands.Admin.DeleteUser.Models;
-using TaskManagementTool.BusinessLogic.Commands.Admin.GetTodos.Models;
-using TaskManagementTool.BusinessLogic.Commands.Admin.GetUsers.Models;
-using TaskManagementTool.BusinessLogic.Commands.Admin.ReverseStatus.Models;
 using TaskManagementTool.Host.Controllers;
 
 namespace Host.UnitTests.Controllers;
