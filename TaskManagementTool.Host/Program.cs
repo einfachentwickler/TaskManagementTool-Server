@@ -28,7 +28,7 @@ public class Program
         builder.Services.AddControllers();
 
         builder.Services
-            .ConfigureDataAccess(builder.Configuration, builder.Environment.IsDevelopment())
+            .AddInfrastructure(builder.Configuration, builder.Environment.IsDevelopment())
             .ConfigureBll()
             .ConfigureHost(builder.Configuration);
 
@@ -54,7 +54,7 @@ public class Program
 
         UserManager<UserEntity> userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
         RoleManager<IdentityRole> rolesManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        ITaskManagementToolDatabase context = scope.ServiceProvider.GetRequiredService<TaskManagementToolDbContext>();
+        ITaskManagementToolDbContext context = scope.ServiceProvider.GetRequiredService<TaskManagementToolDbContext>();
 
         if (!await context.Database.EnsureCreatedAsync())
         {

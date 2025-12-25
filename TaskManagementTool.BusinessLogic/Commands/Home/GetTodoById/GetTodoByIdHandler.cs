@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using FluentValidation;
-using FluentValidation.Results;
-using Infrastructure.Contracts;
+using Infrastructure.Data.Context;
 using Infrastructure.Data.Entities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
 using TaskManagementTool.BusinessLogic.Commands.Home.GetTodoById.Models;
@@ -16,30 +16,37 @@ namespace TaskManagementTool.BusinessLogic.Commands.Home.GetTodoById;
 
 public class GetTodoByIdHandler(
     IAuthUtils authUtils,
-    ITodoRepository todoRepository,
+    ITaskManagementToolDbContext dbContext,
     IValidator<GetTodoByIdRequest> requestValidator,
     IMapper mapper
     ) : IRequestHandler<GetTodoByIdRequest, GetTodoByIdResponse>
 {
+    private readonly IAuthUtils _authUtils = authUtils;
+    private readonly ITaskManagementToolDbContext _dbContext = dbContext;
+    private readonly IValidator<GetTodoByIdRequest> _requestValidator = requestValidator;
+    private readonly IMapper _mapper = mapper;
+
     public async Task<GetTodoByIdResponse> Handle(GetTodoByIdRequest request, CancellationToken cancellationToken)
     {
-        ValidationResult validationResult = await requestValidator.ValidateAsync(request, cancellationToken);
+        var validationResult = await _requestValidator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
             throw new TaskManagementToolException(ApiErrorCode.InvalidInput, string.Join(", ", validationResult.Errors));
         }
 
-        if (!await authUtils.IsAllowedAction(todoRepository, request.HttpContext, request.TodoId))
+        if (!await _authUtils.IsAllowedActionAsync(request.HttpContext, request.TodoId, cancellationToken))
         {
             throw new TaskManagementToolException(ApiErrorCode.Forbidden, "");
         }
 
-        var todoEntry = await todoRepository.FirstOrDefaultAsync(request.TodoId);
+        var todoEntity = await _dbContext.Todos
+            .Include(todo => todo.Creator)
+            .FirstOrDefaultAsync(todo => todo.Id == request.TodoId, cancellationToken);
 
-        TodoDto result = todoEntry is null
+        var result = todoEntity is null
             ? throw new TaskManagementToolException(ApiErrorCode.TodoNotFound, $"Todo with id {request.TodoId} was not found")
-            : mapper.Map<ToDoEntity, TodoDto>(todoEntry);
+            : _mapper.Map<ToDoEntity, TodoDto>(todoEntity);
 
         return new GetTodoByIdResponse { Todo = result };
     }

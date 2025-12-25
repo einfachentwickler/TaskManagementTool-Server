@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 
 namespace Infrastructure.Extensions;
+
 public static class QueriableExtensions
 {
     public static IQueryable<TType> Page<TType>(this IQueryable<TType> source, int pageSize, int pageNumber) where TType : class

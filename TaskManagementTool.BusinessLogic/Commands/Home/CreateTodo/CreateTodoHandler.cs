@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
-using FluentValidation.Results;
-using Infrastructure.Contracts;
+using Infrastructure.Data.Context;
 using Infrastructure.Data.Entities;
 using MediatR;
 using System.Threading;
@@ -17,24 +16,33 @@ namespace TaskManagementTool.BusinessLogic.Commands.Home.CreateTodo;
 
 public class CreateTodoHandler(
     IAuthUtils authUtils,
-    ITodoRepository todoRepository,
+    ITaskManagementToolDbContext dbContext,
     IMapper mapper,
     IValidator<CreateTodoRequest> requestValidator
     ) : IRequestHandler<CreateTodoRequest, CreateTodoResponse>
 {
+    private readonly IAuthUtils _authUtils = authUtils;
+    private readonly ITaskManagementToolDbContext _dbContext = dbContext;
+    private readonly IMapper _mapper = mapper;
+    private readonly IValidator<CreateTodoRequest> _requestValidator = requestValidator;
+
     public async Task<CreateTodoResponse> Handle(CreateTodoRequest request, CancellationToken cancellationToken)
     {
-        ValidationResult validationResult = await requestValidator.ValidateAsync(request, cancellationToken);
+        var validationResult = await _requestValidator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
             throw new TaskManagementToolException(ApiErrorCode.InvalidInput, string.Join(", ", validationResult.Errors));
         }
 
-        request.CreateTodoDto.CreatorId = authUtils.GetUserId(request.HttpContext);
+        request.CreateTodoDto.CreatorId = _authUtils.GetUserId(request.HttpContext);
 
-        ToDoEntity todoEntry = mapper.Map<CreateTodoDto, ToDoEntity>(request.CreateTodoDto);
+        var todoEntry = _mapper.Map<CreateTodoDto, ToDoEntity>(request.CreateTodoDto);
 
-        return new CreateTodoResponse { Todo = mapper.Map<ToDoEntity, TodoDto>(await todoRepository.CreateAsync(todoEntry)) };
+        var createdTodo = (await _dbContext.Todos.AddAsync(todoEntry, cancellationToken)).Entity;
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return new CreateTodoResponse { Todo = _mapper.Map<ToDoEntity, TodoDto>(createdTodo) };
     }
 }

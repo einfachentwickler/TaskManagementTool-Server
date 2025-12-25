@@ -10,7 +10,7 @@ namespace Infrastructure.Initializers;
 public static class EfCoreCodeFirstInitializer
 {
     public static async Task InitializeAsync(
-        ITaskManagementToolDatabase context,
+        ITaskManagementToolDbContext context,
         UserManager<UserEntity> userManager,
         RoleManager<IdentityRole> roleManager,
         IConfiguration configuration
@@ -75,7 +75,7 @@ public static class EfCoreCodeFirstInitializer
                 await context.Todos.AddAsync(todo);
             }
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(default);
         }
     }
 }

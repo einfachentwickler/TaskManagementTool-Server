@@ -2,11 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Data.Context;
 
-public interface ITaskManagementToolDatabase : IAsyncDisposable
+public interface ITaskManagementToolDbContext : IAsyncDisposable
 {
     public DbContext DbContext { get; }
 
@@ -14,5 +15,5 @@ public interface ITaskManagementToolDatabase : IAsyncDisposable
 
     public DbSet<ToDoEntity> Todos { get; set; }
 
-    public Task SaveChangesAsync();
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

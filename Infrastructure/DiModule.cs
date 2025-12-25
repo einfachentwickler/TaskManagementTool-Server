@@ -1,7 +1,4 @@
-﻿using Infrastructure.Contracts;
-using Infrastructure.Data.Context;
-using Infrastructure.Factories;
-using Infrastructure.Repositories;
+﻿using Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,14 +7,13 @@ namespace Infrastructure;
 
 public static class DiModule
 {
-    public static IServiceCollection ConfigureDataAccess(this IServiceCollection services, IConfiguration configuration, bool isDevMode)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, bool isDevMode)
     {
         string connectionString = BuildConnectionString(configuration, isDevMode);
 
         services.AddDbContext<TaskManagementToolDbContext>(builder => builder.UseSqlServer(connectionString));
 
-        services.AddScoped<ITodoRepository, TodoRepository>();
-        services.AddScoped<IDatabaseFactory, DatabaseFactory>();
+        services.AddScoped<ITaskManagementToolDbContext, TaskManagementToolDbContext>();
 
         return services;
     }
