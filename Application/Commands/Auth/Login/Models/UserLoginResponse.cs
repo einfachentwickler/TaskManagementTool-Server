@@ -9,5 +9,5 @@ public record UserLoginResponse
     public required string Token { get; init; }
 
     [JsonProperty("expirationDate")]
-    public DateTime ExpirationDate { get; init; }
+    public DateTime Expires { get; init; }
 }

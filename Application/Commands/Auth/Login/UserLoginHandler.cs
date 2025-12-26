@@ -5,7 +5,6 @@ using Application.Services.Jwt;
 using FluentValidation;
 using MediatR;
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Threading;
 using System.Threading.Tasks;
 using TaskManagementTool.Common.Exceptions;
@@ -18,9 +17,13 @@ public class UserLoginHandler(
     IJwtSecurityTokenBuilder jwtSecurityTokenBuilder
     ) : IRequestHandler<UserLoginCommand, UserLoginResponse>
 {
-    public async Task<UserLoginResponse> Handle(UserLoginCommand request, CancellationToken cancellationToken)
+    private readonly IIdentityUserManagerWrapper _userManager = userManager;
+    private readonly IValidator<UserLoginCommand> _requestValidator = requestValidator;
+    private readonly IJwtSecurityTokenBuilder _jwtSecurityTokenBuilder = jwtSecurityTokenBuilder;
+
+    public async Task<UserLoginResponse> Handle(UserLoginCommand command, CancellationToken cancellationToken)
     {
-        var validationResult = await requestValidator.ValidateAsync(request, cancellationToken);
+        var validationResult = await _requestValidator.ValidateAsync(command, cancellationToken);
 
         if (!validationResult.IsValid)
         {
@@ -28,11 +31,12 @@ public class UserLoginHandler(
             throw new CustomException<UserLoginErrorCode>(Enum.Parse<UserLoginErrorCode>(firstError.ErrorCode), firstError.ErrorMessage);
         }
 
-        var user = await userManager.FindByEmailAsync(request.Email);
+        var user = await _userManager.FindByEmailAsync(command.Email);
+        var passwordValid = user != null && await _userManager.CheckPasswordAsync(user, command.Password);
 
-        if (user is null)
+        if (user == null || !passwordValid)
         {
-            throw new CustomException<UserLoginErrorCode>(UserLoginErrorCode.UserNotFound, UserLoginErrorMessages.UserNotFound);
+            throw new CustomException<UserLoginErrorCode>(UserLoginErrorCode.InvalidCredentials, UserLoginErrorMessages.InvalidCredentials);
         }
 
         if (user.IsBlocked)
@@ -40,18 +44,12 @@ public class UserLoginHandler(
             throw new CustomException<UserLoginErrorCode>(UserLoginErrorCode.BlockedEmail, UserLoginErrorMessages.BlockedEmail);
         }
 
-        var isValid = await userManager.CheckPasswordAsync(user, request.Password);
-        if (!isValid)
-        {
-            throw new CustomException<UserLoginErrorCode>(UserLoginErrorCode.InvalidCredentials, UserLoginErrorMessages.InvalidCredentials);
-        }
-
-        (string tokenAsString, JwtSecurityToken jwtSecurityToken) = jwtSecurityTokenBuilder.Build(user, request);
+        var buildTokenResponse = _jwtSecurityTokenBuilder.Build(user.Id, user.Role, command.Email);
 
         return new UserLoginResponse
         {
-            Token = tokenAsString,
-            ExpirationDate = jwtSecurityToken.ValidTo
+            Token = buildTokenResponse.Token,
+            Expires = buildTokenResponse.Expires
         };
     }
 }

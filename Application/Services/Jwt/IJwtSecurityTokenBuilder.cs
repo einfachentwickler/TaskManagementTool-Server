@@ -1,10 +1,8 @@
-﻿using Application.Commands.Auth.Login.Models;
-using Infrastructure.Entities;
-using System.IdentityModel.Tokens.Jwt;
+﻿using Application.Dto.BuildJwtToken;
 
 namespace Application.Services.Jwt;
 
 public interface IJwtSecurityTokenBuilder
 {
-    (string, JwtSecurityToken) Build(UserEntity user, UserLoginCommand model);
+    BuildJwtTokenResponse Build(string userId, string userRole, string userEmail);
 }

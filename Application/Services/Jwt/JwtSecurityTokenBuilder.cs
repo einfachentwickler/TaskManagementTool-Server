@@ -1,8 +1,8 @@
-﻿using Application.Commands.Auth.Login.Models;
-using Infrastructure.Entities;
+﻿using Application.Dto.BuildJwtToken;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -12,28 +12,43 @@ namespace Application.Services.Jwt;
 
 public class JwtSecurityTokenBuilder(IOptions<AuthSettings> config) : IJwtSecurityTokenBuilder
 {
-    public (string, JwtSecurityToken) Build(UserEntity user, UserLoginCommand model)
+    public BuildJwtTokenResponse Build(string userId, string userRole, string userEmail)
     {
-        Claim[] claims = [
-            new("email", model.Email),
-            new(ClaimTypes.NameIdentifier, user.Id),
-            new("role", user.Role)
-        ];
+        var now = DateTime.UtcNow;
 
-        byte[] authKey = Encoding.UTF8.GetBytes(config.Value.Key);
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, userId),
+            new(ClaimTypes.Email, userEmail),
+            new(ClaimTypes.Role, userRole),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.Iat, new DateTimeOffset(now).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
+            new(JwtRegisteredClaimNames.Nbf, new DateTimeOffset(now).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
+        };
 
-        SymmetricSecurityKey key = new(authKey);
+        var keyBytes = Encoding.UTF8.GetBytes(config.Value.Key);
 
-        JwtSecurityToken token = new(
-            config.Value.Issuer,
-            config.Value.Audience,
-            claims,
-            expires: DateTime.UtcNow.AddDays(30),
-            signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
+        var signingKey = new SymmetricSecurityKey(keyBytes);
+
+        var expires = now.AddMinutes(config.Value.AccessTokenLifetimeMinutes);
+
+        var token = new JwtSecurityToken(
+            issuer: config.Value.Issuer,
+            audience: config.Value.Audience,
+            claims: claims,
+            notBefore: now,
+            expires: expires,
+            signingCredentials: new SigningCredentials(
+                signingKey,
+                SecurityAlgorithms.HmacSha256)
         );
 
-        string tokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
+        var JwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
-        return (tokenAsString, token);
+        return new BuildJwtTokenResponse
+        {
+            Token = JwtSecurityTokenHandler.WriteToken(token),
+            Expires = expires
+        };
     }
 }

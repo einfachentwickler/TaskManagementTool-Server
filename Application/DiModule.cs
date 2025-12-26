@@ -1,6 +1,7 @@
 ﻿using Application.Commands.Auth.Register;
 using Application.Commands.Auth.Register.Validation;
 using Application.MappingProfiles;
+using Application.Services.Http;
 using Application.Services.IdentityUserManagement;
 using Application.Services.Jwt;
 using FluentValidation;
@@ -10,7 +11,7 @@ namespace Application;
 
 public static class DiModule
 {
-    public static IServiceCollection ConfigureBll(this IServiceCollection services)
+    public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddValidatorsFromAssemblyContaining<UserRegisterCommandValidator>();
 
@@ -20,6 +21,7 @@ public static class DiModule
 
         services.AddScoped<IIdentityUserManagerWrapper, IdentityUserManagerWrapper>();
         services.AddScoped<IJwtSecurityTokenBuilder, JwtSecurityTokenBuilder>();
+        services.AddScoped<IHttpContextDataExtractor, HttpContextDataExtractor>();
 
         return services;
     }

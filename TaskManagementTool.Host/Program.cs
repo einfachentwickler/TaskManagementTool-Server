@@ -1,4 +1,5 @@
 using Application;
+using Application.Services.Http;
 using Infrastructure.Context;
 using Infrastructure.DI;
 using Infrastructure.Seeding;
@@ -27,9 +28,11 @@ public class Program
 
         builder.Services.AddControllers();
 
+        builder.Services.AddSwaggerGen();
+
         builder.Services
             .AddInfrastructure(builder.Configuration, builder.Environment.IsDevelopment())
-            .ConfigureBll()
+            .AddApplication()
             .ConfigureHost(builder.Configuration);
 
         builder.ConfigureLogging(builder.Configuration);

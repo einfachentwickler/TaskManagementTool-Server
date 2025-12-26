@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using TaskManagementTool.Common.Configuration;
@@ -20,8 +21,6 @@ public static class DiModule
 {
     public static IServiceCollection ConfigureHost(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<IHttpContextDataExtractor, HttpContextDataExtractor>();
-
         services
             .AddOptions<AuthSettings>()
             .BindConfiguration(nameof(AuthSettings))
@@ -31,8 +30,6 @@ public static class DiModule
         services.ConfigureIdentity(configuration);
 
         services.ConfigureCors();
-
-        services.AddSwaggerGen();
 
         return services;
     }
@@ -90,7 +87,10 @@ public static class DiModule
                 ValidIssuer = authSection["Issuer"],
                 RequireExpirationTime = bool.Parse(tokenValidationSection["RequireExpirationTime"]!),
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(authSection["Key"]!)),
-                ValidateIssuerSigningKey = bool.Parse(tokenValidationSection["ValidateIssuerSigningKey"]!)
+                ValidateIssuerSigningKey = bool.Parse(tokenValidationSection["ValidateIssuerSigningKey"]!),
+
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero,
             };
         }
 
