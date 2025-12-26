@@ -1,4 +1,4 @@
-﻿using Application.Dto.ToDoModels;
+﻿using Application.Commands.Home.CreateTodo.Models;
 using Application.Queries.Home.GetTodos.Models;
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;

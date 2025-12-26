@@ -1,5 +1,5 @@
 ﻿using Application.Commands.Home.CreateTodo.Models;
-using Application.Dto.ToDoModels;
+using Application.Commands.Home.UpdateTodo.Models;
 using Application.Queries.Home.GetTodoById.Models;
 using FluentAssertions;
 using IntegrationTests.Constants;

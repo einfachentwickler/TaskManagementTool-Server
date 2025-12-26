@@ -1,7 +1,6 @@
 ﻿using Application.Commands.Home.CreateTodo.Models;
 using Application.Commands.Utils;
 using Application.Dto;
-using Application.Dto.ToDoModels;
 using AutoMapper;
 using FluentValidation;
 using Infrastructure.Context;

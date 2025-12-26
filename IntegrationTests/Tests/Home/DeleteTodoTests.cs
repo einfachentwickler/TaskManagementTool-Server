@@ -1,5 +1,4 @@
 ﻿using Application.Commands.Home.CreateTodo.Models;
-using Application.Dto.ToDoModels;
 using FluentAssertions;
 using IntegrationTests.Constants;
 using IntegrationTests.Utils;

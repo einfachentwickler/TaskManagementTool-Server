@@ -31,7 +31,7 @@ public class GetTodosHandler(
             .OrderByDescending(todo => todo.Importance)
             .Page(request.PageSize, request.PageNumber)
             .Include(todo => todo.Creator)
-            .ToListAsync(cancellationToken: cancellationToken);
+            .ToListAsync(cancellationToken);
 
         return new GetTodosResponse { Todos = _mapper.Map<IEnumerable<TodoDto>>(todos) };
     }

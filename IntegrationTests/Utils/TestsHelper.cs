@@ -1,6 +1,6 @@
 ﻿using Application.Commands.Auth.Login.Models;
 using Application.Commands.Auth.Register.Models;
-using Application.Dto.ToDoModels;
+using Application.Commands.Home.CreateTodo.Models;
 using IntegrationTests.Constants;
 using System.Net.Http.Json;
 
