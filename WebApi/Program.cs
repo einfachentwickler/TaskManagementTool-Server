@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        //todo health check, caching
+        //todo caching
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: false, reloadOnChange: true);
@@ -55,6 +56,8 @@ public class Program
         app.UseSwagger();
         app.UseSwaggerUI(options => options.SwaggerEndpoint(SwaggerSetupConstants.URL, SwaggerSetupConstants.APPLICATION_NAME));
 
+        app.MapHealthChecks("/health");
+
         app.UseMiddleware<ExceptionMiddleware>();
 
         app.UseHttpsRedirection();
@@ -71,6 +74,17 @@ public class Program
     {
         builder.Services.AddControllers();
         builder.Services.AddSwaggerGen();
+
+        builder.Services.AddHealthChecks()
+            .AddCheck("health", () => HealthCheckResult.Healthy())
+            .AddDbContextCheck<TaskManagementToolDbContext>(
+                name: "sqlserver-db-check",
+                tags: ["ready"],
+                failureStatus: HealthStatus.Unhealthy,
+                customTestQuery: async (context, cancellationToken) =>
+                {
+                    return await context.Database.CanConnectAsync(cancellationToken);
+                });
 
         builder.Services
             .AddInfrastructure(builder.Configuration, builder.Environment.IsDevelopment())
