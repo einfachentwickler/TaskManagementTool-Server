@@ -21,7 +21,7 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        //todo health check, rate limiting, caching
+        //todo health check, caching
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: false, reloadOnChange: true);

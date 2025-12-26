@@ -20,7 +20,7 @@ public class HttpContextDataExtractor(ITaskManagementToolDbContext dbContext) : 
     {
         string userId = GetUserNameIdentifier(context);
 
-        var todo = await _dbContext.Todos.FirstOrDefaultAsync(x => x.Id == todoId, cancellationToken);
+        var todo = await _dbContext.Todos.Include(x => x.Creator).FirstOrDefaultAsync(x => x.Id == todoId, cancellationToken);
 
         return todo is not null && todo.Creator.Id == userId;
     }

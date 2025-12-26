@@ -27,8 +27,6 @@ public class UpdateTodoHandler(
 
     public async Task<UpdateTodoResponse> Handle(UpdateTodoCommand request, CancellationToken cancellationToken)
     {
-        //todo hateoas
-        //todo rate limiting
         var validationResult = await _requestValidator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
@@ -42,24 +40,18 @@ public class UpdateTodoHandler(
             throw new CustomException<UpdateTodoErrorCode>(UpdateTodoErrorCode.Forbidden, UpdateTodoErrorMessages.Forbidden);
         }
 
-        var toDo = await _dbContext.Todos
-            //todo do i need creator here?
-            .Include(todo => todo.Creator)
-            .FirstOrDefaultAsync(todo => todo.Id == request.UpdateTodoDto.Id, cancellationToken);
+        var toDo = await _dbContext.Todos.FirstOrDefaultAsync(todo => todo.Id == request.UpdateTodoDto.Id, cancellationToken);
 
         toDo.Name = request.UpdateTodoDto.Name;
         toDo.IsCompleted = request.UpdateTodoDto.IsCompleted;
         toDo.Content = request.UpdateTodoDto.Content;
         toDo.Importance = request.UpdateTodoDto.Importance;
 
-        //todo async
-        var updatedTodo = _dbContext.Todos.Update(toDo).Entity;
-
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return new UpdateTodoResponse
         {
-            Todo = _mapper.Map<TodoDto>(updatedTodo)
+            Todo = _mapper.Map<TodoDto>(toDo)
         };
     }
 }

@@ -46,6 +46,8 @@ public static class DiModule
         //add login as
         //TODO refresh token
         //TODO get sensitive info from env variables
+        //todo hateoas
+        //todo rate limiting
         var identityOptions = configuration.GetRequiredSection(nameof(IdentityPasswordOptions)).Get<IdentityPasswordOptions>()!;
         var authOptions = configuration.GetRequiredSection(nameof(AuthSettings)).Get<AuthSettings>()!;
         var tokenValidationOptions = configuration.GetRequiredSection(nameof(TokenValidationOptions)).Get<TokenValidationOptions>()!;

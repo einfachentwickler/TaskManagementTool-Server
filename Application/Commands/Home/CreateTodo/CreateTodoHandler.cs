@@ -35,7 +35,6 @@ public class CreateTodoHandler(
             throw new CustomException<CreateTodoErrorCode>(Enum.Parse<CreateTodoErrorCode>(firstError.ErrorCode), firstError.ErrorMessage);
         }
 
-        //todo fix this
         var todoEntity = _mapper.Map<CreateTodoDto, ToDoEntity>(request.CreateTodoDto);
 
         todoEntity.CreatorId = _authUtils.GetUserNameIdentifier(request.HttpContext);
