@@ -1,4 +1,4 @@
-﻿using Application.Dto;
+﻿using Application.Dto.GetTodo;
 using Application.Queries.Admin.GetTodos.Models;
 using AutoMapper;
 using Infrastructure.Context;

@@ -1,6 +1,6 @@
 ﻿using Application.Commands.Home.UpdateTodo.Models;
-using Application.Commands.Utils;
-using Application.Dto;
+using Application.Dto.GetTodo;
+using Application.Services.Http;
 using AutoMapper;
 using FluentValidation;
 using Infrastructure.Context;
@@ -15,13 +15,13 @@ namespace Application.Commands.Home.UpdateTodo;
 
 public class UpdateTodoHandler(
     ITaskManagementToolDbContext dbContext,
-    IAuthUtils authUtils,
+    IHttpContextDataExtractor authUtils,
     IValidator<UpdateTodoCommand> requestValidator,
     IMapper mapper
     ) : IRequestHandler<UpdateTodoCommand, UpdateTodoResponse>
 {
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
-    private readonly IAuthUtils _authUtils = authUtils;
+    private readonly IHttpContextDataExtractor _authUtils = authUtils;
     private readonly IValidator<UpdateTodoCommand> _requestValidator = requestValidator;
     private readonly IMapper _mapper = mapper;
 

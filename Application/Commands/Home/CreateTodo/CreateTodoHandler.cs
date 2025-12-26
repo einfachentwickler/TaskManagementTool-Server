@@ -1,6 +1,6 @@
 ﻿using Application.Commands.Home.CreateTodo.Models;
-using Application.Commands.Utils;
-using Application.Dto;
+using Application.Dto.GetTodo;
+using Application.Services.Http;
 using AutoMapper;
 using FluentValidation;
 using Infrastructure.Context;
@@ -14,13 +14,13 @@ using TaskManagementTool.Common.Exceptions;
 namespace Application.Commands.Home.CreateTodo;
 
 public class CreateTodoHandler(
-    IAuthUtils authUtils,
+    IHttpContextDataExtractor authUtils,
     ITaskManagementToolDbContext dbContext,
     IMapper mapper,
     IValidator<CreateTodoCommand> requestValidator
     ) : IRequestHandler<CreateTodoCommand, CreateTodoResponse>
 {
-    private readonly IAuthUtils _authUtils = authUtils;
+    private readonly IHttpContextDataExtractor _authUtils = authUtils;
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
     private readonly IMapper _mapper = mapper;
     private readonly IValidator<CreateTodoCommand> _requestValidator = requestValidator;
@@ -38,7 +38,7 @@ public class CreateTodoHandler(
         //todo fix this
         var todoEntity = _mapper.Map<CreateTodoDto, ToDoEntity>(request.CreateTodoDto);
 
-        todoEntity.CreatorId = _authUtils.GetUserId(request.HttpContext);
+        todoEntity.CreatorId = _authUtils.GetUserNameIdentifier(request.HttpContext);
 
         var createdTodo = (await _dbContext.Todos.AddAsync(todoEntity, cancellationToken)).Entity;
 

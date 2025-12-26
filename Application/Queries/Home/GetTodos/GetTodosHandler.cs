@@ -1,6 +1,6 @@
-﻿using Application.Commands.Utils;
-using Application.Dto;
+﻿using Application.Dto.GetTodo;
 using Application.Queries.Home.GetTodos.Models;
+using Application.Services.Http;
 using AutoMapper;
 using Infrastructure.Context;
 using Infrastructure.Extensions;
@@ -16,15 +16,15 @@ namespace Application.Queries.Home.GetTodos;
 public class GetTodosHandler(
     ITaskManagementToolDbContext dbContext,
     IMapper mapper,
-    IAuthUtils authUtils) : IRequestHandler<GetTodosQuery, GetTodosResponse>
+    IHttpContextDataExtractor authUtils) : IRequestHandler<GetTodosQuery, GetTodosResponse>
 {
     private readonly IMapper _mapper = mapper;
-    private readonly IAuthUtils _authUtils = authUtils;
+    private readonly IHttpContextDataExtractor _authUtils = authUtils;
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
 
     public async Task<GetTodosResponse> Handle(GetTodosQuery request, CancellationToken cancellationToken)
     {
-        string userId = _authUtils.GetUserId(request.HttpContext);
+        string userId = _authUtils.GetUserNameIdentifier(request.HttpContext);
 
         var todos = await _dbContext.Todos
             .Where(todo => todo.CreatorId == userId)

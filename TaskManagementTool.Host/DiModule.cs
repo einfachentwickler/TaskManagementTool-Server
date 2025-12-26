@@ -1,4 +1,4 @@
-﻿using Application.Commands.Utils;
+﻿using Application.Services.Http;
 using Infrastructure.Context;
 using Infrastructure.Entities;
 using Microsoft.AspNetCore.Authentication;
@@ -20,7 +20,7 @@ public static class DiModule
 {
     public static IServiceCollection ConfigureHost(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<IAuthUtils, AuthUtils>();
+        services.AddScoped<IHttpContextDataExtractor, HttpContextDataExtractor>();
 
         services
             .AddOptions<AuthSettings>()

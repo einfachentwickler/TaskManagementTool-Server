@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Application.Commands.Wrappers;
+namespace Application.Services.IdentityUserManagement;
 
-public interface IUserManagerWrapper
+public interface IIdentityUserManagerWrapper
 {
     public IQueryable<UserEntity> Users { get; }
     public Task<bool> CheckPasswordAsync(UserEntity user, string password);

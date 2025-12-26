@@ -8,7 +8,7 @@ using System.Security.Claims;
 using System.Text;
 using TaskManagementTool.Common.Configuration;
 
-namespace Application.Commands.Utils.Jwt;
+namespace Application.Services.Jwt;
 
 public class JwtSecurityTokenBuilder(IOptions<AuthSettings> config) : IJwtSecurityTokenBuilder
 {

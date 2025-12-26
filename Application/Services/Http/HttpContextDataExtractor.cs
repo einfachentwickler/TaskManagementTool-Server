@@ -5,20 +5,20 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.Commands.Utils;
+namespace Application.Services.Http;
 
-public class AuthUtils(ITaskManagementToolDbContext dbContext) : IAuthUtils
+public class HttpContextDataExtractor(ITaskManagementToolDbContext dbContext) : IHttpContextDataExtractor
 {
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
 
-    public string GetUserId(HttpContext context)
+    public string GetUserNameIdentifier(HttpContext context)
     {
         return context.User.FindFirst(ClaimTypes.NameIdentifier).Value;
     }
 
     public async Task<bool> IsAllowedActionAsync(HttpContext context, int todoId, CancellationToken cancellationToken)
     {
-        string userId = GetUserId(context);
+        string userId = GetUserNameIdentifier(context);
 
         var todo = await _dbContext.Todos.FirstOrDefaultAsync(x => x.Id == todoId, cancellationToken);
 

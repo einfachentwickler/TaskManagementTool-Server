@@ -1,5 +1,5 @@
 ﻿using Application.Commands.Admin.ReverseStatus.Models;
-using Application.Commands.Wrappers;
+using Application.Services.IdentityUserManagement;
 using Infrastructure.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -10,7 +10,7 @@ using TaskManagementTool.Common.Exceptions;
 
 namespace Application.Commands.Admin.ReverseStatus;
 
-public class ReverseStatusHandler(IUserManagerWrapper userManager) : IRequestHandler<ReverseStatusCommand, Unit>
+public class ReverseStatusHandler(IIdentityUserManagerWrapper userManager) : IRequestHandler<ReverseStatusCommand, Unit>
 {
     public async Task<Unit> Handle(ReverseStatusCommand request, CancellationToken cancellationToken)
     {

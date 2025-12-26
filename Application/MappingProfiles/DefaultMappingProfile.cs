@@ -1,6 +1,7 @@
 ﻿using Application.Commands.Home.CreateTodo.Models;
 using Application.Commands.Home.UpdateTodo.Models;
-using Application.Dto;
+using Application.Dto.GetTodo;
+using Application.Queries.Admin.GetUsers.Models;
 using AutoMapper;
 using Infrastructure.Entities;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ public class DefaultMappingProfile : Profile
 {
     public DefaultMappingProfile()
     {
-        CreateMap<UserEntity, UserDto>().ReverseMap();
+        CreateMap<UserEntity, GetUserDto>().ReverseMap();
 
         CreateMap<ToDoEntity, TodoDto>().ReverseMap();
 
@@ -19,6 +20,6 @@ public class DefaultMappingProfile : Profile
         CreateMap<UpdateTodoDto, ToDoEntity>();
 
         CreateMap<IEnumerable<ToDoEntity>, List<TodoDto>>();
-        CreateMap<IEnumerable<UserEntity>, List<UserDto>>();
+        CreateMap<IEnumerable<UserEntity>, List<GetUserDto>>();
     }
 }

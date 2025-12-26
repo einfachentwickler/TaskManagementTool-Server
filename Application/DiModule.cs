@@ -1,8 +1,8 @@
 ﻿using Application.Commands.Auth.Register;
 using Application.Commands.Auth.Register.Validation;
-using Application.Commands.Utils.Jwt;
-using Application.Commands.Wrappers;
 using Application.MappingProfiles;
+using Application.Services.IdentityUserManagement;
+using Application.Services.Jwt;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,7 +18,7 @@ public static class DiModule
 
         services.AddAutoMapper(x => { }, typeof(DefaultMappingProfile));
 
-        services.AddScoped<IUserManagerWrapper, UserManagerWrapper>();
+        services.AddScoped<IIdentityUserManagerWrapper, IdentityUserManagerWrapper>();
         services.AddScoped<IJwtSecurityTokenBuilder, JwtSecurityTokenBuilder>();
 
         return services;

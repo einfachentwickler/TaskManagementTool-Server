@@ -1,4 +1,4 @@
-﻿using Application.Dto;
+﻿using Application.Dto.GetTodo;
 
 namespace Application.Commands.Home.UpdateTodo.Models;
 

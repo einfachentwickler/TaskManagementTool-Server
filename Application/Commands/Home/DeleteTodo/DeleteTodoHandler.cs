@@ -1,5 +1,5 @@
 ﻿using Application.Commands.Home.DeleteTodo.Models;
-using Application.Commands.Utils;
+using Application.Services.Http;
 using FluentValidation;
 using Infrastructure.Context;
 using MediatR;
@@ -12,11 +12,11 @@ using TaskManagementTool.Common.Exceptions;
 namespace Application.Commands.Home.DeleteTodo;
 
 public class DeleteTodoHandler(
-    IAuthUtils authUtils,
+    IHttpContextDataExtractor authUtils,
     ITaskManagementToolDbContext dbContext
     ) : IRequestHandler<DeleteTodoCommand, Unit>
 {
-    private readonly IAuthUtils _authUtils = authUtils;
+    private readonly IHttpContextDataExtractor _authUtils = authUtils;
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
 
     public async Task<Unit> Handle(DeleteTodoCommand request, CancellationToken cancellationToken)

@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Application.Commands.Wrappers;
+namespace Application.Services.IdentityUserManagement;
 
-public class UserManagerWrapper(UserManager<UserEntity> userManager) : IUserManagerWrapper
+public class IdentityUserManagerWrapper(UserManager<UserEntity> userManager) : IIdentityUserManagerWrapper
 {
-    IQueryable<UserEntity> IUserManagerWrapper.Users => userManager.Users;
+    IQueryable<UserEntity> IIdentityUserManagerWrapper.Users => userManager.Users;
 
     public async Task<UserEntity> FindByEmailAsync(string email)
     {

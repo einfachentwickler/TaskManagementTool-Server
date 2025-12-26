@@ -1,5 +1,5 @@
 ﻿using Application.Commands.Admin.DeleteUser.Models;
-using Application.Commands.Wrappers;
+using Application.Services.IdentityUserManagement;
 using FluentValidation;
 using Infrastructure.Context;
 using MediatR;
@@ -12,10 +12,10 @@ using TaskManagementTool.Common.Exceptions;
 
 namespace Application.Commands.Admin.DeleteUser;
 
-public class DeleteUserHandler(IUserManagerWrapper userManager, ITaskManagementToolDbContext dbContext, IValidator<DeleteUserCommand> validator) : IRequestHandler<DeleteUserCommand, Unit>
+public class DeleteUserHandler(IIdentityUserManagerWrapper userManager, ITaskManagementToolDbContext dbContext, IValidator<DeleteUserCommand> validator) : IRequestHandler<DeleteUserCommand, Unit>
 {
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
-    private readonly IUserManagerWrapper _userManager = userManager;
+    private readonly IIdentityUserManagerWrapper _userManager = userManager;
     private readonly IValidator<DeleteUserCommand> _validator = validator;
 
     public async Task<Unit> Handle(DeleteUserCommand request, CancellationToken cancellationToken)

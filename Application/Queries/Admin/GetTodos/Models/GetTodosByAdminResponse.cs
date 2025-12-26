@@ -1,4 +1,4 @@
-﻿using Application.Dto;
+﻿using Application.Dto.GetTodo;
 using System.Collections.Generic;
 
 namespace Application.Queries.Admin.GetTodos.Models;

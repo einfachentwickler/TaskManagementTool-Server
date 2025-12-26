@@ -1,7 +1,7 @@
 ﻿using Application.Commands.Auth.Login;
 using Application.Commands.Auth.Login.Models;
-using Application.Commands.Utils.Jwt;
-using Application.Commands.Wrappers;
+using Application.Services.IdentityUserManagement;
+using Application.Services.Jwt;
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using FluentValidation;
@@ -12,7 +12,7 @@ namespace BusinessLogic.UnitTests.Commands.Auth.Login;
 [TestFixture]
 public class UserLoginHandlerTests
 {
-    private IUserManagerWrapper userManager;
+    private IIdentityUserManagerWrapper userManager;
     private IValidator<UserLoginCommand> requestValidator;
     private IJwtSecurityTokenBuilder jwtSecurityTokenBuilder;
 
@@ -25,7 +25,7 @@ public class UserLoginHandlerTests
     {
         fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
 
-        userManager = fixture.Freeze<IUserManagerWrapper>();
+        userManager = fixture.Freeze<IIdentityUserManagerWrapper>();
         requestValidator = fixture.Freeze<IValidator<UserLoginCommand>>();
         jwtSecurityTokenBuilder = fixture.Freeze<IJwtSecurityTokenBuilder>();
 

@@ -1,6 +1,6 @@
-﻿using Application.Commands.Utils;
-using Application.Dto;
+﻿using Application.Dto.GetTodo;
 using Application.Queries.Home.GetTodoById.Models;
+using Application.Services.Http;
 using AutoMapper;
 using Infrastructure.Context;
 using Infrastructure.Entities;
@@ -13,12 +13,12 @@ using TaskManagementTool.Common.Exceptions;
 namespace Application.Queries.Home.GetTodoById;
 
 public class GetTodoByIdHandler(
-    IAuthUtils authUtils,
+    IHttpContextDataExtractor authUtils,
     ITaskManagementToolDbContext dbContext,
     IMapper mapper
     ) : IRequestHandler<GetTodoByIdQuery, GetTodoByIdResponse>
 {
-    private readonly IAuthUtils _authUtils = authUtils;
+    private readonly IHttpContextDataExtractor _authUtils = authUtils;
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
     private readonly IMapper _mapper = mapper;
 

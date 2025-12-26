@@ -1,7 +1,7 @@
 ﻿using Application.Commands.Auth.Login.Models;
 using Application.Commands.Auth.Login.Validation;
-using Application.Commands.Utils.Jwt;
-using Application.Commands.Wrappers;
+using Application.Services.IdentityUserManagement;
+using Application.Services.Jwt;
 using FluentValidation;
 using MediatR;
 using System;
@@ -13,7 +13,7 @@ using TaskManagementTool.Common.Exceptions;
 namespace Application.Commands.Auth.Login;
 
 public class UserLoginHandler(
-    IUserManagerWrapper userManager,
+    IIdentityUserManagerWrapper userManager,
     IValidator<UserLoginCommand> requestValidator,
     IJwtSecurityTokenBuilder jwtSecurityTokenBuilder
     ) : IRequestHandler<UserLoginCommand, UserLoginResponse>

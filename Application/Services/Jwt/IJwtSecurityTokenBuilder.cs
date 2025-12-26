@@ -2,7 +2,7 @@
 using Infrastructure.Entities;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace Application.Commands.Utils.Jwt;
+namespace Application.Services.Jwt;
 
 public interface IJwtSecurityTokenBuilder
 {

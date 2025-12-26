@@ -1,6 +1,6 @@
-﻿using Application.Dto;
+﻿using Application.Dto.GetEntity;
 using MediatR;
 
 namespace Application.Queries.Admin.GetUsers.Models;
 
-public record GetUsersQuery : GetPagedEntityBase, IRequest<GetUsersResponse> { }
+public record GetUsersQuery : GetPagedEntityRequestBase, IRequest<GetUsersResponse> { }

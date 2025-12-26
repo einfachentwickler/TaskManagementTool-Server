@@ -2,11 +2,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.Commands.Utils;
+namespace Application.Services.Http;
 
-public interface IAuthUtils
+public interface IHttpContextDataExtractor
 {
-    public string GetUserId(HttpContext context);
+    public string GetUserNameIdentifier(HttpContext context);
 
     public Task<bool> IsAllowedActionAsync(HttpContext context, int todoId, CancellationToken cancellationToken);
 }

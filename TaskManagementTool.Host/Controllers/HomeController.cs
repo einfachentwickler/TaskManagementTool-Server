@@ -1,7 +1,7 @@
 ﻿using Application.Commands.Home.CreateTodo.Models;
 using Application.Commands.Home.DeleteTodo.Models;
 using Application.Commands.Home.UpdateTodo.Models;
-using Application.Dto;
+using Application.Dto.GetTodo;
 using Application.Queries.Home.GetTodoById.Models;
 using Application.Queries.Home.GetTodos.Models;
 using MediatR;
