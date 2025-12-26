@@ -1,5 +1,4 @@
 using Application;
-using Application.Services.Http;
 using Infrastructure.Context;
 using Infrastructure.DI;
 using Infrastructure.Seeding;
@@ -22,12 +21,55 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
+        //todo health check, rate limiting, caching
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: false, reloadOnChange: true);
 
-        builder.Services.AddControllers();
+        ConfigureServices(builder);
 
+        WebApplication app = builder.Build();
+
+        ConfigureMiddleware(app);
+
+        await ApplyDatabaseMigrationAsync(app);
+
+        await app.RunAsync();
+    }
+
+    private static async Task ApplyDatabaseMigrationAsync(WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+
+        var services = scope.ServiceProvider;
+
+        var dbContext = services.GetRequiredService<TaskManagementToolDbContext>();
+
+        await dbContext.Database.MigrateAsync();
+
+        await DbInitializer.SeedAsync(services);
+    }
+
+    private static void ConfigureMiddleware(WebApplication app)
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI(options => options.SwaggerEndpoint(SwaggerSetupConstants.URL, SwaggerSetupConstants.APPLICATION_NAME));
+
+        app.UseMiddleware<ExceptionMiddleware>();
+
+        app.UseHttpsRedirection();
+        app.UseCors(CorsPolicyNameConstants.DEFAULT_POLICY_NAME);
+
+        app.UseRouting();
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        app.MapControllers();
+    }
+
+    private static void ConfigureServices(WebApplicationBuilder builder)
+    {
+        builder.Services.AddControllers();
         builder.Services.AddSwaggerGen();
 
         builder.Services
@@ -36,33 +78,5 @@ public class Program
             .ConfigureHost(builder.Configuration);
 
         builder.ConfigureLogging(builder.Configuration);
-
-        WebApplication app = builder.Build();
-
-        app.UseSwagger();
-
-        app.UseSwaggerUI(options => options.SwaggerEndpoint(SwaggerSetupConstants.URL, SwaggerSetupConstants.APPLICATION_NAME));
-
-        app.UseMiddleware<ExceptionMiddleware>();
-
-        app.UseHttpsRedirection();
-        app.UseCors(CorsPolicyNameConstants.DEFAULT_POLICY_NAME);
-
-        app.UseAuthentication();
-        app.UseRouting();
-        app.UseAuthorization();
-        app.MapControllers();
-
-        using (var scope = app.Services.CreateScope())
-        {
-            var services = scope.ServiceProvider;
-            var context = services.GetRequiredService<TaskManagementToolDbContext>();
-
-            await context.Database.MigrateAsync();
-
-            await DbInitializer.SeedAsync(services);
-        }
-
-        await app.RunAsync();
     }
 }

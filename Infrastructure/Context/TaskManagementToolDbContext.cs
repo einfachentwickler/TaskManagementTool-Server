@@ -1,5 +1,5 @@
-﻿using Infrastructure.Configuration;
-using Infrastructure.Entities;
+﻿using Infrastructure.Entities;
+using Infrastructure.EntityConfiguration;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

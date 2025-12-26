@@ -5,73 +5,91 @@ using Application.Queries.Admin.GetTodos.Models;
 using Application.Queries.Admin.GetUsers.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TaskManagementTool.Host.Controllers;
 
-[Route("api/admin/")]
+[Route("api/admin")]
 [ApiController]
 [Authorize(Roles = "Admin")]
 public class AdminController(IMediator mediator) : ControllerBase
 {
-    [HttpGet("users")]
-    [SwaggerResponse((int)HttpStatusCode.OK)]
-    [Consumes("application/json")]
-    public async Task<IActionResult> GetUsers([FromQuery][Required] int pageNumber, [FromQuery][Required] int pageSize)
-    {
-        GetUsersQuery request = new() { PageNumber = pageNumber, PageSize = pageSize };
+    private readonly IMediator _mediator = mediator;
 
-        GetUsersResponse response = await mediator.Send(request);
+    [HttpGet("users")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(GetUsersResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetUsers([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
+    {
+        var query = new GetUsersQuery
+        {
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+
+        var response = await _mediator.Send(query, cancellationToken);
 
         return Ok(response);
     }
 
     [HttpPost("reverse-status/{userId}")]
-    [SwaggerResponse((int)HttpStatusCode.NoContent)]
-    [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> ReverseStatus([FromRoute][Required] string userId)
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ReverseStatus([FromRoute] string userId, CancellationToken cancellationToken)
     {
-        await mediator.Send(new ReverseStatusCommand { UserId = userId });
+        await _mediator.Send(new ReverseStatusCommand { UserId = userId }, cancellationToken);
         return NoContent();
     }
 
     [HttpDelete("users/{email}")]
-    [SwaggerResponse((int)HttpStatusCode.NoContent)]
-    [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> DeleteUser([FromRoute][Required] string email)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteUser([FromRoute] string email, CancellationToken cancellationToken)
     {
-        DeleteUserCommand request = new() { Email = email };
-
-        await mediator.Send(request);
-
+        await _mediator.Send(new DeleteUserCommand { Email = email }, cancellationToken);
         return NoContent();
     }
 
     [HttpGet("todos")]
     [Produces("application/json")]
-    [SwaggerResponse((int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetTodos([FromQuery][Required] int pageNumber, [FromQuery][Required] int pageSize)
+    [ProducesResponseType(typeof(GetTodosByAdminResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetTodos([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
     {
-        GetTodosByAdminQuery request = new() { PageNumber = pageNumber, PageSize = pageSize };
+        var query = new GetTodosByAdminQuery
+        {
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
 
-        GetTodosByAdminResponse response = await mediator.Send(request);
+        var response = await _mediator.Send(query, cancellationToken);
 
         return Ok(response);
     }
 
     [HttpDelete("todos/{id:int}")]
-    [SwaggerResponse((int)HttpStatusCode.NoContent)]
-    [SwaggerResponse((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> DeleteTodo([FromRoute][Required] int id)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteTodo([FromRoute] int id, CancellationToken cancellationToken)
     {
-        DeleteTodoByAdminCommand request = new() { TodoId = id };
-
-        await mediator.Send(request);
-
+        await _mediator.Send(new DeleteTodoByAdminCommand { TodoId = id }, cancellationToken);
         return NoContent();
     }
 }

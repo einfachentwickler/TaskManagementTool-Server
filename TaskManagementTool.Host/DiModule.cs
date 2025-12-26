@@ -1,9 +1,7 @@
-﻿using Application.Services.Http;
+﻿using Application.Configuration;
 using Infrastructure.Context;
 using Infrastructure.Entities;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +9,6 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using TaskManagementTool.Common.Configuration;
 using TaskManagementTool.Host.Constants;
 
 namespace TaskManagementTool.Host;
@@ -34,16 +31,12 @@ public static class DiModule
         return services;
     }
 
-    private static void ConfigureCors(this IServiceCollection service)
+    private static void ConfigureCors(this IServiceCollection services)
     {
-        void AddPolicy(CorsPolicyBuilder builder) => builder
-            .AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-
-        void AddCors(CorsOptions options) => options.AddPolicy(CorsPolicyNameConstants.DEFAULT_POLICY_NAME, AddPolicy);
-
-        service.AddCors(AddCors);
+        services.AddCors(options =>
+        {
+            options.AddPolicy(CorsPolicyNameConstants.DEFAULT_POLICY_NAME, builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+        });
     }
 
     private static void ConfigureIdentity(this IServiceCollection services, IConfiguration configuration)
@@ -53,54 +46,44 @@ public static class DiModule
         //add login as
         //TODO refresh token
         //TODO get sensitive info from env variables
-        IConfigurationSection identitySection = configuration.GetRequiredSection("IdentityPasswordOptions");
+        var identityOptions = configuration.GetRequiredSection(nameof(IdentityPasswordOptions)).Get<IdentityPasswordOptions>()!;
+        var authOptions = configuration.GetRequiredSection(nameof(AuthSettings)).Get<AuthSettings>()!;
+        var tokenValidationOptions = configuration.GetRequiredSection(nameof(TokenValidationOptions)).Get<TokenValidationOptions>()!;
 
-        IConfigurationSection tokenValidationSection = configuration.GetRequiredSection("TokenValidationParameters");
-
-        IConfigurationSection authSection = configuration.GetRequiredSection("AuthSettings");
-
-        void AddIdentity(IdentityOptions identityOptions)
+        services.AddIdentity<UserEntity, IdentityRole>(options =>
         {
-            identityOptions.Password.RequireDigit = bool.Parse(identitySection["RequireDigit"]!);
-            identityOptions.Password.RequireLowercase = bool.Parse(identitySection["RequireLowercase"]!);
-            identityOptions.Password.RequireNonAlphanumeric = bool.Parse(identitySection["RequireNonAlphanumeric"]!);
-            identityOptions.Password.RequireUppercase = bool.Parse(identitySection["RequireUppercase"]!);
-            identityOptions.Password.RequiredLength = int.Parse(identitySection["RequiredLength"]!);
-            identityOptions.Password.RequiredUniqueChars = int.Parse(identitySection["RequiredUniqueChars"]!);
+            options.Password.RequireDigit = identityOptions.RequireDigit;
+            options.Password.RequireLowercase = identityOptions.RequireLowercase;
+            options.Password.RequireNonAlphanumeric = identityOptions.RequireNonAlphanumeric;
+            options.Password.RequireUppercase = identityOptions.RequireUppercase;
+            options.Password.RequiredLength = identityOptions.RequiredLength;
+            options.Password.RequiredUniqueChars = identityOptions.RequiredUniqueChars;
 
-            identityOptions.User.RequireUniqueEmail = true;
-        }
+            options.User.RequireUniqueEmail = true;
+        })
+       .AddEntityFrameworkStores<TaskManagementToolDbContext>()
+       .AddDefaultTokenProviders();
 
-        static void AddAuthentication(AuthenticationOptions options)
+        services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }
-
-        void AddJwtBearer(JwtBearerOptions options)
+        })
+        .AddJwtBearer(options =>
         {
             options.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuer = bool.Parse(tokenValidationSection["ValidateIssuer"]!),
-                ValidateAudience = bool.Parse(tokenValidationSection["ValidateAudience"]!),
-                ValidAudience = authSection["Audience"],
-                ValidIssuer = authSection["Issuer"],
-                RequireExpirationTime = bool.Parse(tokenValidationSection["RequireExpirationTime"]!),
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(authSection["Key"]!)),
-                ValidateIssuerSigningKey = bool.Parse(tokenValidationSection["ValidateIssuerSigningKey"]!),
+                ValidateIssuer = tokenValidationOptions.ValidateIssuer,
+                ValidateAudience = tokenValidationOptions.ValidateAudience,
+                ValidIssuer = authOptions.Issuer,
+                ValidAudience = authOptions.Audience,
+                RequireExpirationTime = tokenValidationOptions.RequireExpirationTime,
+                ValidateIssuerSigningKey = tokenValidationOptions.ValidateIssuerSigningKey,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authOptions.Key)),
 
                 ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero,
+                ClockSkew = TimeSpan.Zero
             };
-        }
-
-        services
-            .AddIdentity<UserEntity, IdentityRole>(AddIdentity)
-            .AddEntityFrameworkStores<TaskManagementToolDbContext>()
-            .AddDefaultTokenProviders();
-
-        services
-            .AddAuthentication(AddAuthentication)
-            .AddJwtBearer(AddJwtBearer);
+        });
     }
 }

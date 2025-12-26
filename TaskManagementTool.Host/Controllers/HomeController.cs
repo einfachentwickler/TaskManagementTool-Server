@@ -8,10 +8,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TaskManagementTool.Host.Controllers;
@@ -20,87 +18,97 @@ namespace TaskManagementTool.Host.Controllers;
 [ApiController, Authorize]
 public class HomeController(IMediator mediator, IHttpContextAccessor httpContextAccessor) : ControllerBase
 {
+    private readonly IMediator _mediator = mediator;
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+
     [HttpGet]
-    [Produces("application/json")]
-    [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(IEnumerable<TodoDto>))]
-    public async Task<IActionResult> GetTodos([FromQuery][Required] int pageNumber, [FromQuery][Required] int pageSize)
+    [ProducesResponseType(typeof(IEnumerable<TodoDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetTodos([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
     {
-        GetTodosQuery request = new()
+        var request = new GetTodosQuery
         {
             PageNumber = pageNumber,
             PageSize = pageSize,
-            HttpContext = httpContextAccessor.HttpContext
+            HttpContext = _httpContextAccessor.HttpContext
         };
 
-        return Ok(await mediator.Send(request));
+        var response = await _mediator.Send(request, cancellationToken);
+
+        return Ok(response);
     }
 
     [HttpGet("{id:int}")]
-    [Produces("application/json")]
-    [Consumes("application/json")]
-    [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(TodoDto))]
-    [SwaggerResponse((int)HttpStatusCode.NotFound)]
-    [SwaggerResponse((int)HttpStatusCode.Forbidden)]
-    public async Task<IActionResult> GetById([FromRoute][Required] int id)
+    [ProducesResponseType(typeof(TodoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetById([FromRoute] int id, CancellationToken cancellationToken)
     {
-        GetTodoByIdQuery request = new()
+        var request = new GetTodoByIdQuery
         {
             TodoId = id,
-            HttpContext = httpContextAccessor.HttpContext
+            HttpContext = _httpContextAccessor.HttpContext
         };
 
-        GetTodoByIdResponse response = await mediator.Send(request);
-
+        var response = await _mediator.Send(request, cancellationToken);
         return Ok(response);
     }
 
     [HttpPost]
-    [Consumes("application/json")]
-    [SwaggerResponse((int)HttpStatusCode.Created)]
-    public async Task<IActionResult> Create([FromBody][Required] CreateTodoDto model)
+    [ProducesResponseType(typeof(CreateTodoResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Create([FromBody] CreateTodoDto model, CancellationToken cancellationToken)
     {
-        CreateTodoCommand request = new()
+        var request = new CreateTodoCommand
         {
-            HttpContext = httpContextAccessor.HttpContext,
-            CreateTodoDto = model
+            CreateTodoDto = model,
+            HttpContext = _httpContextAccessor.HttpContext
         };
 
-        CreateTodoResponse response = await mediator.Send(request);
-
-        return Ok(response);
+        var response = await _mediator.Send(request, cancellationToken);
+        return CreatedAtAction(nameof(GetById), new { id = response.Todo.Id }, response);
     }
 
     [HttpPut]
-    [SwaggerResponse((int)HttpStatusCode.NoContent)]
-    [SwaggerResponse((int)HttpStatusCode.Forbidden)]
-    [Consumes("application/json")]
-    public async Task<IActionResult> Update([FromBody][Required] UpdateTodoDto model)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Update([FromBody] UpdateTodoDto model, CancellationToken cancellationToken)
     {
-        UpdateTodoCommand req = new()
+        var request = new UpdateTodoCommand
         {
-            HttpContext = httpContextAccessor.HttpContext,
-            UpdateTodoDto = model
+            UpdateTodoDto = model,
+            HttpContext = _httpContextAccessor.HttpContext
         };
 
-        UpdateTodoResponse response = await mediator.Send(req);
-
-        return Ok(response);
+        await _mediator.Send(request, cancellationToken);
+        return NoContent();
     }
 
     [HttpDelete("{id:int}")]
-    [SwaggerResponse((int)HttpStatusCode.OK)]
-    [SwaggerResponse((int)HttpStatusCode.NotFound)]
-    [SwaggerResponse((int)HttpStatusCode.Forbidden)]
-    public async Task<IActionResult> Delete([FromRoute][Required] int id)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Delete([FromRoute] int id, CancellationToken cancellationToken)
     {
-        DeleteTodoCommand request = new()
+        var request = new DeleteTodoCommand
         {
             TodoId = id,
-            HttpContext = httpContextAccessor.HttpContext
+            HttpContext = _httpContextAccessor.HttpContext
         };
 
-        var response = await mediator.Send(request);
-
-        return Ok(response);
+        await _mediator.Send(request, cancellationToken);
+        return NoContent();
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TaskManagementTool.Common.Configuration;
+namespace Application.Configuration;
 
-public record AuthSettings()
+public record AuthSettings
 {
     [Required]
     public string Audience { get; init; }

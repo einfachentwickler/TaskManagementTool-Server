@@ -4,8 +4,6 @@ using Application.Commands.Auth.ResetPassword.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
-using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,10 +18,10 @@ public class AuthController(IMediator mediator) : ControllerBase
     private readonly IMediator _mediator = mediator;
 
     [HttpPost("register")]
-    [SwaggerResponse(StatusCodes.Status204NoContent)]
-    [SwaggerResponse(StatusCodes.Status400BadRequest)]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Register([FromBody][Required] UserRegisterCommand request, CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Register([FromBody] UserRegisterCommand request, CancellationToken cancellationToken)
     {
         await _mediator.Send(request, cancellationToken);
 
@@ -31,10 +29,10 @@ public class AuthController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("login")]
-    [SwaggerResponse(StatusCodes.Status200OK)]
-    [SwaggerResponse(StatusCodes.Status400BadRequest)]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Login([FromBody][Required] UserLoginCommand request, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(UserLoginResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Login([FromBody] UserLoginCommand request, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(request, cancellationToken);
 
@@ -42,10 +40,10 @@ public class AuthController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("reset-password")]
-    [SwaggerResponse(StatusCodes.Status204NoContent)]
-    [SwaggerResponse(StatusCodes.Status401Unauthorized)]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> ResetPassword([FromBody][Required] ResetPasswordCommand request, CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand request, CancellationToken cancellationToken)
     {
         await _mediator.Send(request, cancellationToken);
 
