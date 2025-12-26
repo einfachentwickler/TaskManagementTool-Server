@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TaskManagementTool.Common\TaskManagementTool.Common.csproj" />
+	 <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 
 </Project>
