@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TaskManagementTool.Host.Controllers;
+namespace WebApi.Controllers;
 
 [Route("api/home")]
 [ApiController, Authorize]

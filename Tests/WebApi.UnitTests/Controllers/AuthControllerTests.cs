@@ -2,9 +2,9 @@
 using AutoFixture.AutoNSubstitute;
 using MediatR;
 using NUnit.Framework;
-using TaskManagementTool.Host.Controllers;
+using WebApi.Controllers;
 
-namespace Host.UnitTests.Controllers;
+namespace WebApi.UnitTests.Controllers;
 
 [TestFixture]
 public class AuthControllerTests

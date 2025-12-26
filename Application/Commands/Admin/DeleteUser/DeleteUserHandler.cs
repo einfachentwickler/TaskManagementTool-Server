@@ -5,10 +5,10 @@ using Infrastructure.Context;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Shared.Exceptions;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskManagementTool.Common.Exceptions;
 
 namespace Application.Commands.Admin.DeleteUser;
 

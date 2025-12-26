@@ -4,10 +4,10 @@ using Application.Services.IdentityUserManagement;
 using Application.Services.Jwt;
 using FluentValidation;
 using MediatR;
+using Shared.Exceptions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskManagementTool.Common.Exceptions;
 
 namespace Application.Commands.Auth.Login;
 

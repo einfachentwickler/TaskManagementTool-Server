@@ -2,7 +2,7 @@
 using FluentAssertions.Execution;
 using NSubstitute;
 
-namespace Host.UnitTests.Utils;
+namespace WebApi.UnitTests.Utils;
 public static class ExtendedArg
 {
     public static TType Is<TType>(TType otherObj)

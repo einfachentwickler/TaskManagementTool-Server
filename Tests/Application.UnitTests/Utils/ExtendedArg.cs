@@ -2,7 +2,7 @@
 using FluentAssertions.Execution;
 using NSubstitute;
 
-namespace BusinessLogic.UnitTests.Utils;
+namespace Application.UnitTests.Utils;
 
 public static class ExtendedArg
 {

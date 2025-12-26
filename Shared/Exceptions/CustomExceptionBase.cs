@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TaskManagementTool.Common.Exceptions;
+namespace Shared.Exceptions;
 
 public abstract class CustomExceptionBase(string message) : Exception(message)
 {

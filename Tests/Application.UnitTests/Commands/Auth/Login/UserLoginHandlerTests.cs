@@ -7,7 +7,7 @@ using AutoFixture.AutoNSubstitute;
 using FluentValidation;
 using NUnit.Framework;
 
-namespace BusinessLogic.UnitTests.Commands.Auth.Login;
+namespace Application.UnitTests.Commands.Auth.Login;
 
 [TestFixture]
 public class UserLoginHandlerTests

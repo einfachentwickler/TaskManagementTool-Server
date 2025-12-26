@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Shared.Exceptions;
 using System;
 using System.Threading.Tasks;
-using TaskManagementTool.Common.Exceptions;
 
-namespace TaskManagementTool.Host.Middleware;
+namespace WebApi.Middleware;
 
 public class ExceptionMiddleware(RequestDelegate next)
 {

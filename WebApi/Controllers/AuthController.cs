@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TaskManagementTool.Host.Controllers;
+namespace WebApi.Controllers;
 
 [Route("api/auth")]
 [ApiController]

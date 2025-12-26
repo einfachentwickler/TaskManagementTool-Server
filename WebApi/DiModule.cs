@@ -9,9 +9,9 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using TaskManagementTool.Host.Constants;
+using WebApi.Constants;
 
-namespace TaskManagementTool.Host;
+namespace WebApi;
 
 [ExcludeFromCodeCoverage]
 public static class DiModule

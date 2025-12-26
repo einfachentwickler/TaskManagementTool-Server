@@ -1,4 +1,4 @@
-﻿namespace BusinessLogic.UnitTests.Commands.Admin;
+﻿namespace Application.UnitTests.Commands.Admin;
 
 //todo fix tests
 //[TestFixture]

@@ -3,11 +3,11 @@ using FluentValidation;
 using Infrastructure.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Shared.Constants;
+using Shared.Exceptions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskManagementTool.Common.Constants;
-using TaskManagementTool.Common.Exceptions;
 
 namespace Application.Commands.Auth.Register;
 

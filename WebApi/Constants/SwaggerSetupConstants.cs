@@ -1,4 +1,4 @@
-﻿namespace TaskManagementTool.Host.Constants;
+﻿namespace WebApi.Constants;
 
 public static class SwaggerSetupConstants
 {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Shared.Constants;
 using System.Threading.Tasks;
-using TaskManagementTool.Common.Constants;
 
 namespace Infrastructure.Seeding;
 

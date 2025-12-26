@@ -1,18 +1,6 @@
-﻿using Application.Commands.Admin.DeleteUser.Models;
-using Application.Commands.Admin.ReverseStatus.Models;
-using Application.Queries.Admin.GetTodos.Models;
-using Application.Queries.Admin.GetUsers.Models;
-using AutoFixture;
-using AutoFixture.AutoNSubstitute;
-using FluentAssertions;
-using Host.UnitTests.Utils;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using NSubstitute;
-using NUnit.Framework;
-using TaskManagementTool.Host.Controllers;
+﻿using NUnit.Framework;
 
-namespace Host.UnitTests.Controllers;
+namespace WebApi.UnitTests.Controllers;
 
 [TestFixture]
 public class AdminControllerTests

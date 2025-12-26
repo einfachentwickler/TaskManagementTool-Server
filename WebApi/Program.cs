@@ -11,10 +11,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using TaskManagementTool.Host.Constants;
-using TaskManagementTool.Host.Middleware;
+using WebApi.Constants;
+using WebApi.Middleware;
 
-namespace TaskManagementTool.Host;
+namespace WebApi;
 
 [ExcludeFromCodeCoverage]
 public class Program

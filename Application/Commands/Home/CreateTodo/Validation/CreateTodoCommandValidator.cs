@@ -1,6 +1,6 @@
 ﻿using Application.Commands.Home.CreateTodo.Models;
 using FluentValidation;
-using TaskManagementTool.Common.Constants;
+using Shared.Constants;
 
 namespace Application.Commands.Home.CreateTodo.Validation;
 

@@ -3,7 +3,7 @@ using AutoFixture.AutoNSubstitute;
 using LoggerService;
 using NUnit.Framework;
 
-namespace Host.UnitTests.Middleware;
+namespace WebApi.UnitTests.Middleware;
 
 [TestFixture]
 public class ExceptionMiddlewareTests

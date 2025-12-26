@@ -6,9 +6,9 @@ using Infrastructure.Context;
 using Infrastructure.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Shared.Exceptions;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskManagementTool.Common.Exceptions;
 
 namespace Application.Queries.Home.GetTodoById;
 

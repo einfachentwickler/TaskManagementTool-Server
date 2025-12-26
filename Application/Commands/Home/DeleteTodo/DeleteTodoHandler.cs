@@ -4,10 +4,10 @@ using FluentValidation;
 using Infrastructure.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Shared.Exceptions;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskManagementTool.Common.Exceptions;
 
 namespace Application.Commands.Home.DeleteTodo;
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TaskManagementTool.Common.Exceptions;
+namespace Shared.Exceptions;
 
 public class CustomException<TEnum>(TEnum errorCode, string message) : CustomExceptionBase(message) where TEnum : Enum
 {

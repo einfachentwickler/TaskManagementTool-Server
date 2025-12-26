@@ -6,10 +6,10 @@ using FluentValidation;
 using Infrastructure.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Shared.Exceptions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskManagementTool.Common.Exceptions;
 
 namespace Application.Commands.Home.UpdateTodo;
 
@@ -27,6 +27,8 @@ public class UpdateTodoHandler(
 
     public async Task<UpdateTodoResponse> Handle(UpdateTodoCommand request, CancellationToken cancellationToken)
     {
+        //todo hateoas
+        //todo rate limiting
         var validationResult = await _requestValidator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)

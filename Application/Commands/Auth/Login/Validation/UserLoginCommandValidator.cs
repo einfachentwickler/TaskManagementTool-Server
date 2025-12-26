@@ -1,6 +1,6 @@
 ﻿using Application.Commands.Auth.Login.Models;
 using FluentValidation;
-using TaskManagementTool.Common.Constants;
+using Shared.Constants;
 
 namespace Application.Commands.Auth.Login.Validation;
 
