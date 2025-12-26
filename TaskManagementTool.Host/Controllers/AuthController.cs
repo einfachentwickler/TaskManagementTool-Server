@@ -8,13 +8,11 @@ using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
-using TaskManagementTool.Host.ActionFilters;
 
 namespace TaskManagementTool.Host.Controllers;
 
 [Route("api/auth")]
 [ApiController]
-[ModelStateFilter]
 [Consumes("application/json")]
 [Produces("application/json")]
 public class AuthController(IMediator mediator) : ControllerBase

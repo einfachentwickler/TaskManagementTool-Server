@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace Application.Dto.ToDoModels;
+﻿namespace Application.Dto.ToDoModels;
 
 public class CreateTodoDto
 {
@@ -9,7 +7,4 @@ public class CreateTodoDto
     public string Content { get; set; }
 
     public int Importance { get; set; }
-
-    [JsonIgnore]
-    public string CreatorId { get; set; }
 }

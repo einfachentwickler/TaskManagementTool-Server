@@ -1,4 +1,5 @@
-﻿using Application.Queries.Admin.GetTodos.Models;
+﻿using Application.Commands.Admin.DeleteUser.Models;
+using Application.Queries.Admin.GetTodos.Models;
 using Application.Queries.Admin.GetUsers.Models;
 using FluentAssertions;
 using IntegrationTests.Constants;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
-using TaskManagementTool.Common.Enums;
 
 namespace IntegrationTests.Tests.Admin;
 
@@ -79,7 +79,7 @@ public class DeleteUserTests
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         var actualResult = await response.Content.ReadFromJsonAsync<ProblemDetails>();
 
-        actualResult.Should().BeEquivalentTo(new ProblemDetails { Title = nameof(ApiErrorCode.UserNotFound), Detail = "User with email user2@email.com was not found" });
+        actualResult.Should().BeEquivalentTo(new ProblemDetails { Title = nameof(DeleteUserErrorCode.UserNotFound), Detail = DeleteUserErrorMessages.UserNotFound });
     }
 
     [Test]

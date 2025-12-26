@@ -36,11 +36,12 @@ public class CreateTodoHandler(
             throw new CustomException<CreateTodoErrorCode>(Enum.Parse<CreateTodoErrorCode>(firstError.ErrorCode), firstError.ErrorMessage);
         }
 
-        request.CreateTodoDto.CreatorId = _authUtils.GetUserId(request.HttpContext);
+        //todo fix this
+        var todoEntity = _mapper.Map<CreateTodoDto, ToDoEntity>(request.CreateTodoDto);
 
-        var todoEntry = _mapper.Map<CreateTodoDto, ToDoEntity>(request.CreateTodoDto);
+        todoEntity.CreatorId = _authUtils.GetUserId(request.HttpContext);
 
-        var createdTodo = (await _dbContext.Todos.AddAsync(todoEntry, cancellationToken)).Entity;
+        var createdTodo = (await _dbContext.Todos.AddAsync(todoEntity, cancellationToken)).Entity;
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 

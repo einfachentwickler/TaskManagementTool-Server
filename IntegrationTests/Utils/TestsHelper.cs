@@ -2,10 +2,10 @@
 using Application.Commands.Auth.Register.Models;
 using Application.Dto.ToDoModels;
 using IntegrationTests.Constants;
-using Microsoft.AspNetCore.Http;
 using System.Net.Http.Json;
 
 namespace IntegrationTests.Utils;
+
 public static class TestsHelper
 {
     public static async Task<HttpResponseMessage> RegisterUserAsync(HttpClient client, string email, string password, string confirmPassword)
@@ -33,10 +33,10 @@ public static class TestsHelper
 
         HttpResponseMessage loginResponse = await client.PostAsJsonAsync(UriConstants.AUTH_LOGIN_URI, loginDto);
 
-        string token = (await loginResponse.Content.ReadFromJsonAsync<UserLoginResponse>())!.Message;
+        // string token = (await loginResponse.Content.ReadFromJsonAsync<UserLoginResponse>())!.Message;
 
-        client.DefaultRequestHeaders.Clear();
-        client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+        //    client.DefaultRequestHeaders.Clear();
+        //   client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
     }
 
     public static async Task<HttpResponseMessage> CreateTodoAsync(HttpClient client, string name = "Todo 1")

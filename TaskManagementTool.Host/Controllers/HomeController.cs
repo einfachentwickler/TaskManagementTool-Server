@@ -14,13 +14,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
-using TaskManagementTool.Host.ActionFilters;
 
 namespace TaskManagementTool.Host.Controllers;
 
 [Route("api/home")]
 [ApiController, Authorize]
-[ModelStateFilter]
 public class HomeController(IMediator mediator, IHttpContextAccessor httpContextAccessor) : ControllerBase
 {
     [HttpGet]
@@ -102,7 +100,7 @@ public class HomeController(IMediator mediator, IHttpContextAccessor httpContext
             HttpContext = httpContextAccessor.HttpContext
         };
 
-        DeleteTodoResponse response = await mediator.Send(request);
+        var response = await mediator.Send(request);
 
         return Ok(response);
     }
