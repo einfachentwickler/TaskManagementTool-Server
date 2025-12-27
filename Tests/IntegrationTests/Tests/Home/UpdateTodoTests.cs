@@ -29,18 +29,18 @@ public class UpdateTodoTests
         await TestsHelper.RegisterUserAsync(_client, "user1@email.com", "password", "password");
         await TestsHelper.LoginAsync(_client, "user1@email.com", "password");
 
-        CreateTodoDto createTodoDto = new()
+        var createTodoDto = new CreateTodoDto
         {
             Name = "Todo 1",
             Content = "Content 1",
             Importance = 5
         };
 
-        HttpResponseMessage createResponse = await _client.PostAsJsonAsync(UriConstants.HOME_CREATE_TODO_URI, createTodoDto);
+        var createResponse = await _client.PostAsJsonAsync(UriConstants.HOME_CREATE_TODO_URI, createTodoDto);
 
-        CreateTodoResponse? response = await createResponse.Content.ReadFromJsonAsync<CreateTodoResponse>();
+        var response = await createResponse.Content.ReadFromJsonAsync<CreateTodoResponse>();
 
-        UpdateTodoDto updateTodoDto = new()
+        var updateTodoDto = new UpdateTodoDto
         {
             Name = "Todo upd",
             Content = "Content upd",
@@ -49,16 +49,16 @@ public class UpdateTodoTests
         };
 
         //Act
-        HttpResponseMessage updateResponse = await _client.PutAsJsonAsync(UriConstants.HOME_UPDATE_TODO_URI, updateTodoDto);
+        var updateResponse = await _client.PutAsJsonAsync(UriConstants.HOME_UPDATE_TODO_URI, updateTodoDto);
 
         //Assert
         updateResponse.EnsureSuccessStatusCode();
 
-        HttpResponseMessage getResponse = await _client.GetAsync(string.Format(UriConstants.HOME_GET_TODO_URI, response.Todo.Id));
+        var getResponse = await _client.GetAsync(string.Format(UriConstants.HOME_GET_TODO_URI, response.Todo.Id));
 
         getResponse.EnsureSuccessStatusCode();
 
-        GetTodoByIdResponse? todoFromDb = await getResponse.Content.ReadFromJsonAsync<GetTodoByIdResponse>();
+        var todoFromDb = await getResponse.Content.ReadFromJsonAsync<GetTodoByIdResponse>();
 
         todoFromDb!.Todo.Content.Should().Be(updateTodoDto.Content);
         todoFromDb.Todo.Name.Should().Be(updateTodoDto.Name);

@@ -1,8 +1,12 @@
 ﻿using Application.Commands.Auth.Login.Models;
+using Application.Commands.Auth.Register.Models;
 using Application.Commands.Auth.ResetPassword.Models;
+using Azure;
 using FluentAssertions;
 using IntegrationTests.Constants;
 using IntegrationTests.Utils;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
@@ -33,7 +37,7 @@ public class ResetPasswordTests
 
         const string newPassword = "Qwerty123$";
 
-        ResetPasswordCommand request = new()
+        var request = new ResetPasswordCommand
         {
             Email = EMAIL,
             CurrentPassword = PASSWORD,
@@ -42,27 +46,23 @@ public class ResetPasswordTests
         };
 
         //Act
-        HttpResponseMessage actualResponse = await client.PostAsJsonAsync(UriConstants.AUTH_RESET_PASSWORD_URI, request);
+        var actualResponse = await client.PostAsJsonAsync(UriConstants.AUTH_RESET_PASSWORD_URI, request);
 
         //Assert
         actualResponse.EnsureSuccessStatusCode();
 
-        // var actualResult = await actualResponse.Content.ReadFromJsonAsync<ResetPasswordResponse>();
-
-        // actualResult.Should().BeEquivalentTo(new ResetPasswordResponse { IsSuccess = true });
-
-        UserLoginCommand loginDto = new()
+        var loginDto = new UserLoginCommand()
         {
             Email = EMAIL,
             Password = PASSWORD
         };
 
-        HttpResponseMessage loginResponseWithOldCredentials = await client.PostAsJsonAsync(UriConstants.AUTH_LOGIN_URI, loginDto);
-        loginResponseWithOldCredentials.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        var loginResponseWithOldCredentials = await client.PostAsJsonAsync(UriConstants.AUTH_LOGIN_URI, loginDto);
+        loginResponseWithOldCredentials.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
         await TestsHelper.LoginAsync(client, EMAIL, newPassword);
 
-        HttpResponseMessage getResponseWithNewCredentials = await client.GetAsync(string.Format(UriConstants.HOME_GET_USER_TODOS, 1, 10));
+        var getResponseWithNewCredentials = await client.GetAsync(string.Format(UriConstants.HOME_GET_USER_TODOS, 1, 10));
         getResponseWithNewCredentials.EnsureSuccessStatusCode();
     }
 
@@ -74,7 +74,7 @@ public class ResetPasswordTests
 
         const string newPassword = "Qwerty123$";
 
-        ResetPasswordCommand request = new()
+        var request = new ResetPasswordCommand
         {
             Email = EMAIL,
             CurrentPassword = PASSWORD + "qwerty",
@@ -87,6 +87,15 @@ public class ResetPasswordTests
 
         //Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var actualResult = await actualResponse.Content.ReadFromJsonAsync<ProblemDetails>();
+
+        actualResult.Should().BeEquivalentTo(new ProblemDetails
+        {
+            Title = nameof(ResetPasswordErrorCode.InvalidCurrentPassword),
+            Status = StatusCodes.Status400BadRequest,
+            Detail = ResetPasswordErrorMessages.InvalidCurrentPassword
+        }, options => options.Excluding(dto => dto.Extensions));
     }
 
     [Test]
@@ -97,7 +106,7 @@ public class ResetPasswordTests
 
         const string newPassword = "Qwerty123$";
 
-        ResetPasswordCommand request = new()
+        var request = new ResetPasswordCommand
         {
             Email = EMAIL,
             CurrentPassword = PASSWORD,
@@ -106,10 +115,19 @@ public class ResetPasswordTests
         };
 
         //Act
-        HttpResponseMessage actualResponse = await client.PostAsJsonAsync(UriConstants.AUTH_RESET_PASSWORD_URI, request);
+        var actualResponse = await client.PostAsJsonAsync(UriConstants.AUTH_RESET_PASSWORD_URI, request);
 
         //Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var actualResult = await actualResponse.Content.ReadFromJsonAsync<ProblemDetails>();
+
+        actualResult.Should().BeEquivalentTo(new ProblemDetails
+        {
+            Title = nameof(ResetPasswordErrorCode.PasswordsDoNotMatch),
+            Status = StatusCodes.Status400BadRequest,
+            Detail = ResetPasswordErrorMessages.PasswordsDoNotMatch
+        }, options => options.Excluding(dto => dto.Extensions));
     }
 
     [TearDown]

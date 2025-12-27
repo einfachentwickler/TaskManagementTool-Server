@@ -2,6 +2,8 @@
 using FluentAssertions;
 using IntegrationTests.Constants;
 using IntegrationTests.Utils;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using System.Net;
 using System.Net.Http.Json;
@@ -25,34 +27,32 @@ public class RegisterTests
     }
 
     [Test]
-    public async Task RegisterUserAsync_ValidData_Returns200()
+    public async Task RegisterUserAsync_ValidData_Returns204()
     {
         //Act
         var response = await TestsHelper.RegisterUserAsync(_client, EMAIL, PASSWORD, PASSWORD);
 
         //Assert
         response.EnsureSuccessStatusCode();
-
-        //  var actualResult = await response.Content.ReadFromJsonAsync<UserRegisterResponse>();
-
-        // actualResult!.Message.Should().Be(UserManagerResponseMessages.USER_CREATED);
-        // actualResult.IsSuccess.Should().BeTrue();
     }
 
     [Test]
     public async Task RegisterUserAsync_PasswordDoesNotMatch_Returns400()
     {
         //Act
-        var response = await TestsHelper.RegisterUserAsync(_client, EMAIL, PASSWORD, "nonsence");
+        var response = await TestsHelper.RegisterUserAsync(_client, EMAIL, PASSWORD, "nonsense");
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        //var actualResult = await response.Content.ReadFromJsonAsync<UserRegisterResponse>();
+        var actualResult = await response.Content.ReadFromJsonAsync<ProblemDetails>();
 
-        // actualResult!.Message.Should().Be(UserManagerResponseMessages.USER_WAS_NOT_CREATED);
-        // actualResult.IsSuccess.Should().Be(false);
-        // actualResult.Errors.Should().BeEquivalentTo(new List<string> { nameof(ValidationErrorCodes.ConfirmPasswordDoesNotMatch) });
+        actualResult.Should().BeEquivalentTo(new ProblemDetails
+        {
+            Title = nameof(UserRegisterErrorCode.ConfirmPasswordDoesNotMatch),
+            Status = StatusCodes.Status400BadRequest,
+            Detail = UserRegisterErrorMessages.ConfirmPasswordDoesNotMatch
+        }, options => options.Excluding(dto => dto.Extensions));
     }
 
     [Test]
@@ -62,24 +62,26 @@ public class RegisterTests
         await TestsHelper.RegisterUserAsync(_client, EMAIL, PASSWORD, PASSWORD);
 
         //Act
-        HttpResponseMessage response = await TestsHelper.RegisterUserAsync(_client, EMAIL, PASSWORD, PASSWORD);
+        var response = await TestsHelper.RegisterUserAsync(_client, EMAIL, PASSWORD, PASSWORD);
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        // var actualResult = await response.Content.ReadFromJsonAsync<UserRegisterResponse>();
+        var actualResult = await response.Content.ReadFromJsonAsync<ProblemDetails>();
 
-        //  actualResult!.Message.Should().Be(UserManagerResponseMessages.USER_WAS_NOT_CREATED);
-        //  actualResult.IsSuccess.Should().BeFalse();
-
-        //   actualResult.Errors.Should().Contain($"Username '{EMAIL}' is already taken.");
+        actualResult.Should().BeEquivalentTo(new ProblemDetails
+        {
+            Title = nameof(UserRegisterErrorCode.UserAlreadyExists),
+            Status = StatusCodes.Status400BadRequest,
+            Detail = UserRegisterErrorMessages.UserAlreadyExists
+        }, options => options.Excluding(dto => dto.Extensions));
     }
 
     [Test]
     public async Task RegisterUserAsync_WeakPassword_Returns400()
     {
         //Arrange
-        UserRegisterCommand registerDto = new()
+        var registerDto = new UserRegisterCommand
         {
             Age = 34,
             Password = "123",
@@ -94,6 +96,15 @@ public class RegisterTests
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var actualResult = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+        actualResult.Should().BeEquivalentTo(new ProblemDetails
+        {
+            Title = nameof(UserRegisterErrorCode.WeakPassword),
+            Status = StatusCodes.Status400BadRequest,
+            Detail = UserRegisterErrorMessages.WeakPassword
+        }, options => options.Excluding(dto => dto.Extensions));
     }
 
     [Test]
@@ -115,6 +126,15 @@ public class RegisterTests
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var actualResult = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+        actualResult.Should().BeEquivalentTo(new ProblemDetails
+        {
+            Title = nameof(UserRegisterErrorCode.InvalidEmail),
+            Status = StatusCodes.Status400BadRequest,
+            Detail = UserRegisterErrorMessages.InvalidEmail
+        }, options => options.Excluding(dto => dto.Extensions));
     }
 
     [TearDown]

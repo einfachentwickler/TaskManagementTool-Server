@@ -26,6 +26,13 @@ public class UserRegisterHandler(
             throw new CustomException<UserRegisterErrorCode>(Enum.Parse<UserRegisterErrorCode>(firstError.ErrorCode), firstError.ErrorMessage);
         }
 
+        var userByEmail = await userManager.FindByEmailAsync(request.Email);
+
+        if (userByEmail is not null)
+        {
+            throw new CustomException<UserRegisterErrorCode>(UserRegisterErrorCode.UserAlreadyExists, UserRegisterErrorMessages.UserAlreadyExists);
+        }
+
         UserEntity identityUser = new()
         {
             Email = request.Email,

@@ -11,4 +11,5 @@ public class UserRegisterErrorMessages
     public const string EmptyFirstName = "The first name cannot be empty.";
     public const string EmptyLastName = "The last name cannot be empty.";
     public const string InternalServerError = "An internal server error occurred while creating the user.";
+    public const string UserAlreadyExists = "A user with the provided email address already exists.";
 }

@@ -39,7 +39,10 @@ public class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordComm
                .WithMessage(ResetPasswordErrorMessages.InvalidConfirmNewPassword)
            .Must(password => password.Length <= ValidationConstants.DEFAULT_TEXT_INPUT_SIZE)
                .WithErrorCode(nameof(ResetPasswordErrorCode.InvalidConfirmNewPassword))
-               .WithMessage(ResetPasswordErrorMessages.InvalidConfirmNewPassword);
+               .WithMessage(ResetPasswordErrorMessages.InvalidConfirmNewPassword)
+            .Equal(x => x.NewPassword)
+               .WithErrorCode(nameof(ResetPasswordErrorCode.PasswordsDoNotMatch))
+               .WithMessage(ResetPasswordErrorMessages.PasswordsDoNotMatch);
 
         RuleFor(x => x.Email)
             .EmailAddress()

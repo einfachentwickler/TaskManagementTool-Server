@@ -28,24 +28,26 @@ public class CreateTodoTests
         await TestsHelper.RegisterUserAsync(_client, "user1@email.com", "password", "password");
         await TestsHelper.LoginAsync(_client, "user1@email.com", "password");
 
-        CreateTodoDto createTodoDto = new()
+        var createTodoDto = new CreateTodoDto
         {
             Name = "Todo 1",
             Content = "Content 1",
             Importance = 5
         };
 
-        HttpResponseMessage createResponse = await _client.PostAsJsonAsync(UriConstants.HOME_CREATE_TODO_URI, createTodoDto);
+        //Act
+        var createResponse = await _client.PostAsJsonAsync(UriConstants.HOME_CREATE_TODO_URI, createTodoDto);
 
+        //Assert
         createResponse.EnsureSuccessStatusCode();
 
-        CreateTodoResponse? response = await createResponse.Content.ReadFromJsonAsync<CreateTodoResponse>();
+        var response = await createResponse.Content.ReadFromJsonAsync<CreateTodoResponse>();
 
-        HttpResponseMessage getResponse = await _client.GetAsync(string.Format(UriConstants.HOME_GET_TODO_URI, response!.Todo.Id));
+        var getResponse = await _client.GetAsync(string.Format(UriConstants.HOME_GET_TODO_URI, response!.Todo.Id));
 
         getResponse.EnsureSuccessStatusCode();
 
-        GetTodoByIdResponse? todoFromDb = await getResponse.Content.ReadFromJsonAsync<GetTodoByIdResponse>();
+        var todoFromDb = await getResponse.Content.ReadFromJsonAsync<GetTodoByIdResponse>();
 
         todoFromDb!.Todo.Content.Should().Be(createTodoDto.Content);
         todoFromDb.Todo.Name.Should().Be(createTodoDto.Name);

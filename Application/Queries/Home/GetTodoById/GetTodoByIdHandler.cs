@@ -1,6 +1,5 @@
 ﻿using Application.Dto.GetTodo;
 using Application.Queries.Home.GetTodoById.Models;
-using Application.Services.Http;
 using AutoMapper;
 using Infrastructure.Context;
 using Infrastructure.Entities;
@@ -13,25 +12,18 @@ using System.Threading.Tasks;
 namespace Application.Queries.Home.GetTodoById;
 
 public class GetTodoByIdHandler(
-    IHttpContextDataExtractor authUtils,
     ITaskManagementToolDbContext dbContext,
     IMapper mapper
     ) : IRequestHandler<GetTodoByIdQuery, GetTodoByIdResponse>
 {
-    private readonly IHttpContextDataExtractor _authUtils = authUtils;
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
     private readonly IMapper _mapper = mapper;
 
     public async Task<GetTodoByIdResponse> Handle(GetTodoByIdQuery request, CancellationToken cancellationToken)
     {
-        if (!await _authUtils.IsAllowedActionAsync(request.HttpContext, request.TodoId, cancellationToken))
-        {
-            throw new CustomException<GetTodoByIdErrorCode>(GetTodoByIdErrorCode.Forbidden, GetTodoByIdErrorMesssages.Forbidden);
-        }
-
         var todoEntity = await _dbContext.Todos
             .Include(todo => todo.Creator)
-            .FirstOrDefaultAsync(todo => todo.Id == request.TodoId, cancellationToken);
+            .FirstOrDefaultAsync(todo => todo.Id == request.TodoId && todo.CreatorId == todo.Creator.Id, cancellationToken);
 
         var result = todoEntity is null
             ? throw new CustomException<GetTodoByIdErrorCode>(GetTodoByIdErrorCode.TodoNotFound, GetTodoByIdErrorMesssages.Forbidden)

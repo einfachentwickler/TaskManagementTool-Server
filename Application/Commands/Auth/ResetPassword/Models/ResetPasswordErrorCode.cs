@@ -6,5 +6,6 @@ public enum ResetPasswordErrorCode
     InvalidNewPassword,
     InvalidConfirmNewPassword,
     InvalidEmail,
-    UserNotFound
+    UserNotFound,
+    PasswordsDoNotMatch
 }

@@ -10,7 +10,7 @@ public static class TestsHelper
 {
     public static async Task<HttpResponseMessage> RegisterUserAsync(HttpClient client, string email, string password, string confirmPassword)
     {
-        UserRegisterCommand registerDto = new()
+        var registerDto = new UserRegisterCommand
         {
             Age = 34,
             Password = password,
@@ -25,23 +25,23 @@ public static class TestsHelper
 
     public static async Task LoginAsync(HttpClient client, string email, string password)
     {
-        UserLoginCommand loginDto = new()
+        var loginDto = new UserLoginCommand
         {
             Email = email,
             Password = password
         };
 
-        HttpResponseMessage loginResponse = await client.PostAsJsonAsync(UriConstants.AUTH_LOGIN_URI, loginDto);
+        var loginResponse = await client.PostAsJsonAsync(UriConstants.AUTH_LOGIN_URI, loginDto);
 
-        // string token = (await loginResponse.Content.ReadFromJsonAsync<UserLoginResponse>())!.Message;
+        string token = (await loginResponse.Content.ReadFromJsonAsync<UserLoginResponse>())!.Token;
 
-        //    client.DefaultRequestHeaders.Clear();
-        //   client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+        client.DefaultRequestHeaders.Clear();
+        client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
     }
 
     public static async Task<HttpResponseMessage> CreateTodoAsync(HttpClient client, string name = "Todo 1")
     {
-        CreateTodoDto createTodoDto = new()
+        var createTodoDto = new CreateTodoDto
         {
             Name = name,
             Content = "Content 1",

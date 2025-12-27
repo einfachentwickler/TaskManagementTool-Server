@@ -10,5 +10,6 @@ public enum UserRegisterErrorCode
     ConfirmPasswordDoesNotMatch,
     EmptyFirstName,
     EmptyLastName,
+    UserAlreadyExists,
     InternalServerError
 }

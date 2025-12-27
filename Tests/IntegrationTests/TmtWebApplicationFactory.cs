@@ -15,15 +15,15 @@ public class TmtWebApplicationFactory : WebApplicationFactory<Program>
     {
         builder.ConfigureTestServices(services =>
         {
-            services.RemoveAll(typeof(DbContextOptions<TaskManagementToolDbContext>));
+            services.RemoveAll<DbContextOptions<TaskManagementToolDbContext>>();
 
             //ToDo move to docker, add test db initialization script
             services.AddDbContext<TaskManagementToolDbContext>(
-                options => options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TaskManagementToolTests;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
+                options => options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TaskManagementToolTests;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
                 builder => builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null))
                 );
 
-            TaskManagementToolDbContext db = CreateDbContext(services);
+            var db = CreateDbContext(services);
 
             db.Database.EnsureDeleted();
         });
