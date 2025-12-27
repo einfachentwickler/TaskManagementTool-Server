@@ -19,7 +19,7 @@ namespace WebApi;
 [ExcludeFromCodeCoverage]
 public static class DiModule
 {
-    public static IServiceCollection ConfigureHost(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddWebApi(this IServiceCollection services, IConfiguration configuration)
     {
         services
             .AddOptions<AuthOptions>()

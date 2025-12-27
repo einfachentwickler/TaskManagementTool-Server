@@ -53,8 +53,11 @@ public class Program
 
     private static void ConfigureMiddleware(WebApplication app)
     {
-        app.UseSwagger();
-        app.UseSwaggerUI();
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
 
         app.MapHealthChecks("/health");
 
@@ -96,7 +99,7 @@ public class Program
         builder.Services
             .AddInfrastructure(builder.Configuration, builder.Environment.IsDevelopment())
             .AddApplication()
-            .ConfigureHost(builder.Configuration);
+            .AddWebApi(builder.Configuration);
 
         builder.ConfigureLogging(builder.Configuration);
     }
