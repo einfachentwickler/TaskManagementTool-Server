@@ -2,6 +2,7 @@
 using Application.Services.IdentityUserManagement;
 using FluentValidation;
 using Infrastructure.Context;
+using LoggerService;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -12,11 +13,16 @@ using System.Threading.Tasks;
 
 namespace Application.Commands.Admin.DeleteUser;
 
-public class DeleteUserHandler(IIdentityUserManagerWrapper userManager, ITaskManagementToolDbContext dbContext, IValidator<DeleteUserCommand> validator) : IRequestHandler<DeleteUserCommand, Unit>
+public class DeleteUserHandler(
+    IIdentityUserManagerWrapper userManager,
+    ITaskManagementToolDbContext dbContext,
+    IValidator<DeleteUserCommand> validator,
+    ILoggerManager loggerManager) : IRequestHandler<DeleteUserCommand, Unit>
 {
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
     private readonly IIdentityUserManagerWrapper _userManager = userManager;
     private readonly IValidator<DeleteUserCommand> _validator = validator;
+    private readonly ILoggerManager _loggerManager = loggerManager;
 
     public async Task<Unit> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
@@ -38,8 +44,8 @@ public class DeleteUserHandler(IIdentityUserManagerWrapper userManager, ITaskMan
         var identityResult = await _userManager.DeleteAsync(user);
         if (!identityResult.Succeeded)
         {
+            _loggerManager.LogWarn(string.Join(", ", identityResult.Errors.Select(x => x.Code + " " + x.Description)));
             throw new CustomException<DeleteUserErrorCode>(DeleteUserErrorCode.InternalServerError, DeleteUserErrorMessages.InternalServerError);
-            //todo log errors
         }
 
         return new Unit();

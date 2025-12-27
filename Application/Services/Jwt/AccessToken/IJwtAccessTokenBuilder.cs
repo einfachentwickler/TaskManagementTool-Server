@@ -1,8 +1,8 @@
 ﻿using Application.Dto.BuildJwtToken;
 
-namespace Application.Services.Jwt;
+namespace Application.Services.Jwt.AccessToken;
 
-public interface IJwtSecurityTokenBuilder
+public interface IJwtAccessTokenBuilder
 {
     BuildJwtTokenResponse Build(string userId, string userRole, string userEmail);
 }

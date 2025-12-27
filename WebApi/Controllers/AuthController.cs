@@ -1,4 +1,5 @@
 ﻿using Application.Commands.Auth.Login.Models;
+using Application.Commands.Auth.RefreshToken.Models;
 using Application.Commands.Auth.Register.Models;
 using Application.Commands.Auth.ResetPassword.Models;
 using MediatR;
@@ -51,5 +52,15 @@ public class AuthController(IMediator mediator) : ControllerBase
         await _mediator.Send(request, cancellationToken);
 
         return NoContent();
+    }
+
+    [HttpPost("refresh")]
+    [ProducesResponseType(typeof(UserLoginResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Refresh([FromBody] RefreshTokenCommand request, CancellationToken cancellationToken)
+    {
+        var response = await _mediator.Send(request, cancellationToken);
+        return Ok(response);
     }
 }

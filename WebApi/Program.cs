@@ -4,6 +4,7 @@ using Infrastructure.DI;
 using Infrastructure.Seeding;
 using LoggerService;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -59,8 +60,12 @@ public class Program
 
         app.UseMiddleware<ExceptionMiddleware>();
 
+        app.UseForwardedHeaders(new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+        });
+
         app.UseHttpsRedirection();
-        //TODO setup cors
         app.UseCors("CorsPolicy");
 
         app.UseRateLimiter();

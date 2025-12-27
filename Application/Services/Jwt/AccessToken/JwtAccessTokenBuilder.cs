@@ -8,9 +8,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Application.Services.Jwt;
+namespace Application.Services.Jwt.AccessToken;
 
-public class JwtSecurityTokenBuilder(IOptions<AuthOptions> config) : IJwtSecurityTokenBuilder
+public class JwtAccessTokenBuilder(IOptions<AuthOptions> config) : IJwtAccessTokenBuilder
 {
     public BuildJwtTokenResponse Build(string userId, string userRole, string userEmail)
     {

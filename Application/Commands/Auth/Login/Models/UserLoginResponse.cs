@@ -1,13 +1,12 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 
 namespace Application.Commands.Auth.Login.Models;
 
 public record UserLoginResponse
 {
-    [JsonProperty("token")]
-    public required string Token { get; init; }
+    public required string AccessToken { get; init; }
 
-    [JsonProperty("expirationDate")]
     public DateTime Expires { get; init; }
+
+    public required string RefreshToken { get; init; }
 }

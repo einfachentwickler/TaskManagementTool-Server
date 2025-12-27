@@ -53,7 +53,7 @@ public static class DiModule
     {
         services.AddCors(options =>
         {
-            //TODO setup cors
+            //TODO setup cors after UI setup
             options.AddPolicy("CorsPolicy", builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
         });
     }
@@ -62,10 +62,8 @@ public static class DiModule
     {
         //adjust swagger, produceresponsetype
         //add login as
-        //TODO refresh token
         //TODO get sensitive info from env variables
         //todo hateoas
-        //todo rate limiting
         var identityOptions = configuration.GetRequiredSection(nameof(IdentityPasswordOptions)).Get<IdentityPasswordOptions>()!;
         var authOptions = configuration.GetRequiredSection(nameof(AuthOptions)).Get<AuthOptions>()!;
         var tokenValidationOptions = configuration.GetRequiredSection(nameof(TokenValidationOptions)).Get<TokenValidationOptions>()!;

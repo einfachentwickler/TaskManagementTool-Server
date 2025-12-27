@@ -9,5 +9,6 @@ public interface ITaskManagementToolDbContext
 {
     DbSet<ToDoEntity> Todos { get; }
     DbSet<UserEntity> Users { get; }
+    DbSet<RefreshTokenEntity> RefreshTokens { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

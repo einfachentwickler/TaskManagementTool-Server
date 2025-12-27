@@ -15,4 +15,7 @@ public record AuthOptions
 
     [Required]
     public int AccessTokenLifetimeMinutes { get; init; }
+
+    [Required]
+    public int RefreshTokenLifetimeDays { get; init; }
 }

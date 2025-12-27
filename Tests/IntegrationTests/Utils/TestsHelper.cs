@@ -23,7 +23,7 @@ public static class TestsHelper
         return await client.PostAsJsonAsync(UriConstants.AUTH_REGISTER_URI, registerDto);
     }
 
-    public static async Task LoginAsync(HttpClient client, string email, string password)
+    public static async Task<UserLoginResponse> LoginAsync(HttpClient client, string email, string password)
     {
         var loginDto = new UserLoginCommand
         {
@@ -33,10 +33,12 @@ public static class TestsHelper
 
         var loginResponse = await client.PostAsJsonAsync(UriConstants.AUTH_LOGIN_URI, loginDto);
 
-        string token = (await loginResponse.Content.ReadFromJsonAsync<UserLoginResponse>())!.Token;
+        var response = await loginResponse.Content.ReadFromJsonAsync<UserLoginResponse>();
 
         client.DefaultRequestHeaders.Clear();
-        client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+        client.DefaultRequestHeaders.Add("Authorization", "Bearer " + response!.AccessToken);
+
+        return response;
     }
 
     public static async Task<HttpResponseMessage> CreateTodoAsync(HttpClient client, string name = "Todo 1")

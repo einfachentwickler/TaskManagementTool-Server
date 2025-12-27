@@ -8,6 +8,7 @@ namespace Infrastructure.Context;
 public class TaskManagementToolDbContext(DbContextOptions<TaskManagementToolDbContext> options) : IdentityDbContext<UserEntity>(options), ITaskManagementToolDbContext
 {
     public DbSet<ToDoEntity> Todos { get; set; }
+    public DbSet<RefreshTokenEntity> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

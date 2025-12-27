@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
 
 namespace Application.Commands.Auth.Login.Models;
 

@@ -45,12 +45,13 @@ public class LoginTests
 
         var actualResult = await response.Content.ReadFromJsonAsync<UserLoginResponse>();
 
-        actualResult!.Token.Should().NotBeNullOrEmpty();
+        actualResult!.AccessToken.Should().NotBeNullOrEmpty();
         actualResult.Expires.Should().BeAfter(DateTime.UtcNow);
+        actualResult.RefreshToken.Should().NotBeNullOrEmpty();
 
         _client.DefaultRequestHeaders.Clear();
 
-        _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + actualResult.Token);
+        _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + actualResult.AccessToken);
         var getResponse = await TestsHelper.CreateTodoAsync(_client);
 
         getResponse.EnsureSuccessStatusCode();

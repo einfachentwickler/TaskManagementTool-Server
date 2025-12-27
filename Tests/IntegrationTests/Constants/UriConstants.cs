@@ -7,6 +7,8 @@ public static class UriConstants
 
     public const string AUTH_RESET_PASSWORD_URI = "https://localhost:44311/api/auth/reset-password/";
 
+    public const string AUTH_REFRESH_TOKEN = "https://localhost:44311/api/auth/refresh";
+
     public const string HOME_GET_USER_TODOS = "https://localhost:44311/api/home?pageSize={0}&pageNumber={1}";
 
     public const string HOME_CREATE_TODO_URI = "https://localhost:44311/api/home";
