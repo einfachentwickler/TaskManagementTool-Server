@@ -24,7 +24,7 @@ public static class DiModule
 
         DatabaseTarget dbTarget = new()
         {
-            ConnectionString = configuration.GetRequiredSection("DevConnectionStrings")["SqlServerDataBaseLoggerConnectinoString"],
+            ConnectionString = configuration.GetRequiredSection("DevConnectionStrings")["SqlServerDataBaseLoggerConnectionString"],
             CommandText = "INSERT INTO [ct_logs] (created_on,message,level,exception,stack_trace,logger,url) VALUES (@datetime,@msg,@level,@exception,@trace,@logger,@url);"
         };
 
