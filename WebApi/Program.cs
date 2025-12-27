@@ -12,7 +12,6 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using WebApi.Constants;
 using WebApi.Middleware;
 
 namespace WebApi;
@@ -54,14 +53,15 @@ public class Program
     private static void ConfigureMiddleware(WebApplication app)
     {
         app.UseSwagger();
-        app.UseSwaggerUI(options => options.SwaggerEndpoint(SwaggerSetupConstants.URL, SwaggerSetupConstants.APPLICATION_NAME));
+        app.UseSwaggerUI();
 
         app.MapHealthChecks("/health");
 
         app.UseMiddleware<ExceptionMiddleware>();
 
         app.UseHttpsRedirection();
-        app.UseCors(CorsPolicyNameConstants.DEFAULT_POLICY_NAME);
+        //TODO setup cors
+        app.UseCors("CorsPolicy");
 
         app.UseRateLimiter();
 

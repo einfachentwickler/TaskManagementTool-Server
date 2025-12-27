@@ -13,7 +13,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Threading.RateLimiting;
-using WebApi.Constants;
 
 namespace WebApi;
 
@@ -54,13 +53,13 @@ public static class DiModule
     {
         services.AddCors(options =>
         {
-            options.AddPolicy(CorsPolicyNameConstants.DEFAULT_POLICY_NAME, builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            //TODO setup cors
+            options.AddPolicy("CorsPolicy", builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
         });
     }
 
     private static void ConfigureIdentity(this IServiceCollection services, IConfiguration configuration)
     {
-        //todo add emails
         //adjust swagger, produceresponsetype
         //add login as
         //TODO refresh token

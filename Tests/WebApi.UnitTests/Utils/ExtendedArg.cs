@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
-using FluentAssertions.Execution;
 using NSubstitute;
 
 namespace WebApi.UnitTests.Utils;
+
 public static class ExtendedArg
 {
     public static TType Is<TType>(TType otherObj)
@@ -12,10 +12,14 @@ public static class ExtendedArg
 
     private static bool ToPredicate(Action act)
     {
-        using var scope = new AssertionScope();
-
-        act();
-
-        return scope.Discard().Length == 0;
+        try
+        {
+            act();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

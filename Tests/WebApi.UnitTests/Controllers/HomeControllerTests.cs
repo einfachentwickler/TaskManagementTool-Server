@@ -1,30 +1,149 @@
-﻿using AutoFixture;
+﻿using Application.Commands.Home.CreateTodo.Models;
+using Application.Commands.Home.DeleteTodo.Models;
+using Application.Commands.Home.UpdateTodo.Models;
+using Application.Queries.Home.GetTodoById.Models;
+using Application.Queries.Home.GetTodos.Models;
+using AutoFixture;
 using AutoFixture.AutoNSubstitute;
+using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using NSubstitute;
 using NUnit.Framework;
 using WebApi.Controllers;
+using WebApi.UnitTests.Utils;
 
 namespace WebApi.UnitTests.Controllers;
 
 [TestFixture]
 public class HomeControllerTests
 {
-    private IFixture fixture;
+    private IFixture _fixture;
+    private IMediator _mediator;
+    private IHttpContextAccessor _httpContextAccessor;
+    private CancellationToken _cancellationToken;
 
-    private IMediator mediator;
-    private IHttpContextAccessor httpContextAccessor;
-
-    private HomeController sut;
+    private HomeController _sut;
 
     [SetUp]
     public void Setup()
     {
-        fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
+        _fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
 
-        httpContextAccessor = fixture.Freeze<IHttpContextAccessor>();
-        mediator = fixture.Freeze<IMediator>();
+        _mediator = _fixture.Freeze<IMediator>();
+        _httpContextAccessor = _fixture.Freeze<IHttpContextAccessor>();
+        _httpContextAccessor.HttpContext.Returns(new DefaultHttpContext());
 
-        sut = new HomeController(mediator, httpContextAccessor);
+        _cancellationToken = _fixture.Create<CancellationToken>();
+
+        _sut = new HomeController(_mediator, _httpContextAccessor);
+    }
+
+    [Test]
+    public async Task GetTodos_ValidRequest_ReturnsOkWithList()
+    {
+        // Arrange
+        var query = new GetTodosQuery
+        {
+            PageNumber = 1,
+            PageSize = 10,
+            HttpContext = _httpContextAccessor.HttpContext
+        };
+
+        var response = _fixture.Create<GetTodosResponse>();
+
+        _mediator.Send(ExtendedArg.Is(query), _cancellationToken).Returns(response);
+
+        // Act
+        var actualResult = await _sut.GetTodos(query.PageNumber, query.PageSize, _cancellationToken);
+
+        // Assert
+        actualResult.Should().BeOfType<OkObjectResult>();
+        actualResult.As<OkObjectResult>().Value.Should().BeEquivalentTo(response);
+    }
+
+    [Test]
+    public async Task GetById_ValidId_ReturnsOkWithTodo()
+    {
+        // Arrange
+        var query = new GetTodoByIdQuery
+        {
+            TodoId = 1,
+            HttpContext = _httpContextAccessor.HttpContext
+        };
+
+        var response = _fixture.Create<GetTodoByIdResponse>();
+
+        _mediator.Send(ExtendedArg.Is(query), _cancellationToken).Returns(response);
+
+        // Act
+        var actualResult = await _sut.GetById(query.TodoId, _cancellationToken);
+
+        // Assert
+        actualResult.Should().BeOfType<OkObjectResult>();
+        actualResult.As<OkObjectResult>().Value.Should().BeEquivalentTo(response);
+    }
+
+    [Test]
+    public async Task Create_ValidModel_ReturnsCreatedAtAction()
+    {
+        // Arrange
+        var command = new CreateTodoCommand
+        {
+            CreateTodoDto = _fixture.Create<CreateTodoDto>(),
+            HttpContext = _httpContextAccessor.HttpContext
+        };
+
+        var response = _fixture.Create<CreateTodoResponse>();
+
+        _mediator.Send(ExtendedArg.Is(command), _cancellationToken).Returns(response);
+
+        // Act
+        var actualResult = await _sut.Create(command.CreateTodoDto, _cancellationToken);
+
+        // Assert
+        actualResult.Should().BeOfType<CreatedAtActionResult>();
+        var createdResult = actualResult.As<CreatedAtActionResult>();
+        createdResult.Value.Should().BeEquivalentTo(response);
+        createdResult.RouteValues!["id"].Should().Be(response.Todo.Id);
+    }
+
+    [Test]
+    public async Task Update_ValidModel_ReturnsNoContent()
+    {
+        // Arrange
+        var command = new UpdateTodoCommand
+        {
+            UpdateTodoDto = _fixture.Create<UpdateTodoDto>(),
+            HttpContext = _httpContextAccessor.HttpContext
+        };
+
+        // Act
+        var actualResult = await _sut.Update(command.UpdateTodoDto, _cancellationToken);
+
+        // Assert
+        actualResult.Should().BeOfType<NoContentResult>();
+
+        await _mediator.Received(1).Send(ExtendedArg.Is(command), _cancellationToken);
+    }
+
+    [Test]
+    public async Task Delete_ValidId_ReturnsNoContent()
+    {
+        // Arrange
+        var command = new DeleteTodoCommand
+        {
+            TodoId = 12,
+            HttpContext = _httpContextAccessor.HttpContext
+        };
+
+        // Act
+        var actualResult = await _sut.Delete(command.TodoId, _cancellationToken);
+
+        // Assert
+        actualResult.Should().BeOfType<NoContentResult>();
+
+        await _mediator.Received(1).Send(ExtendedArg.Is(command), _cancellationToken);
     }
 }

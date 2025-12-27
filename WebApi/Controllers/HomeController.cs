@@ -31,14 +31,14 @@ public class HomeController(IMediator mediator, IHttpContextAccessor httpContext
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetTodos([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
     {
-        var request = new GetTodosQuery
+        var query = new GetTodosQuery
         {
             PageNumber = pageNumber,
             PageSize = pageSize,
             HttpContext = _httpContextAccessor.HttpContext
         };
 
-        var response = await _mediator.Send(request, cancellationToken);
+        var response = await _mediator.Send(query, cancellationToken);
 
         return Ok(response);
     }
@@ -51,13 +51,13 @@ public class HomeController(IMediator mediator, IHttpContextAccessor httpContext
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetById([FromRoute] int id, CancellationToken cancellationToken)
     {
-        var request = new GetTodoByIdQuery
+        var query = new GetTodoByIdQuery
         {
             TodoId = id,
             HttpContext = _httpContextAccessor.HttpContext
         };
 
-        var response = await _mediator.Send(request, cancellationToken);
+        var response = await _mediator.Send(query, cancellationToken);
         return Ok(response);
     }
 
@@ -69,13 +69,13 @@ public class HomeController(IMediator mediator, IHttpContextAccessor httpContext
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Create([FromBody] CreateTodoDto model, CancellationToken cancellationToken)
     {
-        var request = new CreateTodoCommand
+        var command = new CreateTodoCommand
         {
             CreateTodoDto = model,
             HttpContext = _httpContextAccessor.HttpContext
         };
 
-        var response = await _mediator.Send(request, cancellationToken);
+        var response = await _mediator.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = response.Todo.Id }, response);
     }
 
@@ -87,13 +87,13 @@ public class HomeController(IMediator mediator, IHttpContextAccessor httpContext
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Update([FromBody] UpdateTodoDto model, CancellationToken cancellationToken)
     {
-        var request = new UpdateTodoCommand
+        var command = new UpdateTodoCommand
         {
             UpdateTodoDto = model,
             HttpContext = _httpContextAccessor.HttpContext
         };
 
-        await _mediator.Send(request, cancellationToken);
+        await _mediator.Send(command, cancellationToken);
         return NoContent();
     }
 
@@ -105,13 +105,13 @@ public class HomeController(IMediator mediator, IHttpContextAccessor httpContext
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Delete([FromRoute] int id, CancellationToken cancellationToken)
     {
-        var request = new DeleteTodoCommand
+        var command = new DeleteTodoCommand
         {
             TodoId = id,
             HttpContext = _httpContextAccessor.HttpContext
         };
 
-        await _mediator.Send(request, cancellationToken);
+        await _mediator.Send(command, cancellationToken);
         return NoContent();
     }
 }
