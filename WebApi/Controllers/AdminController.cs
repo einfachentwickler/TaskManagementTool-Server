@@ -7,6 +7,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Shared.Constants;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,6 +16,7 @@ namespace WebApi.Controllers;
 
 [Route("api/admin")]
 [ApiController]
+[EnableRateLimiting(RateLimiterConstants.CONCURRENCY_POLICY_NAME)]
 [Authorize(Roles = "Admin")]
 public class AdminController(IMediator mediator) : ControllerBase
 {
@@ -41,7 +44,7 @@ public class AdminController(IMediator mediator) : ControllerBase
     [HttpPost("reverse-status/{userId}")]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ReverseStatus([FromRoute] string userId, CancellationToken cancellationToken)
@@ -53,7 +56,7 @@ public class AdminController(IMediator mediator) : ControllerBase
     [HttpDelete("users/{email}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteUser([FromRoute] string email, CancellationToken cancellationToken)
@@ -65,7 +68,7 @@ public class AdminController(IMediator mediator) : ControllerBase
     [HttpGet("todos")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(GetTodosByAdminResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetTodos([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
@@ -84,7 +87,7 @@ public class AdminController(IMediator mediator) : ControllerBase
     [HttpDelete("todos/{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteTodo([FromRoute] int id, CancellationToken cancellationToken)

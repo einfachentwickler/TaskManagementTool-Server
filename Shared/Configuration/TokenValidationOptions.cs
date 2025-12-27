@@ -1,4 +1,4 @@
-﻿namespace Application.Configuration;
+﻿namespace Shared.Configuration;
 
 public record TokenValidationOptions
 {

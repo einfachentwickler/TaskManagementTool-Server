@@ -1,7 +1,7 @@
-﻿using Application.Configuration;
-using Application.Dto.BuildJwtToken;
+﻿using Application.Dto.BuildJwtToken;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Shared.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,7 +10,7 @@ using System.Text;
 
 namespace Application.Services.Jwt;
 
-public class JwtSecurityTokenBuilder(IOptions<AuthSettings> config) : IJwtSecurityTokenBuilder
+public class JwtSecurityTokenBuilder(IOptions<AuthOptions> config) : IJwtSecurityTokenBuilder
 {
     public BuildJwtTokenResponse Build(string userId, string userRole, string userEmail)
     {

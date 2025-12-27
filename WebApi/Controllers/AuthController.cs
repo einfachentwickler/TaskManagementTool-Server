@@ -4,6 +4,8 @@ using Application.Commands.Auth.ResetPassword.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Shared.Constants;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,6 +15,7 @@ namespace WebApi.Controllers;
 [ApiController]
 [Consumes("application/json")]
 [Produces("application/json")]
+[EnableRateLimiting(RateLimiterConstants.CONCURRENCY_POLICY_NAME)]
 public class AuthController(IMediator mediator) : ControllerBase
 {
     private readonly IMediator _mediator = mediator;

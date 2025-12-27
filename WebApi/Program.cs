@@ -63,6 +63,8 @@ public class Program
         app.UseHttpsRedirection();
         app.UseCors(CorsPolicyNameConstants.DEFAULT_POLICY_NAME);
 
+        app.UseRateLimiter();
+
         app.UseRouting();
         app.UseAuthentication();
         app.UseAuthorization();

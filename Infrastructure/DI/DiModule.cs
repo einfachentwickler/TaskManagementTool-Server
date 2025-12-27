@@ -2,31 +2,39 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Configuration;
+using System;
 
 namespace Infrastructure.DI;
 
 public static class DiModule
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, bool isDevMode)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, bool isDevEnv)
     {
-        string connectionString = BuildConnectionString(configuration, isDevMode);
+        string connectionString = BuildConnectionString(configuration, isDevEnv);
 
-        services.AddDbContext<TaskManagementToolDbContext>(builder => builder.UseSqlServer(connectionString));
+        services.AddDbContext<TaskManagementToolDbContext>(builder => builder.UseSqlServer(connectionString, options =>
+        {
+            options.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(10),
+                errorNumbersToAdd: null);
+        }));
 
         services.AddScoped<ITaskManagementToolDbContext, TaskManagementToolDbContext>();
 
         return services;
     }
 
-    private static string BuildConnectionString(IConfiguration configuration, bool isDevMode)
+    private static string BuildConnectionString(IConfiguration configuration, bool isDevEnv)
     {
-        if (isDevMode)
+        if (isDevEnv)
         {
-            return configuration.GetRequiredSection("LocalSettings:SqlServerDataBaseConnectionString").Value;
+            return configuration.GetRequiredSection("DevConnectionStrings:SqlServerDataBaseConnectionString").Value;
         }
 
-        IConfigurationSection section = configuration.GetRequiredSection("DockerDatabaseConfiguration");
+        var dockerConfig = configuration.GetRequiredSection(nameof(DockerDatabaseOptions)).Get<DockerDatabaseOptions>();
 
-        return $"Server={section["DBServer"]},{section["DBPort"]};Initial Catalog={section["DBName"]};User ID={section["DBUser"]};Password={section["DBPassword"]};TrustServerCertificate=True";
+        return $"Server={dockerConfig.DBServer},{dockerConfig.DBPort};Initial Catalog={dockerConfig.DBName};User ID={dockerConfig.DBUser};Password={dockerConfig.DBPassword};TrustServerCertificate=True";
     }
 }

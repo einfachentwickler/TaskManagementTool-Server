@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Application.Configuration;
+namespace Shared.Configuration;
 
-public record AuthSettings
+public record AuthOptions
 {
     [Required]
     public string Audience { get; init; }
