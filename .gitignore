@@ -16,6 +16,10 @@
 # Mono auto generated files
 mono_crash.*
 
+# Ignore all environment-specific appsettings files
+/WebApi/appsettings.Development.json
+/WebApi/appsettings.Production.json
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
