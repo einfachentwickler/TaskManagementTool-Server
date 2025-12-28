@@ -8,5 +8,5 @@ public record CreateTodoCommand : IRequest<CreateTodoResponse>
 
     public required string Content { get; init; }
 
-    public int Importance { get; init; }
+    public required int Importance { get; init; }
 }

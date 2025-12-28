@@ -1,6 +1,6 @@
-﻿namespace Application.Commands.Home.UpdateTodo.Models;
+﻿namespace Application.Queries.Home.GetTodos.Models;
 
-public record UpdateTodoResponse
+public class GetTodoDto
 {
     public required int Id { get; init; }
 

@@ -1,4 +1,4 @@
-﻿namespace Application.Commands.Auth.Login.Validation;
+﻿namespace Application.Commands.Auth.Login.Models;
 
 public enum UserLoginErrorCode
 {

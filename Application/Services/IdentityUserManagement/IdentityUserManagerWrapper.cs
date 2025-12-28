@@ -28,4 +28,14 @@ public class IdentityUserManagerWrapper(UserManager<UserEntity> userManager) : I
     {
         return await userManager.DeleteAsync(user);
     }
+
+    public async Task<string> GeneratePasswordResetTokenAsync(UserEntity user)
+    {
+        return await userManager.GeneratePasswordResetTokenAsync(user);
+    }
+
+    public async Task<IdentityResult> ResetPasswordAsync(UserEntity user, string resetToken, string newPassword)
+    {
+        return await userManager.ResetPasswordAsync(user, resetToken, newPassword);
+    }
 }

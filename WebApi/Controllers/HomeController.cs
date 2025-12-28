@@ -1,7 +1,7 @@
 ﻿using Application.Commands.Home.CreateTodo.Models;
 using Application.Commands.Home.DeleteTodo.Models;
 using Application.Commands.Home.UpdateTodo.Models;
-using Application.Dto.GetTodo;
+using Application.Queries.Admin.GetTodos.Models;
 using Application.Queries.Home.GetTodoById.Models;
 using Application.Queries.Home.GetTodos.Models;
 using MediatR;
@@ -24,7 +24,7 @@ public class HomeController(IMediator mediator) : ControllerBase
     private readonly IMediator _mediator = mediator;
 
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<TodoDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<TodoDtoWithUser>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
@@ -42,7 +42,7 @@ public class HomeController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    [ProducesResponseType(typeof(TodoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(TodoDtoWithUser), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -68,7 +68,7 @@ public class HomeController(IMediator mediator) : ControllerBase
     {
         var response = await _mediator.Send(command, cancellationToken);
 
-        return CreatedAtAction(nameof(GetById), new { id = response.Todo.Id }, response);
+        return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
     }
 
     [HttpPut]

@@ -1,7 +1,5 @@
 ﻿using Application.Commands.Home.UpdateTodo.Models;
-using Application.Dto.GetTodo;
 using Application.Services.Http;
-using AutoMapper;
 using FluentValidation;
 using Infrastructure.Context;
 using MediatR;
@@ -18,14 +16,12 @@ public class UpdateTodoHandler(
     ITaskManagementToolDbContext dbContext,
     IHttpContextDataExtractor authUtils,
     IValidator<UpdateTodoCommand> requestValidator,
-    IMapper mapper,
     IHttpContextAccessor httpContextAccessor
     ) : IRequestHandler<UpdateTodoCommand, UpdateTodoResponse>
 {
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
     private readonly IHttpContextDataExtractor _authUtils = authUtils;
     private readonly IValidator<UpdateTodoCommand> _requestValidator = requestValidator;
-    private readonly IMapper _mapper = mapper;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     public async Task<UpdateTodoResponse> Handle(UpdateTodoCommand request, CancellationToken cancellationToken)
@@ -43,18 +39,22 @@ public class UpdateTodoHandler(
             throw new CustomException<UpdateTodoErrorCode>(UpdateTodoErrorCode.Forbidden, UpdateTodoErrorMessages.Forbidden);
         }
 
-        var toDo = await _dbContext.Todos.FirstOrDefaultAsync(todo => todo.Id == request.Id, cancellationToken);
+        var entity = await _dbContext.Todos.FirstOrDefaultAsync(todo => todo.Id == request.Id, cancellationToken);
 
-        toDo.Name = request.Name;
-        toDo.IsCompleted = request.IsCompleted;
-        toDo.Content = request.Content;
-        toDo.Importance = request.Importance;
+        entity.Name = request.Name;
+        entity.IsCompleted = request.IsCompleted;
+        entity.Content = request.Content;
+        entity.Importance = request.Importance;
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return new UpdateTodoResponse
         {
-            Todo = _mapper.Map<TodoDto>(toDo)
+            Content = entity.Content,
+            Id = entity.Id,
+            Importance = entity.Importance,
+            IsCompleted = entity.IsCompleted,
+            Name = entity.Name,
         };
     }
 }

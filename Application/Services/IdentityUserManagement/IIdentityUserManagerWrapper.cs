@@ -9,6 +9,8 @@ public interface IIdentityUserManagerWrapper
 {
     public IQueryable<UserEntity> Users { get; }
     public Task<bool> CheckPasswordAsync(UserEntity user, string password);
+    public Task<string> GeneratePasswordResetTokenAsync(UserEntity user);
+    public Task<IdentityResult> ResetPasswordAsync(UserEntity user, string resetToken, string newPassword);
     public Task<UserEntity> FindByEmailAsync(string email);
     public Task<IdentityResult> UpdateAsync(UserEntity user);
     public Task<IdentityResult> DeleteAsync(UserEntity user);

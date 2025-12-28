@@ -1,7 +1,5 @@
 ﻿using Application.Commands.Home.CreateTodo.Models;
-using Application.Dto.GetTodo;
 using Application.Services.Http;
-using AutoMapper;
 using FluentValidation;
 using Infrastructure.Context;
 using Infrastructure.Entities;
@@ -17,14 +15,12 @@ namespace Application.Commands.Home.CreateTodo;
 public class CreateTodoHandler(
     IHttpContextDataExtractor authUtils,
     ITaskManagementToolDbContext dbContext,
-    IMapper mapper,
     IValidator<CreateTodoCommand> requestValidator,
     IHttpContextAccessor httpContextAccessor
     ) : IRequestHandler<CreateTodoCommand, CreateTodoResponse>
 {
     private readonly IHttpContextDataExtractor _authUtils = authUtils;
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
-    private readonly IMapper _mapper = mapper;
     private readonly IValidator<CreateTodoCommand> _requestValidator = requestValidator;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
@@ -38,14 +34,26 @@ public class CreateTodoHandler(
             throw new CustomException<CreateTodoErrorCode>(Enum.Parse<CreateTodoErrorCode>(firstError.ErrorCode), firstError.ErrorMessage);
         }
 
-        var todoEntity = _mapper.Map<CreateTodoCommand, ToDoEntity>(request);
-
-        todoEntity.CreatorId = _authUtils.GetUserNameIdentifier(_httpContextAccessor.HttpContext);
+        var todoEntity = new ToDoEntity
+        {
+            Content = request.Content,
+            CreatorId = _authUtils.GetUserNameIdentifier(_httpContextAccessor.HttpContext),
+            Importance = request.Importance,
+            IsCompleted = false,
+            Name = request.Name,
+        };
 
         var createdTodo = (await _dbContext.Todos.AddAsync(todoEntity, cancellationToken)).Entity;
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return new CreateTodoResponse { Todo = _mapper.Map<ToDoEntity, TodoDto>(createdTodo) };
+        return new CreateTodoResponse
+        {
+            Content = createdTodo.Content,
+            Id = createdTodo.Id,
+            Importance = createdTodo.Importance,
+            IsCompleted = createdTodo.IsCompleted,
+            Name = createdTodo.Name,
+        };
     }
 }

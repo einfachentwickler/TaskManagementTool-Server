@@ -16,8 +16,8 @@ public static class TodosSeeder
 
         var todos = new[]
         {
-            new ToDoEntity { Name = "Todo 1 init", Content = "Todo 1 content", IsCompleted = false, Importance = 10, Creator = admin },
-            new ToDoEntity { Name = "Todo 2 init", Content = "Todo 2 content", IsCompleted = true, Importance = 2, Creator = admin }
+            new ToDoEntity { Name = "Todo 1 init", Content = "Todo 1 content", IsCompleted = false, Importance = 10, Creator = admin, CreatorId = admin.Id },
+            new ToDoEntity { Name = "Todo 2 init", Content = "Todo 2 content", IsCompleted = true, Importance = 2, Creator = admin, CreatorId = admin.Id }
         };
 
         await context.Todos.AddRangeAsync(todos);

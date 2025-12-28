@@ -1,5 +1,4 @@
 ﻿using Application.Commands.Auth.Login.Models;
-using Application.Commands.Auth.Login.Validation;
 using Application.Queries.Admin.GetUsers.Models;
 using FluentAssertions;
 using IntegrationTests.Constants;

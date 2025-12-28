@@ -1,5 +1,4 @@
 ﻿using Application.Commands.Auth.Login.Models;
-using Application.Commands.Auth.Login.Validation;
 using Application.Services.IdentityUserManagement;
 using Application.Services.Jwt.AccessToken;
 using Application.Services.Jwt.RefreshToken;

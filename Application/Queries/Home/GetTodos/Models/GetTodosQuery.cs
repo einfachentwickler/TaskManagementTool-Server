@@ -1,10 +1,6 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Http;
+﻿using Application.Dto.GetEntity;
+using MediatR;
 
 namespace Application.Queries.Home.GetTodos.Models;
 
-public record GetTodosQuery : IRequest<GetTodosResponse>
-{
-    public int PageSize { get; set; }
-    public int PageNumber { get; set; }
-}
+public record GetTodosQuery : GetPagedEntityRequestBase, IRequest<GetTodosResponse> { }

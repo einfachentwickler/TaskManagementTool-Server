@@ -14,5 +14,5 @@ public record UserRegisterCommand : IRequest<Unit>
 
     public required string LastName { get; init; }
 
-    public int Age { get; init; }
+    public required int Age { get; init; }
 }

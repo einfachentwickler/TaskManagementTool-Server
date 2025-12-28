@@ -96,7 +96,7 @@ public class HomeControllerTests
         actualResult.Should().BeOfType<CreatedAtActionResult>();
         var createdResult = actualResult.As<CreatedAtActionResult>();
         createdResult.Value.Should().BeEquivalentTo(response);
-        createdResult.RouteValues!["id"].Should().Be(response.Todo.Id);
+        createdResult.RouteValues!["id"].Should().Be(response.Id);
     }
 
     [Test]

@@ -43,16 +43,16 @@ public class CreateTodoTests
 
         var response = await createResponse.Content.ReadFromJsonAsync<CreateTodoResponse>();
 
-        var getResponse = await _client.GetAsync(string.Format(UriConstants.HOME_GET_TODO_URI, response!.Todo.Id));
+        var getResponse = await _client.GetAsync(string.Format(UriConstants.HOME_GET_TODO_URI, response!.Id));
 
         getResponse.EnsureSuccessStatusCode();
 
         var todoFromDb = await getResponse.Content.ReadFromJsonAsync<GetTodoByIdResponse>();
 
-        todoFromDb!.Todo.Content.Should().Be(createTodoDto.Content);
-        todoFromDb.Todo.Name.Should().Be(createTodoDto.Name);
-        todoFromDb.Todo.Importance.Should().Be(createTodoDto.Importance);
-        todoFromDb.Todo.Id.Should().Be(response.Todo.Id);
+        todoFromDb!.Content.Should().Be(createTodoDto.Content);
+        todoFromDb.Name.Should().Be(createTodoDto.Name);
+        todoFromDb.Importance.Should().Be(createTodoDto.Importance);
+        todoFromDb.Id.Should().Be(response.Id);
     }
 
     [TearDown]

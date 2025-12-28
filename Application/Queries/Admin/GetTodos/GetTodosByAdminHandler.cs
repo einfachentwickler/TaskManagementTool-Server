@@ -1,21 +1,18 @@
-﻿using Application.Dto.GetTodo;
-using Application.Queries.Admin.GetTodos.Models;
-using AutoMapper;
+﻿using Application.Queries.Admin.GetTodos.Models;
+using Application.Queries.Admin.GetUsers.Models;
 using Infrastructure.Context;
 using Infrastructure.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.Queries.Admin.GetTodos;
 
-public class GetTodosByAdminHandler(ITaskManagementToolDbContext dbContext, IMapper mapper) : IRequestHandler<GetTodosByAdminQuery, GetTodosByAdminResponse>
+public class GetTodosByAdminHandler(ITaskManagementToolDbContext dbContext) : IRequestHandler<GetTodosByAdminQuery, GetTodosByAdminResponse>
 {
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
-    private readonly IMapper _mapper = mapper;
 
     public async Task<GetTodosByAdminResponse> Handle(GetTodosByAdminQuery request, CancellationToken cancellationToken)
     {
@@ -25,6 +22,27 @@ public class GetTodosByAdminHandler(ITaskManagementToolDbContext dbContext, IMap
             .Include(todo => todo.Creator)
             .ToListAsync(cancellationToken);
 
-        return new GetTodosByAdminResponse { Todos = _mapper.Map<IEnumerable<TodoDto>>(todos) };
+        return new GetTodosByAdminResponse
+        {
+            Todos = todos.Select(x => new TodoDtoWithUser
+            {
+                Id = x.Id,
+                Content = x.Content,
+                Creator = new GetUserDto
+                {
+                    Age = x.Creator.Age,
+                    Email = x.Creator.Email,
+                    FirstName = x.Creator.FirstName,
+                    LastName = x.Creator.LastName,
+                    Id = x.Creator.Id,
+                    IsBlocked = x.Creator.IsBlocked,
+                    Role = x.Creator.Role,
+                    Username = x.Creator.UserName
+                },
+                Importance = x.Importance,
+                IsCompleted = x.IsCompleted,
+                Name = x.Name
+            })
+        };
     }
 }

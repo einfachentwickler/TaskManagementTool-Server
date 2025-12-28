@@ -1,9 +1,8 @@
-﻿using Application.Dto.GetTodo;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Application.Queries.Home.GetTodos.Models;
 
 public record GetTodosResponse
 {
-    public required IEnumerable<TodoDto> Todos { get; init; }
+    public required IEnumerable<GetTodoDto> Todos { get; init; }
 }

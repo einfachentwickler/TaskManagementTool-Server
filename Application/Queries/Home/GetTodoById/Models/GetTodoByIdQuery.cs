@@ -4,5 +4,5 @@ namespace Application.Queries.Home.GetTodoById.Models;
 
 public record GetTodoByIdQuery : IRequest<GetTodoByIdResponse>
 {
-    public int TodoId { get; init; }
+    public required int TodoId { get; init; }
 }

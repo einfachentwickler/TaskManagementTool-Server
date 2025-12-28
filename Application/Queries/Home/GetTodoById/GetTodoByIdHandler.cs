@@ -1,8 +1,5 @@
-﻿using Application.Dto.GetTodo;
-using Application.Queries.Home.GetTodoById.Models;
-using AutoMapper;
+﻿using Application.Queries.Home.GetTodoById.Models;
 using Infrastructure.Context;
-using Infrastructure.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Shared.Exceptions;
@@ -11,13 +8,9 @@ using System.Threading.Tasks;
 
 namespace Application.Queries.Home.GetTodoById;
 
-public class GetTodoByIdHandler(
-    ITaskManagementToolDbContext dbContext,
-    IMapper mapper
-    ) : IRequestHandler<GetTodoByIdQuery, GetTodoByIdResponse>
+public class GetTodoByIdHandler(ITaskManagementToolDbContext dbContext) : IRequestHandler<GetTodoByIdQuery, GetTodoByIdResponse>
 {
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
-    private readonly IMapper _mapper = mapper;
 
     public async Task<GetTodoByIdResponse> Handle(GetTodoByIdQuery request, CancellationToken cancellationToken)
     {
@@ -25,10 +18,16 @@ public class GetTodoByIdHandler(
             .Include(todo => todo.Creator)
             .FirstOrDefaultAsync(todo => todo.Id == request.TodoId && todo.CreatorId == todo.Creator.Id, cancellationToken);
 
-        var result = todoEntity is null
-            ? throw new CustomException<GetTodoByIdErrorCode>(GetTodoByIdErrorCode.TodoNotFound, GetTodoByIdErrorMesssages.Forbidden)
-            : _mapper.Map<ToDoEntity, TodoDto>(todoEntity);
+        if (todoEntity is null)
+            throw new CustomException<GetTodoByIdErrorCode>(GetTodoByIdErrorCode.TodoNotFound, GetTodoByIdErrorMesssages.TodoNotFound);
 
-        return new GetTodoByIdResponse { Todo = result };
+        return new GetTodoByIdResponse
+        {
+            Id = todoEntity.Id,
+            Content = todoEntity.Content,
+            Importance = todoEntity.Importance,
+            IsCompleted = todoEntity.IsCompleted,
+            Name = todoEntity.Name
+        };
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace Application.Commands.Home.UpdateTodo.Models;
+﻿using Application.Queries.Admin.GetUsers.Models;
 
-public record UpdateTodoResponse
+namespace Application.Queries.Admin.GetTodos.Models;
+
+public record TodoDtoWithUser
 {
     public required int Id { get; init; }
 
@@ -11,4 +13,6 @@ public record UpdateTodoResponse
     public required bool IsCompleted { get; init; }
 
     public required int Importance { get; init; }
+
+    public required GetUserDto Creator { get; init; }
 }

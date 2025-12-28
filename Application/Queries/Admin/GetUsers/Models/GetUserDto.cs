@@ -12,9 +12,9 @@ public record GetUserDto
 
     public required string LastName { get; init; }
 
-    public int Age { get; init; }
+    public required int Age { get; init; }
 
-    public bool IsBlocked { get; init; }
+    public required bool IsBlocked { get; init; }
 
     public required string Role { get; init; }
 }

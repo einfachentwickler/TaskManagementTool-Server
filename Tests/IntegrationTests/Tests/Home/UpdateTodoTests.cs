@@ -45,7 +45,8 @@ public class UpdateTodoTests
             Name = "Todo upd",
             Content = "Content upd",
             Importance = 10,
-            Id = response!.Todo.Id
+            Id = response!.Id,
+            IsCompleted = false
         };
 
         //Act
@@ -54,16 +55,16 @@ public class UpdateTodoTests
         //Assert
         updateResponse.EnsureSuccessStatusCode();
 
-        var getResponse = await _client.GetAsync(string.Format(UriConstants.HOME_GET_TODO_URI, response.Todo.Id));
+        var getResponse = await _client.GetAsync(string.Format(UriConstants.HOME_GET_TODO_URI, response.Id));
 
         getResponse.EnsureSuccessStatusCode();
 
         var todoFromDb = await getResponse.Content.ReadFromJsonAsync<GetTodoByIdResponse>();
 
-        todoFromDb!.Todo.Content.Should().Be(updateTodoDto.Content);
-        todoFromDb.Todo.Name.Should().Be(updateTodoDto.Name);
-        todoFromDb.Todo.Importance.Should().Be(updateTodoDto.Importance);
-        todoFromDb.Todo.Id.Should().Be(response.Todo.Id);
+        todoFromDb!.Content.Should().Be(updateTodoDto.Content);
+        todoFromDb.Name.Should().Be(updateTodoDto.Name);
+        todoFromDb.Importance.Should().Be(updateTodoDto.Importance);
+        todoFromDb.Id.Should().Be(response.Id);
     }
 
     [TearDown]

@@ -1,6 +1,5 @@
 ﻿using Application.Commands.Auth.Register;
 using Application.Commands.Auth.Register.Validation;
-using Application.MappingProfiles;
 using Application.Services.Http;
 using Application.Services.IdentityUserManagement;
 using Application.Services.Jwt.AccessToken;
@@ -17,8 +16,6 @@ public static class DiModule
         services.AddValidatorsFromAssemblyContaining<UserRegisterCommandValidator>();
 
         services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblyContaining<UserRegisterHandler>());
-
-        services.AddAutoMapper(x => { }, typeof(DefaultMappingProfile));
 
         services.AddScoped<IIdentityUserManagerWrapper, IdentityUserManagerWrapper>();
         services.AddScoped<IJwtAccessTokenBuilder, JwtAccessTokenBuilder>();

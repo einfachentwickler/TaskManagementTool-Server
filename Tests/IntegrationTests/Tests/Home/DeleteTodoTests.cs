@@ -50,20 +50,20 @@ public class DeleteTodoTests
         var createdTodo2 = await createResponse2.Content.ReadFromJsonAsync<CreateTodoResponse>();
 
         //Act
-        var deleteResponse = await _client.DeleteAsync(string.Format(UriConstants.HOME_DELETE_TODO_URI, createdTodo!.Todo.Id));
+        var deleteResponse = await _client.DeleteAsync(string.Format(UriConstants.HOME_DELETE_TODO_URI, createdTodo!.Id));
 
         //Assert
         deleteResponse.EnsureSuccessStatusCode();
 
-        var getResponse1 = await _client.GetAsync(string.Format(UriConstants.HOME_GET_TODO_URI, createdTodo!.Todo.Id));
+        var getResponse1 = await _client.GetAsync(string.Format(UriConstants.HOME_GET_TODO_URI, createdTodo!.Id));
         getResponse1.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        var getResponse = await _client.GetAsync(string.Format(UriConstants.HOME_GET_TODO_URI, createdTodo2!.Todo.Id));
+        var getResponse = await _client.GetAsync(string.Format(UriConstants.HOME_GET_TODO_URI, createdTodo2!.Id));
         getResponse.EnsureSuccessStatusCode();
     }
 
     [Test]
-    public async Task DeleteTodo_ForbiddedTodo_ReturnsForbidden()
+    public async Task DeleteTodo_ForbiddenTodo_ReturnsForbidden()
     {
         //Arrange
         await TestsHelper.RegisterUserAsync(_client, "user1@email.com", "password", "password");
@@ -84,14 +84,14 @@ public class DeleteTodoTests
         await TestsHelper.LoginAsync(_client, "user2@email.com", "password");
 
         //Act
-        var deleteResponse = await _client.DeleteAsync(string.Format(UriConstants.HOME_DELETE_TODO_URI, createdTodo!.Todo.Id));
+        var deleteResponse = await _client.DeleteAsync(string.Format(UriConstants.HOME_DELETE_TODO_URI, createdTodo!.Id));
 
         //Assert
         deleteResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
 
         await TestsHelper.LoginAsync(_client, "user1@email.com", "password");
 
-        var getTodoResponse = await _client.DeleteAsync(string.Format(UriConstants.HOME_GET_TODO_URI, createdTodo!.Todo.Id));
+        var getTodoResponse = await _client.DeleteAsync(string.Format(UriConstants.HOME_GET_TODO_URI, createdTodo!.Id));
         getTodoResponse.EnsureSuccessStatusCode();
     }
 
