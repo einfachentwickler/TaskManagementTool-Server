@@ -5,6 +5,7 @@ using AutoMapper;
 using FluentValidation;
 using Infrastructure.Context;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Shared.Exceptions;
 using System;
@@ -17,13 +18,15 @@ public class UpdateTodoHandler(
     ITaskManagementToolDbContext dbContext,
     IHttpContextDataExtractor authUtils,
     IValidator<UpdateTodoCommand> requestValidator,
-    IMapper mapper
+    IMapper mapper,
+    IHttpContextAccessor httpContextAccessor
     ) : IRequestHandler<UpdateTodoCommand, UpdateTodoResponse>
 {
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
     private readonly IHttpContextDataExtractor _authUtils = authUtils;
     private readonly IValidator<UpdateTodoCommand> _requestValidator = requestValidator;
     private readonly IMapper _mapper = mapper;
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     public async Task<UpdateTodoResponse> Handle(UpdateTodoCommand request, CancellationToken cancellationToken)
     {
@@ -35,7 +38,7 @@ public class UpdateTodoHandler(
             throw new CustomException<UpdateTodoErrorCode>(Enum.Parse<UpdateTodoErrorCode>(firstError.ErrorCode), firstError.ErrorMessage);
         }
 
-        if (!await _authUtils.IsAllowedActionAsync(request.HttpContext, request.UpdateTodoDto.Id, cancellationToken))
+        if (!await _authUtils.IsAllowedActionAsync(_httpContextAccessor.HttpContext, request.UpdateTodoDto.Id, cancellationToken))
         {
             throw new CustomException<UpdateTodoErrorCode>(UpdateTodoErrorCode.Forbidden, UpdateTodoErrorMessages.Forbidden);
         }

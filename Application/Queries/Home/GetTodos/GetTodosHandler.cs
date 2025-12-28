@@ -5,6 +5,7 @@ using AutoMapper;
 using Infrastructure.Context;
 using Infrastructure.Extensions;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,15 +17,17 @@ namespace Application.Queries.Home.GetTodos;
 public class GetTodosHandler(
     ITaskManagementToolDbContext dbContext,
     IMapper mapper,
-    IHttpContextDataExtractor authUtils) : IRequestHandler<GetTodosQuery, GetTodosResponse>
+    IHttpContextDataExtractor authUtils,
+    IHttpContextAccessor httpContextAccessor) : IRequestHandler<GetTodosQuery, GetTodosResponse>
 {
     private readonly IMapper _mapper = mapper;
     private readonly IHttpContextDataExtractor _authUtils = authUtils;
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     public async Task<GetTodosResponse> Handle(GetTodosQuery request, CancellationToken cancellationToken)
     {
-        string userId = _authUtils.GetUserNameIdentifier(request.HttpContext);
+        string userId = _authUtils.GetUserNameIdentifier(_httpContextAccessor.HttpContext);
 
         var todos = await _dbContext.Todos
             .Where(todo => todo.CreatorId == userId)

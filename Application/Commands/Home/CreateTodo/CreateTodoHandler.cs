@@ -6,6 +6,7 @@ using FluentValidation;
 using Infrastructure.Context;
 using Infrastructure.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Shared.Exceptions;
 using System;
 using System.Threading;
@@ -17,13 +18,15 @@ public class CreateTodoHandler(
     IHttpContextDataExtractor authUtils,
     ITaskManagementToolDbContext dbContext,
     IMapper mapper,
-    IValidator<CreateTodoCommand> requestValidator
+    IValidator<CreateTodoCommand> requestValidator,
+    IHttpContextAccessor httpContextAccessor
     ) : IRequestHandler<CreateTodoCommand, CreateTodoResponse>
 {
     private readonly IHttpContextDataExtractor _authUtils = authUtils;
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
     private readonly IMapper _mapper = mapper;
     private readonly IValidator<CreateTodoCommand> _requestValidator = requestValidator;
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     public async Task<CreateTodoResponse> Handle(CreateTodoCommand request, CancellationToken cancellationToken)
     {
@@ -37,7 +40,7 @@ public class CreateTodoHandler(
 
         var todoEntity = _mapper.Map<CreateTodoDto, ToDoEntity>(request.CreateTodoDto);
 
-        todoEntity.CreatorId = _authUtils.GetUserNameIdentifier(request.HttpContext);
+        todoEntity.CreatorId = _authUtils.GetUserNameIdentifier(_httpContextAccessor.HttpContext);
 
         var createdTodo = (await _dbContext.Todos.AddAsync(todoEntity, cancellationToken)).Entity;
 

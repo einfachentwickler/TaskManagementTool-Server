@@ -7,7 +7,6 @@ using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using FluentAssertions;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NUnit.Framework;
@@ -21,7 +20,6 @@ public class HomeControllerTests
 {
     private IFixture _fixture;
     private IMediator _mediator;
-    private IHttpContextAccessor _httpContextAccessor;
     private CancellationToken _cancellationToken;
 
     private HomeController _sut;
@@ -32,12 +30,10 @@ public class HomeControllerTests
         _fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
 
         _mediator = _fixture.Freeze<IMediator>();
-        _httpContextAccessor = _fixture.Freeze<IHttpContextAccessor>();
-        _httpContextAccessor.HttpContext.Returns(new DefaultHttpContext());
 
         _cancellationToken = _fixture.Create<CancellationToken>();
 
-        _sut = new HomeController(_mediator, _httpContextAccessor);
+        _sut = new HomeController(_mediator);
     }
 
     [Test]
@@ -47,8 +43,7 @@ public class HomeControllerTests
         var query = new GetTodosQuery
         {
             PageNumber = 1,
-            PageSize = 10,
-            HttpContext = _httpContextAccessor.HttpContext
+            PageSize = 10
         };
 
         var response = _fixture.Create<GetTodosResponse>();
@@ -69,8 +64,7 @@ public class HomeControllerTests
         // Arrange
         var query = new GetTodoByIdQuery
         {
-            TodoId = 1,
-            HttpContext = _httpContextAccessor.HttpContext
+            TodoId = 1
         };
 
         var response = _fixture.Create<GetTodoByIdResponse>();
@@ -91,8 +85,7 @@ public class HomeControllerTests
         // Arrange
         var command = new CreateTodoCommand
         {
-            CreateTodoDto = _fixture.Create<CreateTodoDto>(),
-            HttpContext = _httpContextAccessor.HttpContext
+            CreateTodoDto = _fixture.Create<CreateTodoDto>()
         };
 
         var response = _fixture.Create<CreateTodoResponse>();
@@ -115,8 +108,7 @@ public class HomeControllerTests
         // Arrange
         var command = new UpdateTodoCommand
         {
-            UpdateTodoDto = _fixture.Create<UpdateTodoDto>(),
-            HttpContext = _httpContextAccessor.HttpContext
+            UpdateTodoDto = _fixture.Create<UpdateTodoDto>()
         };
 
         // Act
@@ -134,8 +126,7 @@ public class HomeControllerTests
         // Arrange
         var command = new DeleteTodoCommand
         {
-            TodoId = 12,
-            HttpContext = _httpContextAccessor.HttpContext
+            TodoId = 12
         };
 
         // Act

@@ -1,4 +1,5 @@
 ﻿using Application.Commands.Auth.Login.Models;
+using Application.Commands.Auth.RefreshToken.Models;
 using Application.Commands.Auth.Register.Models;
 using Application.Commands.Auth.ResetPassword.Models;
 using AutoFixture;
@@ -78,5 +79,23 @@ public class AuthControllerTests
         actualResult.Should().BeOfType<NoContentResult>();
 
         await _mediator.Received(1).Send(ExtendedArg.Is(request), _cancellationToken);
+    }
+
+    [Test]
+    public async Task Refresh_ValidRequest_Returns()
+    {
+        //Arrange
+        var command = _fixture.Create<RefreshTokenCommand>();
+        var response = _fixture.Create<UserLoginResponse>();
+
+        _mediator.Send(command, _cancellationToken).Returns(response);
+
+        //Act
+        var actualResult = await _sut.Refresh(command, _cancellationToken);
+
+        //Assert
+        actualResult.Should().BeOfType<OkObjectResult>();
+
+        actualResult.As<OkObjectResult>().Value.Should().BeEquivalentTo(response);
     }
 }

@@ -3,6 +3,7 @@ using Application.Services.Http;
 using FluentValidation;
 using Infrastructure.Context;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Shared.Exceptions;
 using System.Linq;
@@ -13,15 +14,17 @@ namespace Application.Commands.Home.DeleteTodo;
 
 public class DeleteTodoHandler(
     IHttpContextDataExtractor authUtils,
-    ITaskManagementToolDbContext dbContext
+    ITaskManagementToolDbContext dbContext,
+    IHttpContextAccessor httpContextAccessor
     ) : IRequestHandler<DeleteTodoCommand, Unit>
 {
     private readonly IHttpContextDataExtractor _authUtils = authUtils;
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     public async Task<Unit> Handle(DeleteTodoCommand request, CancellationToken cancellationToken)
     {
-        if (!await _authUtils.IsAllowedActionAsync(request.HttpContext, request.TodoId, cancellationToken))
+        if (!await _authUtils.IsAllowedActionAsync(_httpContextAccessor.HttpContext, request.TodoId, cancellationToken))
         {
             throw new CustomException<DeleteTodoErrorCode>(DeleteTodoErrorCode.Forbidden, DeleteTodoErrorMessages.Forbidden);
         }

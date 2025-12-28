@@ -19,10 +19,9 @@ namespace WebApi.Controllers;
 [Route("api/home")]
 [ApiController, Authorize]
 [EnableRateLimiting(RateLimiterConstants.CONCURRENCY_POLICY_NAME)]
-public class HomeController(IMediator mediator, IHttpContextAccessor httpContextAccessor) : ControllerBase
+public class HomeController(IMediator mediator) : ControllerBase
 {
     private readonly IMediator _mediator = mediator;
-    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<TodoDto>), StatusCodes.Status200OK)]
@@ -34,8 +33,7 @@ public class HomeController(IMediator mediator, IHttpContextAccessor httpContext
         var query = new GetTodosQuery
         {
             PageNumber = pageNumber,
-            PageSize = pageSize,
-            HttpContext = _httpContextAccessor.HttpContext
+            PageSize = pageSize
         };
 
         var response = await _mediator.Send(query, cancellationToken);
@@ -53,8 +51,7 @@ public class HomeController(IMediator mediator, IHttpContextAccessor httpContext
     {
         var query = new GetTodoByIdQuery
         {
-            TodoId = id,
-            HttpContext = _httpContextAccessor.HttpContext
+            TodoId = id
         };
 
         var response = await _mediator.Send(query, cancellationToken);
@@ -71,8 +68,7 @@ public class HomeController(IMediator mediator, IHttpContextAccessor httpContext
     {
         var command = new CreateTodoCommand
         {
-            CreateTodoDto = model,
-            HttpContext = _httpContextAccessor.HttpContext
+            CreateTodoDto = model
         };
 
         var response = await _mediator.Send(command, cancellationToken);
@@ -89,8 +85,7 @@ public class HomeController(IMediator mediator, IHttpContextAccessor httpContext
     {
         var command = new UpdateTodoCommand
         {
-            UpdateTodoDto = model,
-            HttpContext = _httpContextAccessor.HttpContext
+            UpdateTodoDto = model
         };
 
         await _mediator.Send(command, cancellationToken);
@@ -107,8 +102,7 @@ public class HomeController(IMediator mediator, IHttpContextAccessor httpContext
     {
         var command = new DeleteTodoCommand
         {
-            TodoId = id,
-            HttpContext = _httpContextAccessor.HttpContext
+            TodoId = id
         };
 
         await _mediator.Send(command, cancellationToken);
