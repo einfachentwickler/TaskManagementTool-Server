@@ -1,17 +1,14 @@
-version: '3'
-
 services:
   ms-sql-server:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "Password123455"
-      MSSQL_PID: EXPRESS
+      MSSQL_SA_PASSWORD: ${SA_PASSWORD:?SA_PASSWORD is required}
+      MSSQL_PID: ${MSSQL_PID:-EXPRESS}
     ports:
       - "1433:1433"
     networks:
        - default
-    restart: always
   task-management-tool-api:
     build: .
     ports:

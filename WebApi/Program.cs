@@ -116,6 +116,6 @@ public class Program
             .AddApplication()
             .AddWebApi(builder.Configuration);
 
-        builder.ConfigureLogging(builder.Configuration);
+        builder.ConfigureLogging(builder.Configuration, builder.Environment.IsDevelopment());
     }
 }

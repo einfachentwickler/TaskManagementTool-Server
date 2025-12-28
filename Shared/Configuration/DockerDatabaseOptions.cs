@@ -8,6 +8,8 @@ public record DockerDatabaseOptions
 
     public required string DBName { get; init; }
 
+    public required string DbNameLogs { get; init; }
+
     public required string DBUser { get; init; }
 
     public required string DBPassword { get; init; }
