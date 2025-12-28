@@ -43,7 +43,7 @@ public static class TestsHelper
 
     public static async Task<HttpResponseMessage> CreateTodoAsync(HttpClient client, string name = "Todo 1")
     {
-        var createTodoDto = new CreateTodoDto
+        var createTodoDto = new CreateTodoCommand
         {
             Name = name,
             Content = "Content 1",

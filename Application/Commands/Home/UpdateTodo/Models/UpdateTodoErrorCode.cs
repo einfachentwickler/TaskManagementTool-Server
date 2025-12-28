@@ -2,7 +2,6 @@
 
 public enum UpdateTodoErrorCode
 {
-    InvalidRequest,
     InvalidName,
     InvalidContent,
     Forbidden

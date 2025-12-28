@@ -6,7 +6,6 @@ using FluentAssertions;
 using IntegrationTests.Constants;
 using IntegrationTests.Utils;
 using NUnit.Framework;
-using System.Net;
 using System.Net.Http.Json;
 
 namespace IntegrationTests.Tests.Home;
@@ -35,7 +34,7 @@ public class GetTodosTests
         await TestsHelper.RegisterUserAsync(_client, "user1@email.com", "password", "password");
         await TestsHelper.LoginAsync(_client, "user1@email.com", "password");
 
-        var todos = fixture.CreateMany<CreateTodoDto>(30).ToList();
+        var todos = fixture.CreateMany<CreateTodoCommand>(30).ToList();
 
         todos.ForEach(async todo => await _client.PostAsJsonAsync(UriConstants.HOME_CREATE_TODO_URI, todo));
 
@@ -66,7 +65,7 @@ public class GetTodosTests
         await TestsHelper.RegisterUserAsync(_client, "user2@email.com", "password", "password");
         await TestsHelper.LoginAsync(_client, "user1@email.com", "password");
 
-        var todos = fixture.CreateMany<CreateTodoDto>(30).ToList();
+        var todos = fixture.CreateMany<CreateTodoCommand>(30).ToList();
 
         todos.ForEach(async todo => await _client.PostAsJsonAsync(UriConstants.HOME_CREATE_TODO_URI, todo));
 

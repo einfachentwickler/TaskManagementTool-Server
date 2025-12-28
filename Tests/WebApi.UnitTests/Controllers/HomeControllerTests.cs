@@ -83,17 +83,14 @@ public class HomeControllerTests
     public async Task Create_ValidModel_ReturnsCreatedAtAction()
     {
         // Arrange
-        var command = new CreateTodoCommand
-        {
-            CreateTodoDto = _fixture.Create<CreateTodoDto>()
-        };
+        var command = _fixture.Create<CreateTodoCommand>();
 
         var response = _fixture.Create<CreateTodoResponse>();
 
         _mediator.Send(ExtendedArg.Is(command), _cancellationToken).Returns(response);
 
         // Act
-        var actualResult = await _sut.Create(command.CreateTodoDto, _cancellationToken);
+        var actualResult = await _sut.Create(command, _cancellationToken);
 
         // Assert
         actualResult.Should().BeOfType<CreatedAtActionResult>();
@@ -106,13 +103,10 @@ public class HomeControllerTests
     public async Task Update_ValidModel_ReturnsNoContent()
     {
         // Arrange
-        var command = new UpdateTodoCommand
-        {
-            UpdateTodoDto = _fixture.Create<UpdateTodoDto>()
-        };
+        var command = _fixture.Create<UpdateTodoCommand>();
 
         // Act
-        var actualResult = await _sut.Update(command.UpdateTodoDto, _cancellationToken);
+        var actualResult = await _sut.Update(command, _cancellationToken);
 
         // Assert
         actualResult.Should().BeOfType<NoContentResult>();

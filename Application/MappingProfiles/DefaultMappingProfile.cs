@@ -16,8 +16,8 @@ public class DefaultMappingProfile : Profile
 
         CreateMap<ToDoEntity, TodoDto>().ReverseMap();
 
-        CreateMap<CreateTodoDto, ToDoEntity>();
-        CreateMap<UpdateTodoDto, ToDoEntity>();
+        CreateMap<CreateTodoCommand, ToDoEntity>();
+        CreateMap<UpdateTodoCommand, ToDoEntity>();
 
         CreateMap<IEnumerable<ToDoEntity>, List<TodoDto>>();
         CreateMap<IEnumerable<UserEntity>, List<GetUserDto>>();

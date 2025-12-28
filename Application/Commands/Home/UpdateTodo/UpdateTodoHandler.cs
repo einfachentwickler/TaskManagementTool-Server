@@ -38,17 +38,17 @@ public class UpdateTodoHandler(
             throw new CustomException<UpdateTodoErrorCode>(Enum.Parse<UpdateTodoErrorCode>(firstError.ErrorCode), firstError.ErrorMessage);
         }
 
-        if (!await _authUtils.IsAllowedActionAsync(_httpContextAccessor.HttpContext, request.UpdateTodoDto.Id, cancellationToken))
+        if (!await _authUtils.IsAllowedActionAsync(_httpContextAccessor.HttpContext, request.Id, cancellationToken))
         {
             throw new CustomException<UpdateTodoErrorCode>(UpdateTodoErrorCode.Forbidden, UpdateTodoErrorMessages.Forbidden);
         }
 
-        var toDo = await _dbContext.Todos.FirstOrDefaultAsync(todo => todo.Id == request.UpdateTodoDto.Id, cancellationToken);
+        var toDo = await _dbContext.Todos.FirstOrDefaultAsync(todo => todo.Id == request.Id, cancellationToken);
 
-        toDo.Name = request.UpdateTodoDto.Name;
-        toDo.IsCompleted = request.UpdateTodoDto.IsCompleted;
-        toDo.Content = request.UpdateTodoDto.Content;
-        toDo.Importance = request.UpdateTodoDto.Importance;
+        toDo.Name = request.Name;
+        toDo.IsCompleted = request.IsCompleted;
+        toDo.Content = request.Content;
+        toDo.Importance = request.Importance;
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 

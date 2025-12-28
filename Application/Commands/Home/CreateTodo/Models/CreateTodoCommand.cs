@@ -4,5 +4,9 @@ namespace Application.Commands.Home.CreateTodo.Models;
 
 public record CreateTodoCommand : IRequest<CreateTodoResponse>
 {
-    public required CreateTodoDto CreateTodoDto { get; init; }
+    public required string Name { get; init; }
+
+    public required string Content { get; init; }
+
+    public int Importance { get; init; }
 }

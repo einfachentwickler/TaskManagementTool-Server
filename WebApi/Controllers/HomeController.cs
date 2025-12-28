@@ -64,14 +64,10 @@ public class HomeController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Create([FromBody] CreateTodoDto model, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create([FromBody] CreateTodoCommand command, CancellationToken cancellationToken)
     {
-        var command = new CreateTodoCommand
-        {
-            CreateTodoDto = model
-        };
-
         var response = await _mediator.Send(command, cancellationToken);
+
         return CreatedAtAction(nameof(GetById), new { id = response.Todo.Id }, response);
     }
 
@@ -81,14 +77,10 @@ public class HomeController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Update([FromBody] UpdateTodoDto model, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update([FromBody] UpdateTodoCommand command, CancellationToken cancellationToken)
     {
-        var command = new UpdateTodoCommand
-        {
-            UpdateTodoDto = model
-        };
-
         await _mediator.Send(command, cancellationToken);
+
         return NoContent();
     }
 

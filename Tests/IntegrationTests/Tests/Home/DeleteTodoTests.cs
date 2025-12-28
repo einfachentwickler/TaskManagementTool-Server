@@ -29,14 +29,14 @@ public class DeleteTodoTests
         await TestsHelper.RegisterUserAsync(_client, "user1@email.com", "password", "password");
         await TestsHelper.LoginAsync(_client, "user1@email.com", "password");
 
-        var createTodoDto = new CreateTodoDto
+        var createTodoDto = new CreateTodoCommand
         {
             Name = "Todo 1",
             Content = "Content 1",
             Importance = 5
         };
 
-        var createTodoDto2 = new CreateTodoDto
+        var createTodoDto2 = new CreateTodoCommand
         {
             Name = "Todo 2",
             Content = "Content 2",
@@ -70,7 +70,7 @@ public class DeleteTodoTests
         await TestsHelper.RegisterUserAsync(_client, "user2@email.com", "password", "password");
         await TestsHelper.LoginAsync(_client, "user1@email.com", "password");
 
-        var createTodoDto = new CreateTodoDto
+        var createTodoDto = new CreateTodoCommand
         {
             Name = "Todo 1",
             Content = "Content 1",

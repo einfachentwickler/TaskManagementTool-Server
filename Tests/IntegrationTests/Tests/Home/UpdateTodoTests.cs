@@ -29,7 +29,7 @@ public class UpdateTodoTests
         await TestsHelper.RegisterUserAsync(_client, "user1@email.com", "password", "password");
         await TestsHelper.LoginAsync(_client, "user1@email.com", "password");
 
-        var createTodoDto = new CreateTodoDto
+        var createTodoDto = new CreateTodoCommand
         {
             Name = "Todo 1",
             Content = "Content 1",
@@ -40,7 +40,7 @@ public class UpdateTodoTests
 
         var response = await createResponse.Content.ReadFromJsonAsync<CreateTodoResponse>();
 
-        var updateTodoDto = new UpdateTodoDto
+        var updateTodoDto = new UpdateTodoCommand
         {
             Name = "Todo upd",
             Content = "Content upd",

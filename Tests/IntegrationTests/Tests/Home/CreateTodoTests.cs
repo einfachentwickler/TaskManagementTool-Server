@@ -28,7 +28,7 @@ public class CreateTodoTests
         await TestsHelper.RegisterUserAsync(_client, "user1@email.com", "password", "password");
         await TestsHelper.LoginAsync(_client, "user1@email.com", "password");
 
-        var createTodoDto = new CreateTodoDto
+        var createTodoDto = new CreateTodoCommand
         {
             Name = "Todo 1",
             Content = "Content 1",
