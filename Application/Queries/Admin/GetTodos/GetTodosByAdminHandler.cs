@@ -17,6 +17,7 @@ public class GetTodosByAdminHandler(ITaskManagementToolDbContext dbContext) : IR
     public async Task<GetTodosByAdminResponse> Handle(GetTodosByAdminQuery request, CancellationToken cancellationToken)
     {
         var todos = await _dbContext.Todos
+            .AsNoTracking()
             .OrderByDescending(todo => todo.Importance)
             .Page(request.PageSize, request.PageNumber)
             .Include(todo => todo.Creator)

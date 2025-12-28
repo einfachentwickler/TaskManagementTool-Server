@@ -25,6 +25,7 @@ public class GetTodosHandler(
         string userId = _authUtils.GetUserNameIdentifier(_httpContextAccessor.HttpContext);
 
         var todos = await _dbContext.Todos
+            .AsNoTracking()
             .Where(todo => todo.CreatorId == userId)
             .OrderByDescending(todo => todo.Importance)
             .Page(request.PageSize, request.PageNumber)

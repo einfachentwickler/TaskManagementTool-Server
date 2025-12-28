@@ -15,6 +15,7 @@ public class GetTodoByIdHandler(ITaskManagementToolDbContext dbContext) : IReque
     public async Task<GetTodoByIdResponse> Handle(GetTodoByIdQuery request, CancellationToken cancellationToken)
     {
         var todoEntity = await _dbContext.Todos
+            .AsNoTracking()
             .Include(todo => todo.Creator)
             .FirstOrDefaultAsync(todo => todo.Id == request.TodoId && todo.CreatorId == todo.Creator.Id, cancellationToken);
 

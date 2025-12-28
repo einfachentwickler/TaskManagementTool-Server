@@ -15,7 +15,10 @@ public class GetUsersHandler(IIdentityUserManagerWrapper userManager) : IRequest
 
     public async Task<GetUsersResponse> Handle(GetUsersQuery request, CancellationToken cancellationToken)
     {
-        var users = await _identityUserManager.Users.Page(request.PageSize, request.PageNumber).ToListAsync(cancellationToken);
+        var users = await _identityUserManager.Users
+            .AsNoTracking()
+            .Page(request.PageSize, request.PageNumber)
+            .ToListAsync(cancellationToken);
 
         return new GetUsersResponse
         {
