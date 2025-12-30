@@ -14,17 +14,11 @@ public class TmtWebApplicationFactory : WebApplicationFactory<Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureAppConfiguration((context, configBuilder) =>
-        {
-            var path = Path.Combine(AppContext.BaseDirectory, "appsettings.Test.json");
-            configBuilder.AddJsonFile(path, optional: false);
-        });
-
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<DbContextOptions<TaskManagementToolDbContext>>();
 
-            //ToDo move to docker
+            //ToDo move to docker for CI purposes
             var serviceProvider = services.BuildServiceProvider();
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 

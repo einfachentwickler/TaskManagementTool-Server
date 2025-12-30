@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Host": {
+    "WebApi": {
       "commandName": "Project",
       "launchUrl": "swagger",
       "launchBrowser": true,
@@ -13,11 +13,10 @@
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": false,
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
       "environmentVariables": {
-        "ASPNETCORE_HTTPS_PORTS": "8081"
+        "ASPNETCORE_HTTPS_PORTS": "8081",
+        "ASPNETCORE_ENVIRONMENT": "Production"
       },
-      "publishAllPorts": true,
       "useSSL": true
     }
   },

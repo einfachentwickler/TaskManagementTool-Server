@@ -1,4 +1,5 @@
 ﻿namespace IntegrationTests.Constants;
+
 public static class UriConstants
 {
     public const string AUTH_REGISTER_URI = "https://localhost:44311/api/auth/register";

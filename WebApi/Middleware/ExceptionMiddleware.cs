@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Shared.Exceptions;
 using System;
+using System.Net.Mime;
 using System.Threading.Tasks;
 
 namespace WebApi.Middleware;
@@ -20,7 +21,7 @@ public class ExceptionMiddleware(RequestDelegate next)
         }
         catch (Exception exception)
         {
-            context.Response.ContentType = "application/json";
+            context.Response.ContentType = MediaTypeNames.Application.Json;
 
             if (exception is CustomExceptionBase customException)
             {
