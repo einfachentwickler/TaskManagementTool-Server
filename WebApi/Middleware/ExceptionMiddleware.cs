@@ -1,6 +1,6 @@
-﻿using LoggerService;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Shared.Exceptions;
 using System;
@@ -13,7 +13,7 @@ public class ExceptionMiddleware(RequestDelegate next)
 {
     private readonly RequestDelegate _next = next;
 
-    public async Task InvokeAsync(HttpContext context, ILoggerManager loggerManager)
+    public async Task InvokeAsync(HttpContext context, ILogger<ExceptionMiddleware> logger)
     {
         try
         {
@@ -38,7 +38,7 @@ public class ExceptionMiddleware(RequestDelegate next)
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 
-            loggerManager.LogError(exception);
+            logger.LogError(new EventId(), exception, "{Message}", exception.Message);
 
             await context.Response.WriteAsync(exception switch
             {

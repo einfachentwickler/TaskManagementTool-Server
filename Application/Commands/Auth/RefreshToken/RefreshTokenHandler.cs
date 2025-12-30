@@ -70,7 +70,7 @@ public class RefreshTokenHandler(
             TokenHash = _jwtRefreshTokenGenerator.Hash(newRefreshToken),
             CreatedAt = DateTime.UtcNow,
             ExpiresAt = DateTime.UtcNow.AddDays(_options.RefreshTokenLifetimeDays),
-            UserAgent = _httpContextAccessor.HttpContext.Request.Headers.UserAgent,
+            UserAgent = _httpContextAccessor.HttpContext.Request.Headers["User-Agent"].ToString(),
             CreatedByIp = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress?.ToString(),
         }, cancellationToken);
 

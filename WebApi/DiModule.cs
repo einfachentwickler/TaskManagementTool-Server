@@ -1,4 +1,7 @@
-﻿using Infrastructure.Context;
+﻿using Amazon;
+using Amazon.CloudWatchLogs;
+using Amazon.Runtime;
+using Infrastructure.Context;
 using Infrastructure.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -7,6 +10,9 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
+using Serilog.Events;
+using Serilog.Sinks.AwsCloudWatch;
 using Shared.Configuration;
 using Shared.Constants;
 using System;
@@ -19,7 +25,7 @@ namespace WebApi;
 [ExcludeFromCodeCoverage]
 public static class DiModule
 {
-    public static IServiceCollection AddWebApi(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddWebApi(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
     {
         services
             .AddOptions<AuthOptions>()
@@ -27,11 +33,45 @@ public static class DiModule
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services.ConfigureSerilog(configuration, isDevelopment);
+
         services.ConfigureIdentity(configuration);
 
         services.ConfigureRateLimiter(configuration);
 
         services.ConfigureCors();
+
+        return services;
+    }
+
+    private static IServiceCollection ConfigureSerilog(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
+    {
+        if (isDevelopment)
+            return services;
+
+        var awsSettings = configuration
+            .GetSection(nameof(AWSOptions))
+            .Get<AWSOptions>()!;
+
+        var client = new AmazonCloudWatchLogsClient(
+            new BasicAWSCredentials(
+                awsSettings.AccessKey,
+                awsSettings.SecretKey),
+            RegionEndpoint.USEast1);
+
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Verbose()
+            .Enrich.FromLogContext()
+            .WriteTo.AmazonCloudWatch(
+                logGroup: awsSettings.LogGroup,
+                logStreamPrefix: awsSettings.LogStreamPrefix,
+                restrictedToMinimumLevel: Enum.Parse<LogEventLevel>(awsSettings.MinLogLevel),
+                createLogGroup: false,
+                appendUniqueInstanceGuid: false,
+                appendHostName: false,
+                logGroupRetentionPolicy: Enum.Parse<LogGroupRetentionPolicy>(awsSettings.LogsRetentionPolicy),
+                cloudWatchClient: client)
+            .CreateLogger();
 
         return services;
     }

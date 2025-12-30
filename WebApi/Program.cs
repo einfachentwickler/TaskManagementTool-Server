@@ -2,7 +2,6 @@ using Application;
 using Infrastructure.Context;
 using Infrastructure.DI;
 using Infrastructure.Seeding;
-using LoggerService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi;
+using Serilog;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using WebApi.Middleware;
@@ -83,6 +83,13 @@ public class Program
 
     private static void ConfigureServices(WebApplicationBuilder builder)
     {
+        builder.Host.UseSerilog();
+
+        builder.Services
+            .AddInfrastructure(builder.Configuration, builder.Environment.IsDevelopment())
+            .AddApplication()
+            .AddWebApi(builder.Configuration, builder.Environment.IsDevelopment());
+
         builder.Services.AddControllers();
         builder.Services.AddSwaggerGen(options =>
         {
@@ -110,12 +117,5 @@ public class Program
                 {
                     return await context.Database.CanConnectAsync(cancellationToken);
                 });
-
-        builder.Services
-            .AddInfrastructure(builder.Configuration, builder.Environment.IsDevelopment())
-            .AddApplication()
-            .AddWebApi(builder.Configuration);
-
-        builder.ConfigureLogging(builder.Configuration, builder.Environment.IsDevelopment());
     }
 }

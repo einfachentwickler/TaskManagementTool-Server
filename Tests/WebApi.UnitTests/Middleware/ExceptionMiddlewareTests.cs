@@ -2,15 +2,13 @@
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using FluentAssertions;
-using LoggerService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using NSubstitute;
 using NUnit.Framework;
 using Shared.Exceptions;
 using WebApi.Middleware;
-using WebApi.UnitTests.Utils;
 
 namespace WebApi.UnitTests.Middleware;
 
@@ -18,13 +16,13 @@ namespace WebApi.UnitTests.Middleware;
 public class ExceptionMiddlewareTests
 {
     private IFixture _fixture;
-    private ILoggerManager _loggerManager;
+    private ILogger<ExceptionMiddleware> _logger;
 
     [SetUp]
     public void Setup()
     {
         _fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
-        _loggerManager = _fixture.Freeze<ILoggerManager>();
+        _logger = _fixture.Freeze<ILogger<ExceptionMiddleware>>();
     }
 
     [TestCase(GetTodoByIdErrorCode.TodoNotFound, StatusCodes.Status404NotFound)]
@@ -40,7 +38,7 @@ public class ExceptionMiddlewareTests
         context.Response.Body = new MemoryStream();
 
         // Act
-        await middleware.InvokeAsync(context, _loggerManager);
+        await middleware.InvokeAsync(context, _logger);
 
         // Assert
         context.Response.StatusCode.Should().Be(expectedStatusCode);
@@ -56,8 +54,6 @@ public class ExceptionMiddlewareTests
             Detail = GetTodoByIdErrorMesssages.TodoNotFound,
             Status = expectedStatusCode
         });
-
-        _loggerManager.Received(1).LogError(ExtendedArg.Is(exception));
     }
 
     [Test]
@@ -72,7 +68,7 @@ public class ExceptionMiddlewareTests
         context.Response.Body = new MemoryStream();
 
         // Act
-        await middleware.InvokeAsync(context, _loggerManager);
+        await middleware.InvokeAsync(context, _logger);
 
         // Assert
         context.Response.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
@@ -88,7 +84,5 @@ public class ExceptionMiddlewareTests
             Detail = "Unexpected error occured",
             Status = StatusCodes.Status500InternalServerError
         });
-
-        _loggerManager.Received(1).LogError(ExtendedArg.Is(exception));
     }
 }

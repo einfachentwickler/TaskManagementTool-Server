@@ -30,7 +30,7 @@ public static class DiModule
     {
         if (isDevEnv)
         {
-            return configuration.GetRequiredSection("DevConnectionStrings:SqlServerDataBaseConnectionString").Value;
+            return configuration.GetRequiredSection("ConnectionStrings:LocalDbConnection").Value;
         }
 
         var dockerConfig = configuration.GetRequiredSection(nameof(DockerDatabaseOptions)).Get<DockerDatabaseOptions>();

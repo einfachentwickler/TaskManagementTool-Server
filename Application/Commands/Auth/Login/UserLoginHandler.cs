@@ -67,7 +67,7 @@ public class UserLoginHandler(
             TokenHash = _jwtRefreshTokenGenerator.Hash(refreshToken),
             CreatedAt = DateTime.UtcNow,
             ExpiresAt = DateTime.UtcNow.AddDays(_authOptions.RefreshTokenLifetimeDays),
-            UserAgent = _httpContextAccessor.HttpContext.Request.Headers.UserAgent,
+            UserAgent = _httpContextAccessor.HttpContext.Request.Headers["User-Agent"].ToString(),
             CreatedByIp = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress?.ToString(),
         }, cancellationToken);
 

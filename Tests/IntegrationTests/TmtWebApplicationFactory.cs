@@ -22,7 +22,7 @@ public class TmtWebApplicationFactory : WebApplicationFactory<Program>
             var serviceProvider = services.BuildServiceProvider();
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
-            var connectionString = configuration.GetSection("DevConnectionStrings:SqlServerDataBaseConnectionString").Value;
+            var connectionString = configuration.GetSection("ConnectionStrings:LocalDbConnection").Value;
 
             services.AddDbContext<TaskManagementToolDbContext>(
                 options => options.UseSqlServer(connectionString,
