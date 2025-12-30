@@ -16,5 +16,6 @@ public class ToDoEntityConfiguration : IEntityTypeConfiguration<ToDoEntity>
 
         builder.Property(t => t.Name).IsRequired().HasMaxLength(200);
         builder.Property(t => t.Content).IsRequired();
+        builder.Property(t => t.Importance).IsRequired();
     }
 }
