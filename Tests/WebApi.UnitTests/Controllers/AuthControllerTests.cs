@@ -1,4 +1,5 @@
 ﻿using Application.Commands.Auth.Login.Models;
+using Application.Commands.Auth.Logout.Models;
 using Application.Commands.Auth.RefreshToken.Models;
 using Application.Commands.Auth.Register.Models;
 using Application.Commands.Auth.ResetPassword.Models;
@@ -97,5 +98,20 @@ public class AuthControllerTests
         actualResult.Should().BeOfType<OkObjectResult>();
 
         actualResult.As<OkObjectResult>().Value.Should().BeEquivalentTo(response);
+    }
+
+    [Test]
+    public async Task Logout_ValidRequest_ReturnsNoContent()
+    {
+        // Arrange
+        var request = _fixture.Create<LogoutCommand>();
+
+        // Act
+        var actualResult = await _sut.Logout(request, _cancellationToken);
+
+        // Assert
+        actualResult.Should().BeOfType<NoContentResult>();
+
+        await _mediator.Received(1).Send(ExtendedArg.Is(request), _cancellationToken);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Application.Commands.Auth.Login.Models;
+using Application.Commands.Auth.Logout.Models;
 using Application.Commands.Auth.RefreshToken.Models;
 using Application.Commands.Auth.Register.Models;
 using Application.Commands.Auth.ResetPassword.Models;
@@ -62,5 +63,15 @@ public class AuthController(IMediator mediator) : ControllerBase
     {
         var response = await _mediator.Send(request, cancellationToken);
         return Ok(response);
+    }
+
+    [HttpPost("logout")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> Logout(
+    [FromBody] LogoutCommand request,
+    CancellationToken cancellationToken)
+    {
+        await _mediator.Send(request, cancellationToken);
+        return NoContent();
     }
 }
