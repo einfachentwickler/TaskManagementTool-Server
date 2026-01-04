@@ -74,4 +74,8 @@ public class AuthController(IMediator mediator) : ControllerBase
         await _mediator.Send(request, cancellationToken);
         return NoContent();
     }
+
+    //TODO
+
+    //reset pwd with email
 }
