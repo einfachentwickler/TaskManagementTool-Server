@@ -1,18 +1,22 @@
 ﻿using Application.Commands.Auth.Logout.Models;
+using Application.Services.Abstractions.DateTimeGeneration;
 using Application.Services.Jwt.RefreshToken;
 using Infrastructure.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.Commands.Auth.Logout;
 
-public class LogoutHandler(ITaskManagementToolDbContext dbContext, IJwtRefreshTokenGenerator jwtRefreshTokenGenerator) : IRequestHandler<LogoutCommand>
+public class LogoutHandler(
+    ITaskManagementToolDbContext dbContext,
+    IJwtRefreshTokenGenerator jwtRefreshTokenGenerator,
+    IDateTimeProvider dateTimeProvider) : IRequestHandler<LogoutCommand>
 {
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
     private readonly IJwtRefreshTokenGenerator _jwtRefreshTokenGenerator = jwtRefreshTokenGenerator;
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
     public async Task Handle(LogoutCommand command, CancellationToken cancellationToken)
     {
@@ -23,7 +27,7 @@ public class LogoutHandler(ITaskManagementToolDbContext dbContext, IJwtRefreshTo
 
         if (token != null)
         {
-            token.RevokedAt = DateTime.UtcNow;
+            token.RevokedAt = _dateTimeProvider.UtcNow;
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
     }

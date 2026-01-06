@@ -39,22 +39,22 @@ public class UpdateTodoHandler(
             throw new CustomException<UpdateTodoErrorCode>(UpdateTodoErrorCode.Forbidden, UpdateTodoErrorMessages.Forbidden);
         }
 
-        var entity = await _dbContext.Todos.FirstOrDefaultAsync(todo => todo.Id == request.Id, cancellationToken);
+        var todoEntity = await _dbContext.Todos.FirstOrDefaultAsync(todo => todo.Id == request.Id, cancellationToken);
 
-        entity.Name = request.Name;
-        entity.IsCompleted = request.IsCompleted;
-        entity.Content = request.Content;
-        entity.Importance = request.Importance;
+        todoEntity.Name = request.Name;
+        todoEntity.IsCompleted = request.IsCompleted;
+        todoEntity.Content = request.Content;
+        todoEntity.Importance = request.Importance;
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return new UpdateTodoResponse
         {
-            Content = entity.Content,
-            Id = entity.Id,
-            Importance = entity.Importance,
-            IsCompleted = entity.IsCompleted,
-            Name = entity.Name,
+            Content = todoEntity.Content,
+            Id = todoEntity.Id,
+            Importance = todoEntity.Importance,
+            IsCompleted = todoEntity.IsCompleted,
+            Name = todoEntity.Name,
         };
     }
 }

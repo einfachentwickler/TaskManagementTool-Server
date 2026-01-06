@@ -1,18 +1,20 @@
 ﻿using Application.Commands.Admin.ReverseStatus.Models;
 using Application.Services.IdentityUserManagement;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Shared.Exceptions;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.Commands.Admin.ReverseStatus;
 
-public class ReverseStatusHandler(IIdentityUserManagerWrapper userManager)
+public class ReverseStatusHandler(IIdentityUserManagerWrapper userManager, ILogger<ReverseStatusHandler> logger)
         : IRequestHandler<ReverseStatusCommand, Unit>
 {
     private readonly IIdentityUserManagerWrapper _userManager = userManager;
+    private readonly ILogger<ReverseStatusHandler> _logger = logger;
 
     public async Task<Unit> Handle(
         ReverseStatusCommand request,
@@ -40,7 +42,8 @@ public class ReverseStatusHandler(IIdentityUserManagerWrapper userManager)
 
         if (!result.Succeeded)
         {
-            // TODO: log result.Errors
+            _logger.LogWarning("User status revert failed, errors: {0}", JsonConvert.SerializeObject(result));
+
             throw new CustomException<ReverseStatusErrorCode>(
                 ReverseStatusErrorCode.InternalServerError,
                 ReverseStatusErrorMessages.InternalServerError);

@@ -1,5 +1,6 @@
 ﻿using Application.Commands.Auth.Login.Models;
 using Application.Commands.Auth.RefreshToken.Models;
+using Application.Services.Abstractions.DateTimeGeneration;
 using Application.Services.IdentityUserManagement;
 using Application.Services.Jwt.AccessToken;
 using Application.Services.Jwt.RefreshToken;
@@ -11,7 +12,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Shared.Configuration;
 using Shared.Exceptions;
-using System;
 using System.Linq;
 using System.Security;
 using System.Threading;
@@ -25,7 +25,8 @@ public class RefreshTokenHandler(
     IJwtAccessTokenBuilder jwtBuilder,
     IJwtRefreshTokenGenerator jwtRefreshTokenGenerator,
     IOptions<AuthOptions> options,
-    IHttpContextAccessor httpContextAccessor)
+    IHttpContextAccessor httpContextAccessor,
+    IDateTimeProvider dateTimeProvider)
     : IRequestHandler<RefreshTokenCommand, UserLoginResponse>
 {
     private readonly ITaskManagementToolDbContext _dbContext = dbContext;
@@ -33,6 +34,7 @@ public class RefreshTokenHandler(
     private readonly IJwtAccessTokenBuilder _jwtBuilder = jwtBuilder;
     private readonly IJwtRefreshTokenGenerator _jwtRefreshTokenGenerator = jwtRefreshTokenGenerator;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
     private readonly AuthOptions _options = options.Value;
 
     public async Task<UserLoginResponse> Handle(
@@ -46,12 +48,14 @@ public class RefreshTokenHandler(
         if (storedToken == null)
             throw new CustomException<RefreshTokenErrorCode>(RefreshTokenErrorCode.InvalidToken, RefreshTokenErrorMessages.InvalidToken);
 
+        var utcNow = _dateTimeProvider.UtcNow;
+
         if (storedToken.RevokedAt != null)
         {
             var userTokens = _dbContext.RefreshTokens.Where(t => t.UserEmail == storedToken.UserEmail && t.RevokedAt == null);
 
             foreach (var token in userTokens)
-                token.RevokedAt = DateTime.UtcNow;
+                token.RevokedAt = utcNow;
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
@@ -60,7 +64,7 @@ public class RefreshTokenHandler(
 
         var user = await _userManager.FindByEmailAsync(storedToken.UserEmail);
 
-        storedToken.RevokedAt = DateTime.UtcNow;
+        storedToken.RevokedAt = utcNow;
 
         var newRefreshToken = _jwtRefreshTokenGenerator.Generate();
 
@@ -68,8 +72,8 @@ public class RefreshTokenHandler(
         {
             UserEmail = user.Email,
             TokenHash = _jwtRefreshTokenGenerator.Hash(newRefreshToken),
-            CreatedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddDays(_options.RefreshTokenLifetimeDays),
+            CreatedAt = utcNow,
+            ExpiresAt = utcNow.AddDays(_options.RefreshTokenLifetimeDays),
             UserAgent = _httpContextAccessor.HttpContext.Request.Headers["User-Agent"].ToString(),
             CreatedByIp = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress?.ToString(),
         }, cancellationToken);

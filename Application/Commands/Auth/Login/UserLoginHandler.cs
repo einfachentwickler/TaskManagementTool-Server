@@ -1,4 +1,5 @@
 ﻿using Application.Commands.Auth.Login.Models;
+using Application.Services.Abstractions.DateTimeGeneration;
 using Application.Services.IdentityUserManagement;
 using Application.Services.Jwt.AccessToken;
 using Application.Services.Jwt.RefreshToken;
@@ -23,7 +24,8 @@ public class UserLoginHandler(
     IJwtAccessTokenBuilder jwtSecurityTokenBuilder,
     ITaskManagementToolDbContext taskManagementToolDbContext,
     IOptions<AuthOptions> options,
-    IHttpContextAccessor httpContextAccessor
+    IHttpContextAccessor httpContextAccessor,
+    IDateTimeProvider dateTimeProvider
     ) : IRequestHandler<UserLoginCommand, UserLoginResponse>
 {
     private readonly IIdentityUserManagerWrapper _userManager = userManager;
@@ -33,6 +35,7 @@ public class UserLoginHandler(
     private readonly ITaskManagementToolDbContext _dbContext = taskManagementToolDbContext;
     private readonly AuthOptions _authOptions = options.Value;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
     public async Task<UserLoginResponse> Handle(UserLoginCommand command, CancellationToken cancellationToken)
     {
@@ -61,12 +64,14 @@ public class UserLoginHandler(
 
         var refreshToken = _jwtRefreshTokenGenerator.Generate();
 
+        var utcNow = _dateTimeProvider.UtcNow;
+
         await _dbContext.RefreshTokens.AddAsync(new RefreshTokenEntity
         {
             UserEmail = user.Email,
             TokenHash = _jwtRefreshTokenGenerator.Hash(refreshToken),
-            CreatedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddDays(_authOptions.RefreshTokenLifetimeDays),
+            CreatedAt = utcNow,
+            ExpiresAt = utcNow.AddDays(_authOptions.RefreshTokenLifetimeDays),
             UserAgent = _httpContextAccessor.HttpContext.Request.Headers["User-Agent"].ToString(),
             CreatedByIp = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress?.ToString(),
         }, cancellationToken);

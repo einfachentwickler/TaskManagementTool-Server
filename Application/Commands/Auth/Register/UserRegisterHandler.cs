@@ -33,7 +33,7 @@ public class UserRegisterHandler(
             throw new CustomException<UserRegisterErrorCode>(UserRegisterErrorCode.UserAlreadyExists, UserRegisterErrorMessages.UserAlreadyExists);
         }
 
-        UserEntity identityUser = new()
+        var identityUser = new UserEntity
         {
             Email = request.Email,
             UserName = request.Email,

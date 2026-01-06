@@ -1,5 +1,7 @@
 ﻿using Application.Commands.Auth.Register;
 using Application.Commands.Auth.Register.Validation;
+using Application.Services.Abstractions.DateTimeGeneration;
+using Application.Services.Abstractions.GuidGeneration;
 using Application.Services.Http;
 using Application.Services.IdentityUserManagement;
 using Application.Services.Jwt.AccessToken;
@@ -16,6 +18,9 @@ public static class DiModule
         services.AddValidatorsFromAssemblyContaining<UserRegisterCommandValidator>();
 
         services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblyContaining<UserRegisterHandler>());
+
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+        services.AddSingleton<IGuidProvider, GuidProvider>();
 
         services.AddScoped<IIdentityUserManagerWrapper, IdentityUserManagerWrapper>();
         services.AddScoped<IJwtAccessTokenBuilder, JwtAccessTokenBuilder>();
